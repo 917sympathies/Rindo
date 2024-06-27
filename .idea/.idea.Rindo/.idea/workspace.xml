@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="cfe22323-e16e-4057-9718-e221733a138f" name="Changes" comment="init commit" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="dev" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;917sympathies&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="selectedUrlAndAccountId">
+      <UrlAndAccount>
+        <option name="accountId" value="ee9aaef4-c4f1-40b0-8dbd-ea3641c4f162" />
+        <option name="url" value="https://github.com/917sympathies/Rindo.git" />
+      </UrlAndAccount>
+    </option>
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/aspnetcore/610fe433e07b32ed451ed99d07df63be47c29050/src/Security/Authentication/JwtBearer/src/JwtBearerEvents.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/aspnetcore/b506e2cb7b6c0fe787305f8cfdee046b7b3f9a53/src/Mvc/Mvc.Core/src/Infrastructure/ActionMethodExecutor.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/aspnetcore/d0ca5a8d20ac50a33d5451e998a5d411a810c8d7/src/Mvc/Mvc.Core/src/Infrastructure/ActionMethodExecutor.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/aspnetcore/d0ca5a8d20ac50a33d5451e998a5d411a810c8d7/src/Security/Authentication/Core/src/AuthenticationServiceCollectionExtensions.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/efcore/819a61e6a4687309ad410167d488010192a27abc/src/EFCore/ChangeTracking/Internal/InternalEntityEntry.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/efcore/819a61e6a4687309ad410167d488010192a27abc/src/EFCore/ChangeTracking/Internal/SnapshotFactoryFactory.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/efcore/819a61e6a4687309ad410167d488010192a27abc/src/EFCore/Metadata/Internal/EntityTypeExtensions.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/efcore/819a61e6a4687309ad410167d488010192a27abc/src/EFCore/Metadata/RuntimeEntityType.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/efcore/819a61e6a4687309ad410167d488010192a27abc/src/Shared/NonCapturingLazyInitializer.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/runtime/8e9a17b2216f51a5788f8b1c467a4cf3b769e7d7/src/coreclr/System.Private.CoreLib/src/System/Type.CoreCLR.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/runtime/8e9a17b2216f51a5788f8b1c467a4cf3b769e7d7/src/libraries/System.Linq/src/System/Linq/Where.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/runtime/dff486f2d78d3f932d0f9bfa38043f85e358fb8c/src/coreclr/System.Private.CoreLib/src/System/Type.CoreCLR.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/runtime/dff486f2d78d3f932d0f9bfa38043f85e358fb8c/src/libraries/System.Linq.Expressions/src/System/Linq/Expressions/ParameterExpression.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Rindo.Infrastructure/Models/RindoDbContext.cs" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="2cnfOIQ1Bqbuhlh8qEUIJX7Wjtv" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;.NET Launch Settings Profile.Rindo.API: http.executor&quot;: &quot;Debug&quot;,
+    &quot;Docker.Rindo.API/Dockerfile.executor&quot;: &quot;Debug&quot;,
+    &quot;Docker.docker-compose.yml.rindo.api: Compose Deployment.executor&quot;: &quot;Run&quot;,
+    &quot;Docker.docker-compose.yml.rindo.db: Compose Deployment.executor&quot;: &quot;Run&quot;,
+    &quot;Docker.docker-compose.yml: Compose Deployment.executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;Docker&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;postgresql&quot;
+    ],
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;PLAIN_TEXT&quot;
+    ],
+    &quot;rider.external.source.directories&quot;: [
+      &quot;C:\\Users\\urazb\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\DecompilerCache&quot;,
+      &quot;C:\\Users\\urazb\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\SourcesCache&quot;,
+      &quot;C:\\Users\\urazb\\AppData\\Local\\Symbols\\src&quot;
+    ]
+  }
+}</component>
+  <component name="RiderProblemsViewState">
+    <hideBySeverity>
+      <option value="15" />
+    </hideBySeverity>
+  </component>
+  <component name="RunManager" selected=".NET Launch Settings Profile.Rindo.API: http">
+    <configuration name="Rindo.API: IIS Express" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
+      <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/Rindo.API/Rindo.API.csproj" />
+      <option name="LAUNCH_PROFILE_TFM" value="net7.0" />
+      <option name="LAUNCH_PROFILE_NAME" value="IIS Express" />
+      <option name="USE_EXTERNAL_CONSOLE" value="0" />
+      <option name="USE_MONO" value="0" />
+      <option name="RUNTIME_ARGUMENTS" value="" />
+      <option name="GENERATE_APPLICATIONHOST_CONFIG" value="1" />
+      <option name="SHOW_IIS_EXPRESS_OUTPUT" value="0" />
+      <option name="SEND_DEBUG_REQUEST" value="1" />
+      <option name="ADDITIONAL_IIS_EXPRESS_ARGUMENTS" value="" />
+      <method v="2">
+        <option name="Build" />
+      </method>
+    </configuration>
+    <configuration name="Rindo.API: http" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
+      <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/Rindo.API/Rindo.API.csproj" />
+      <option name="LAUNCH_PROFILE_TFM" value="net7.0" />
+      <option name="LAUNCH_PROFILE_NAME" value="http" />
+      <option name="USE_EXTERNAL_CONSOLE" value="0" />
+      <option name="USE_MONO" value="0" />
+      <option name="RUNTIME_ARGUMENTS" value="" />
+      <option name="GENERATE_APPLICATIONHOST_CONFIG" value="1" />
+      <option name="SHOW_IIS_EXPRESS_OUTPUT" value="0" />
+      <option name="SEND_DEBUG_REQUEST" value="1" />
+      <option name="ADDITIONAL_IIS_EXPRESS_ARGUMENTS" value="" />
+      <method v="2">
+        <option name="Build" />
+      </method>
+    </configuration>
+    <configuration name="Rindo.API: https" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
+      <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/Rindo.API/Rindo.API.csproj" />
+      <option name="LAUNCH_PROFILE_TFM" value="net7.0" />
+      <option name="LAUNCH_PROFILE_NAME" value="https" />
+      <option name="USE_EXTERNAL_CONSOLE" value="0" />
+      <option name="USE_MONO" value="0" />
+      <option name="RUNTIME_ARGUMENTS" value="" />
+      <option name="GENERATE_APPLICATIONHOST_CONFIG" value="1" />
+      <option name="SHOW_IIS_EXPRESS_OUTPUT" value="0" />
+      <option name="SEND_DEBUG_REQUEST" value="1" />
+      <option name="ADDITIONAL_IIS_EXPRESS_ARGUMENTS" value="" />
+      <method v="2">
+        <option name="Build" />
+      </method>
+    </configuration>
+    <configuration name="Rindo.API/Dockerfile" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
+      <deployment type="dockerfile">
+        <settings>
+          <option name="imageTag" value="rindo.api" />
+          <option name="containerName" value="rindo.api" />
+          <option name="contextFolderPath" value="." />
+          <option name="portBindings">
+            <list>
+              <DockerPortBindingImpl>
+                <option name="containerPort" value="80" />
+                <option name="hostIp" value="127.0.0.1" />
+                <option name="hostPort" value="8080" />
+              </DockerPortBindingImpl>
+            </list>
+          </option>
+          <option name="sourceFilePath" value="Rindo.API/Dockerfile" />
+        </settings>
+      </deployment>
+      <EXTENSION ID="com.jetbrains.rider.docker.debug" isFastModeEnabled="true" isSslEnabled="false" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="docker-deploy" factoryName="docker-compose.yml" temporary="true">
+      <deployment type="docker-compose.yml">
+        <settings />
+      </deployment>
+      <EXTENSION ID="com.jetbrains.rider.docker.debug" isFastModeEnabled="true" isSslEnabled="false" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="docker-deploy" factoryName="dockerfile" temporary="true">
+      <deployment type="dockerfile">
+        <settings />
+      </deployment>
+      <EXTENSION ID="com.jetbrains.rider.docker.debug" isFastModeEnabled="true" isSslEnabled="false" />
+      <method v="2" />
+    </configuration>
+    <configuration name="docker-compose.yml: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" server-name="Docker">
+      <deployment type="docker-compose.yml">
+        <settings>
+          <option name="envFilePath" value="" />
+          <option name="sourceFilePath" value="docker-compose.yml" />
+        </settings>
+      </deployment>
+      <EXTENSION ID="com.jetbrains.rider.docker.debug" isFastModeEnabled="true" isSslEnabled="false" />
+      <method v="2" />
+    </configuration>
+    <configuration name="docker-compose.yml.rindo.api: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Docker">
+      <deployment type="docker-compose.yml">
+        <settings>
+          <option name="services">
+            <list>
+              <option value="rindo.api" />
+            </list>
+          </option>
+          <option name="sourceFilePath" value="docker-compose.yml" />
+        </settings>
+      </deployment>
+      <EXTENSION ID="com.jetbrains.rider.docker.debug" isFastModeEnabled="true" isSslEnabled="false" />
+      <method v="2" />
+    </configuration>
+    <configuration name="docker-compose.yml.rindo.db: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Docker">
+      <deployment type="docker-compose.yml">
+        <settings>
+          <option name="services">
+            <list>
+              <option value="rindo.db" />
+            </list>
+          </option>
+          <option name="sourceFilePath" value="docker-compose.yml" />
+        </settings>
+      </deployment>
+      <EXTENSION ID="com.jetbrains.rider.docker.debug" isFastModeEnabled="true" isSslEnabled="false" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue=".NET Launch Settings Profile.Rindo.API: http" />
+      <item itemvalue=".NET Launch Settings Profile.Rindo.API: https" />
+      <item itemvalue=".NET Launch Settings Profile.Rindo.API: IIS Express" />
+      <item itemvalue="Docker.docker-compose.yml: Compose Deployment" />
+      <item itemvalue="Docker.Rindo.API/Dockerfile" />
+      <item itemvalue="Docker.docker-compose.yml.rindo.api: Compose Deployment" />
+      <item itemvalue="Docker.docker-compose.yml.rindo.db: Compose Deployment" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Docker.docker-compose.yml.rindo.api: Compose Deployment" />
+        <item itemvalue="Docker.docker-compose.yml.rindo.db: Compose Deployment" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="cfe22323-e16e-4057-9718-e221733a138f" name="Changes" comment="" />
+      <created>1708752230635</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1708752230635</updated>
+      <workItem from="1708752232133" duration="1814000" />
+      <workItem from="1708754230367" duration="10853000" />
+      <workItem from="1708840997825" duration="5029000" />
+      <workItem from="1708924634885" duration="15017000" />
+      <workItem from="1709007031720" duration="2429000" />
+      <workItem from="1709045141366" duration="7947000" />
+      <workItem from="1709100291608" duration="15067000" />
+      <workItem from="1709193446724" duration="4858000" />
+      <workItem from="1709207762344" duration="500000" />
+      <workItem from="1709266198168" duration="1195000" />
+      <workItem from="1709362684814" duration="10646000" />
+      <workItem from="1709380393317" duration="3787000" />
+      <workItem from="1709404634046" duration="266000" />
+      <workItem from="1709533321863" duration="800000" />
+      <workItem from="1709566643083" duration="601000" />
+      <workItem from="1709570995156" duration="2719000" />
+      <workItem from="1709636944299" duration="2477000" />
+      <workItem from="1709698349798" duration="8821000" />
+      <workItem from="1709791796525" duration="7990000" />
+      <workItem from="1709872137201" duration="12283000" />
+      <workItem from="1709919714564" duration="2406000" />
+      <workItem from="1710053674639" duration="6150000" />
+      <workItem from="1710081032503" duration="6393000" />
+      <workItem from="1710134347207" duration="5029000" />
+      <workItem from="1710250194253" duration="1793000" />
+      <workItem from="1710305074155" duration="1287000" />
+      <workItem from="1710309896971" duration="4009000" />
+      <workItem from="1710394421720" duration="5155000" />
+      <workItem from="1710408493722" duration="1000" />
+      <workItem from="1710420808109" duration="4270000" />
+      <workItem from="1710505285096" duration="4116000" />
+      <workItem from="1710569383098" duration="23284000" />
+      <workItem from="1710652096898" duration="5580000" />
+      <workItem from="1710661997618" duration="12500000" />
+      <workItem from="1710739750294" duration="4621000" />
+      <workItem from="1710845770551" duration="2172000" />
+      <workItem from="1710907156404" duration="8267000" />
+      <workItem from="1711001856363" duration="3226000" />
+      <workItem from="1711036914279" duration="1194000" />
+      <workItem from="1711174343409" duration="4347000" />
+      <workItem from="1711195685950" duration="5496000" />
+      <workItem from="1711294457914" duration="643000" />
+      <workItem from="1711302763241" duration="717000" />
+      <workItem from="1711366319281" duration="3508000" />
+      <workItem from="1711463289155" duration="3612000" />
+      <workItem from="1711519897315" duration="3059000" />
+      <workItem from="1711611004656" duration="8254000" />
+      <workItem from="1711719911187" duration="1887000" />
+      <workItem from="1711864578920" duration="9647000" />
+      <workItem from="1711907419151" duration="112000" />
+      <workItem from="1712230140971" duration="2285000" />
+      <workItem from="1712240608059" duration="6737000" />
+      <workItem from="1712316834529" duration="312000" />
+      <workItem from="1712317156643" duration="1277000" />
+      <workItem from="1712556969260" duration="15000" />
+      <workItem from="1712557125715" duration="599000" />
+      <workItem from="1713333483804" duration="4918000" />
+      <workItem from="1713447990297" duration="963000" />
+      <workItem from="1713503740474" duration="14831000" />
+      <workItem from="1713607464319" duration="3435000" />
+      <workItem from="1713638866386" duration="2349000" />
+      <workItem from="1713715757093" duration="2187000" />
+      <workItem from="1714072103464" duration="1758000" />
+      <workItem from="1714279931469" duration="598000" />
+      <workItem from="1714370678522" duration="3465000" />
+      <workItem from="1714469796379" duration="8982000" />
+      <workItem from="1714586041424" duration="1314000" />
+      <workItem from="1714847984290" duration="3337000" />
+      <workItem from="1714902830578" duration="650000" />
+      <workItem from="1714933063890" duration="2744000" />
+      <workItem from="1714988204372" duration="411000" />
+      <workItem from="1715358199895" duration="3863000" />
+      <workItem from="1715421619342" duration="8957000" />
+      <workItem from="1715441004644" duration="2754000" />
+      <workItem from="1715530468224" duration="713000" />
+      <workItem from="1715537887222" duration="157000" />
+      <workItem from="1715590753443" duration="6127000" />
+      <workItem from="1715702322085" duration="670000" />
+      <workItem from="1715843838969" duration="4081000" />
+      <workItem from="1716214376053" duration="1222000" />
+      <workItem from="1716888685113" duration="1807000" />
+      <workItem from="1716902058628" duration="7485000" />
+      <workItem from="1716970746609" duration="5208000" />
+      <workItem from="1717051662344" duration="1864000" />
+      <workItem from="1717088726090" duration="245000" />
+      <workItem from="1717408908310" duration="1842000" />
+      <workItem from="1717830095968" duration="2170000" />
+      <workItem from="1717920964386" duration="1196000" />
+      <workItem from="1718054211266" duration="248000" />
+      <workItem from="1718384989769" duration="635000" />
+      <workItem from="1718523149998" duration="2042000" />
+      <workItem from="1718954982729" duration="3822000" />
+      <workItem from="1718958937910" duration="11363000" />
+      <workItem from="1718971961591" duration="1996000" />
+      <workItem from="1719398055507" duration="11253000" />
+      <workItem from="1719471725576" duration="112000" />
+      <workItem from="1719521458112" duration="155000" />
+      <workItem from="1719521626712" duration="384000" />
+    </task>
+    <task id="LOCAL-00001" summary="Init">
+      <option name="closed" value="true" />
+      <created>1709806427502</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1709806427502</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Init">
+      <option name="closed" value="true" />
+      <created>1711864961553</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1711864961553</updated>
+    </task>
+    <task id="LOCAL-00003" summary="add role project user relation">
+      <option name="closed" value="true" />
+      <created>1712239658970</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1712239658970</updated>
+    </task>
+    <task id="LOCAL-00004" summary="add role project user relation">
+      <option name="closed" value="true" />
+      <created>1712239689479</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1712239689479</updated>
+    </task>
+    <task id="LOCAL-00005" summary="fixes">
+      <option name="closed" value="true" />
+      <created>1714076548034</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1714076548034</updated>
+    </task>
+    <task id="LOCAL-00006" summary="idk">
+      <option name="closed" value="true" />
+      <created>1714370753632</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1714370753632</updated>
+    </task>
+    <task id="LOCAL-00007" summary="user profile changes + on user from project delete fix">
+      <option name="closed" value="true" />
+      <created>1714850895685</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1714850895685</updated>
+    </task>
+    <task id="LOCAL-00008" summary="invites and tags added">
+      <option name="closed" value="true" />
+      <created>1714988341267</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1714988341267</updated>
+    </task>
+    <task id="LOCAL-00009" summary="invites and tags added">
+      <option name="closed" value="true" />
+      <created>1714988366001</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1714988366001</updated>
+    </task>
+    <task id="LOCAL-00010" summary="invites fixed">
+      <option name="closed" value="true" />
+      <created>1715428298730</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1715428298730</updated>
+    </task>
+    <task id="LOCAL-00011" summary="stages indexes fixed + color prop removed from tag">
+      <option name="closed" value="true" />
+      <created>1715441378590</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1715441378590</updated>
+    </task>
+    <task id="LOCAL-00012" summary="fixes + fetching changing project name">
+      <option name="closed" value="true" />
+      <created>1715620866061</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1715620866061</updated>
+    </task>
+    <task id="LOCAL-00013" summary="docker setup + fixes + password hashing">
+      <option name="closed" value="true" />
+      <created>1716982344719</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1716982344719</updated>
+    </task>
+    <task id="LOCAL-00014" summary="changed to localhost usage, not docker">
+      <option name="closed" value="true" />
+      <created>1718054329291</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1718054329291</updated>
+    </task>
+    <task id="LOCAL-00015" summary="init commit">
+      <option name="closed" value="true" />
+      <created>1719521654754</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1719521654754</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$" />
+    </ignored-roots>
+    <MESSAGE value="Init" />
+    <MESSAGE value="add role project user relation" />
+    <MESSAGE value="fixes" />
+    <MESSAGE value="idk" />
+    <MESSAGE value="user profile changes + on user from project delete fix" />
+    <MESSAGE value="invites and tags added" />
+    <MESSAGE value="invites fixed" />
+    <MESSAGE value="stages indexes fixed + color prop removed from tag" />
+    <MESSAGE value="fixes + fetching changing project name" />
+    <MESSAGE value="docker setup + fixes + password hashing" />
+    <MESSAGE value="changed to localhost usage, not docker" />
+    <MESSAGE value="init commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="init commit" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Rindo.Application/Services/StageService/StageService.cs</url>
+          <line>54</line>
+          <properties documentPath="D:\Developing\Projects\Rindo\Rindo.Application\Services\StageService\StageService.cs" initialLine="54" containingFunctionPresentation="Method 'ChangeStageTask'" />
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Rindo.Application/Services/ProjectService/ProjectService.cs</url>
+          <line>134</line>
+          <properties documentPath="D:\Developing\Projects\Rindo\Rindo.Application\Services\ProjectService\ProjectService.cs" initialLine="134" containingFunctionPresentation="Method 'UpdateProjectStages'" />
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <pin-to-top-manager>
+      <pinned-members>
+        <PinnedItemInfo parentTag="Type#Rindo.Domain.Entities.Role" memberName="CanModifyRoles" />
+        <PinnedItemInfo parentTag="Type#Rindo.Domain.Entities.User" memberName="LastName" />
+        <PinnedItemInfo parentTag="Type#Rindo.Domain.Entities.Role" memberName="CanInviteUser" />
+        <PinnedItemInfo parentTag="Type#Rindo.Domain.Entities.Role" memberName="CanModifyStage" />
+        <PinnedItemInfo parentTag="Type#Rindo.Domain.Entities.Project" memberName="Owner" />
+        <PinnedItemInfo parentTag="Type#Rindo.Domain.Entities.Role" memberName="CanExcludeUser" />
+        <PinnedItemInfo parentTag="Type#Rindo.Domain.Entities.Role" memberName="CanUseChat" />
+        <PinnedItemInfo parentTag="Type#Rindo.Domain.Entities.Role" memberName="CanModifyTask" />
+      </pinned-members>
+    </pin-to-top-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>
