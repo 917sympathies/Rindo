@@ -25,7 +25,6 @@ public class MappingProfile : Profile
         CreateMap<Project, ProjectSettingsDto>();
         CreateMap<Project, ProjectInfoSidebar>();
         CreateMap<Stage, StageOnCreateDto>().ReverseMap();
-        CreateMap<Stage, StageDto>().ReverseMap();
         CreateMap<Project, ProjectInfoHeader>().ReverseMap();
         CreateMap<Role, RoleDto>().ReverseMap();
         CreateMap<Role, RoleDtoOnCreate>().ReverseMap();
