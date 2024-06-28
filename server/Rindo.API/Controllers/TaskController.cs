@@ -20,12 +20,10 @@ namespace Rindo.API.Controllers
     public class TaskController : ControllerBase
     {
         private readonly ITaskService _service;
-        private readonly RindoDbContext _context;
         
         public TaskController(ITaskService service, RindoDbContext context)
         {
             _service = service;
-            _context = context;
         }
 
         [HttpPost]
