@@ -2,6 +2,7 @@ using System.Text;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Rindo.API.Filters;
 using Rindo.Chat;
 using Rindo.Infrastructure.DependencyInjection;
 using Rindo.Infrastructure.Models;
@@ -18,6 +19,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("CorsPolicy", 
         conf => conf.AllowAnyMethod().AllowAnyHeader().AllowCredentials().SetIsOriginAllowed(x => true)));
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddScoped<AsyncActionAccessFilter>();
 builder.Services.AddSignalR();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 

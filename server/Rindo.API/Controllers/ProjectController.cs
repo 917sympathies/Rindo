@@ -3,6 +3,7 @@ using Application.Interfaces.Services;
 using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Rindo.API.Filters;
 using Rindo.Domain.DTO;
 using Rindo.Domain.Entities;
 
@@ -35,6 +36,7 @@ namespace Rindo.API.Controllers
             return Ok(project);
         }
 
+        [ServiceFilter(typeof(AsyncActionAccessFilter))]
         [HttpGet("{id:guid}/settings")]
         public async Task<IActionResult> GetProjectSettings(Guid id)
         {
@@ -48,6 +50,7 @@ namespace Rindo.API.Controllers
             return Ok(await _service.GetProjectsWhereUserAttends(userId));
         }
 
+        [ServiceFilter(typeof(AsyncActionAccessFilter))]
         [HttpGet("{id:guid}/header")]
         public async Task<IActionResult> GetProjectsInfoForHeader(Guid id)
         {
