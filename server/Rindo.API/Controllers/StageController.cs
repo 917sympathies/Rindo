@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Application.Interfaces.Services;
 using Application.Services.StageService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Rindo.API.Filters;
 using Rindo.Domain.DTO;
 using Rindo.Domain.Entities;
 
@@ -30,6 +32,7 @@ namespace Rindo.API.Controllers
             return Ok(result.Value);
         }
 
+        [ServiceFilter(typeof(AsyncActionAccessFilter))]
         [HttpGet]
         public async Task<IActionResult> GetStagesByProject(Guid projectId)
         {

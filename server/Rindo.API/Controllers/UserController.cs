@@ -1,18 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Application.Mapping;
+using Application.Interfaces.Services;
 using Application.Services.UserService;
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Rindo.Domain.DTO;
-using Rindo.Domain.Entities;
-using Rindo.Domain.Repositories;
-using Rindo.Infrastructure.Models;
 
 namespace Rindo.API.Controllers
 {
@@ -22,13 +12,11 @@ namespace Rindo.API.Controllers
     {
         private readonly IUserService _service;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly RindoDbContext _context;
 
-        public UserController(IUserService service, IHttpContextAccessor httpContextAccessor, RindoDbContext context)
+        public UserController(IUserService service, IHttpContextAccessor httpContextAccessor)
         {
             _service = service;
             _httpContextAccessor = httpContextAccessor;
-            _context = context;
         }
 
         [Authorize]
@@ -70,20 +58,16 @@ namespace Rindo.API.Controllers
         [HttpPut("{id:guid}/firstName")]
         public async Task<IActionResult> ChangeUserFirstName(Guid id, string firstName)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
-            if (user is null) return NotFound();
-            user.FirstName = firstName;
-            await _context.SaveChangesAsync();
+            var result = await _service.ChangeUserFirstName(id, firstName);
+            if (!result.IsSuccess) return NotFound(result.Error.Description); 
             return Ok();
         }
         
         [HttpPut("{id:guid}/lastName")]
         public async Task<IActionResult> ChangeUserLastName(Guid id, string lastName)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
-            if (user is null) return NotFound();
-            user.LastName = lastName;
-            await _context.SaveChangesAsync();
+            var result = await _service.ChangeUserLastName(id, lastName);
+            if (!result.IsSuccess) return NotFound(result.Error.Description);
             return Ok();
         }
     }

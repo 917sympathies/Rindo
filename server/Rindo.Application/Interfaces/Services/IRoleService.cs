@@ -1,8 +1,7 @@
 ﻿using Rindo.Domain.Common;
 using Rindo.Domain.DTO;
-using Rindo.Domain.Entities;
 
-namespace Application.Services.RoleService;
+namespace Application.Interfaces.Services;
 
 public interface IRoleService
 {

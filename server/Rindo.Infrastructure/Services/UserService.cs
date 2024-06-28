@@ -1,5 +1,7 @@
 ﻿using System.Runtime.InteropServices.JavaScript;
+using Application.Interfaces.Services;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Rindo.Domain;
 using Rindo.Domain.Common;
 using Rindo.Domain.DTO;
@@ -41,10 +43,28 @@ public class UserService : IUserService
         return _mapper.Map<UserDto>(user);
     }
 
+    public async Task<Result> ChangeUserLastName(Guid id, string lastName)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+        if (user is null) return Error.NotFound("Пользователя с таким идентификатором не существует");
+        user.LastName = lastName;
+        await _context.SaveChangesAsync();
+        return Result.Success();
+    }
+
+    public async Task<Result> ChangeUserFirstName(Guid id, string firstName)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+        if (user is null) return Error.NotFound("Пользователя с таким идентификатором не существует");
+        user.FirstName = firstName;
+        await _context.SaveChangesAsync();
+        return Result.Success();
+    }
+
     public async Task<Result<IEnumerable<UserDto>>> GetUsersByProjectId(Guid projectId)
     {
         var project = await _projectRepository.GetProjectById(projectId);
-        if (project is null) return Error.NotFound("Такого проекта не существует!");
+        if (project is null) return Error.NotFound("Такого проекта не существует");
         // var users = project.Users;
         // users.Add(project.Owner);
         var users = project.Users.ToList();
@@ -67,12 +87,12 @@ public class UserService : IUserService
     public async Task<Result<Tuple<User, string>>> AuthUser(UserDtoAuth userDtoAuth)
     {
         var user = await _userRepository.GetUserByUsername(userDtoAuth.Username);
-        if (user is null) return Error.NotFound("Пользователя с таким именем пользователя не существует!");
+        if (user is null) return Error.NotFound("Пользователя с таким именем пользователя не существует");
         if (!user.Password.Equals(userDtoAuth.Password))
         {
             var pass = PasswordHandler.GetPasswordHash(userDtoAuth.Password);
             if (!user.Password.Equals(pass))
-                return Error.Validation("Неверный пароль!");
+                return Error.Validation("Неверный пароль");
         }
 
         var token = _jwtProvider.GenerateToken(user);

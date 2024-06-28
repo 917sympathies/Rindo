@@ -1,4 +1,5 @@
-﻿using Rindo.Domain.Common;
+﻿using Application.Interfaces.Services;
+using Rindo.Domain.Common;
 using Rindo.Domain.Entities;
 using Rindo.Domain.Repositories;
 

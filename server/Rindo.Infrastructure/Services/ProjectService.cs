@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices.JavaScript;
+using Application.Interfaces.Services;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Rindo.Domain.Common;
@@ -72,34 +73,51 @@ public class ProjectService : IProjectService
         return _mapper.Map<ProjectInfoSidebar[]>(ret);
     }
 
-    public async Task<Result<User>> InviteUserToProject(Guid projectId, string username, string senderUsername)
+    public async Task<Result<User>> InviteUserToProject(Guid projectId, string username, Guid senderId)
     {
         var user = await _userRepository.GetUserByUsername(username);
-        if (user is null) return Error.NotFound("Такого пользователя не существует!");
+        if (user is null) return Error.NotFound("Такого пользователя не существует");
         var project = await _projectRepository.GetProjectById(projectId);
-        if (project is null) return Error.NotFound("Такого проекта не существует!");
-        var invitation = new Invitation() { UserId = user.Id, ProjectId = projectId, ProjectName = project.Name, SenderUsername = senderUsername};
+        if (project is null) return Error.NotFound("Такого проекта не существует");
+        var sender = await _userRepository.GetUserById(senderId);
+        if (sender is null) return Error.NotFound("Такого пользователя не существует");
+        var invitation = new Invitation() { UserId = user.Id, ProjectId = projectId, ProjectName = project.Name, SenderUsername = sender.Username};
         _context.Invitations.Add(invitation);
         await _context.SaveChangesAsync();
         return user;
     }
 
-    public async Task<Result<User>> AddUserToProject(Guid projectId, Guid userId)
+    public async Task<Result> AddUserToProject(Guid id, Guid userId)
     {
-        var user = await _userRepository.GetUserById(userId);
-        if (user is null) return Error.NotFound("Такого пользователя не существует!");
-        var project = await _projectRepository.GetProjectById(projectId);
-        if (project is null) return Error.NotFound("Такого проекта не существует!");
-        var users = project.Users.ToList();
-        users.Add(user);
-        project.Users = users;
-        await _projectRepository.UpdateProject(project);
+        var invitation =
+            await _context.Invitations.FirstOrDefaultAsync(inv =>
+                inv.ProjectId == id && userId == inv.UserId);
+        _context.Invitations.Remove(invitation);
         await _context.SaveChangesAsync();
-        return user;
+        var project = await _context.Projects.Include(p => p.Users).FirstOrDefaultAsync(p => p.Id == id);
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        project.Users.Add(user);
+        await _context.SaveChangesAsync();
+        return Result.Success();
     }
 
-    public async Task<Result> RemoveUserFromProject(Guid projectId, string username)
+    public async Task<Result> RemoveUserFromProject(Guid id, string username)
     {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+        if (user is null) return Error.NotFound("Такого пользователя не существует");
+        var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);
+        if (project is null) return Error.NotFound("Такого проекта не существует");
+        
+        await _context.Entry(project).Collection(p => p.Users).LoadAsync();
+        project.Users.Remove(user);
+            
+        var upr = await _context.UserProjectRoles.Where(up => up.UserId == user.Id && up.ProjectId == id).ToListAsync();
+        _context.UserProjectRoles.RemoveRange(upr);
+
+        var tasks = await _context.Tasks.Where(t => t.ResponsibleUserId == user.Id && t.ProjectId == id).ToListAsync();
+        foreach (var task in tasks) task.ResponsibleUserId = null;
+            
+        await _context.SaveChangesAsync();
         return Result.Success();
     }
 
@@ -140,10 +158,20 @@ public class ProjectService : IProjectService
 
     public async Task<Result> UpdateProjectStages(Guid projectId, Stage[] stages)
     {
-        var project = await _projectRepository.GetProjectById(projectId);
-        if (project is null) return Result.Failure(Error.Failure("Проекта с таким Id не существует"));
+        var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
+        if (project is null) return Error.NotFound("Такого проекта не существует");
         project.Stages = stages;
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(); 
         return Result.Success();
+    }
+
+    public async Task<Result<object>> GetProjectsWithUserTasks(Guid userId)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if (user is null) return Error.NotFound("Такого пользователя не существует");
+        var tasks = await _context.Tasks.Where(t => t.ResponsibleUserId == userId).ToListAsync();
+        var projects = await _context.Projects.Where(p => p.Users.Contains(user) || p.OwnerId == user.Id).ToListAsync();
+        var result = projects.Select(p => new {p.Name, p.Id, tasks = tasks.Where(t => t.ProjectId == p.Id) }).ToList();
+        return result;
     }
 }

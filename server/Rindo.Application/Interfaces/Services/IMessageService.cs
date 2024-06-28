@@ -1,4 +1,4 @@
-﻿namespace Application.Services.IChatMessageService;
+﻿namespace Application.Interfaces.Services;
 
 public interface IMessageService
 {
