@@ -13,15 +13,13 @@ public class StageService : IStageService
     private readonly IStageRepository _stageRepository;
     private readonly ITaskRepository _taskRepository;
     private readonly RindoDbContext _context;
-    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     
-    public StageService(IStageRepository stageRepository, IUnitOfWork unitOfWork, IMapper mapper, ITaskRepository taskRepository, RindoDbContext context)
+    public StageService(IStageRepository stageRepository, IMapper mapper, ITaskRepository taskRepository, RindoDbContext context)
     {
         _stageRepository = stageRepository;
         _taskRepository = taskRepository;
         _context = context;
-        _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
 
@@ -32,7 +30,7 @@ public class StageService : IStageService
         try
         {
             await _stageRepository.CreateStage(stage);
-            await _unitOfWork.SaveAsync();
+            await _context.SaveChangesAsync();
         }
         catch (Exception e)
         {
@@ -63,7 +61,7 @@ public class StageService : IStageService
         task.StageId = stage.Id;
         var t = task.GetType().GetProperty(nameof(task.StageId));
         await _taskRepository.UpdateProperty(task, t => t.StageId);
-        await _unitOfWork.SaveAsync();
+        await _context.SaveChangesAsync();
         return Result.Success();
     }
 

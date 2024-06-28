@@ -20,14 +20,12 @@ namespace Rindo.API.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
         private readonly IUserService _service;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly RindoDbContext _context;
 
-        public UserController(IUnitOfWork unitOfWork, IUserService service, IHttpContextAccessor httpContextAccessor, RindoDbContext context)
+        public UserController(IUserService service, IHttpContextAccessor httpContextAccessor, RindoDbContext context)
         {
-            _unitOfWork = unitOfWork;
             _service = service;
             _httpContextAccessor = httpContextAccessor;
             _context = context;

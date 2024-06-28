@@ -6,23 +6,24 @@ using Rindo.Domain.DTO;
 using Rindo.Domain.Entities;
 using Rindo.Domain.Repositories;
 using Rindo.Infrastructure;
+using Rindo.Infrastructure.Models;
 using Task = System.Threading.Tasks.Task;
 
 namespace Application.Services.UserService;
 
 public class UserService : IUserService
 {
-    private readonly IUnitOfWork _unitOfWork;
     private readonly IUserRepository _userRepository;
     private readonly IProjectRepository _projectRepository;
     private readonly IMapper _mapper;
     private readonly IJwtProvider _jwtProvider;
+    private readonly RindoDbContext _context;
     
-    public UserService(IUnitOfWork unitOfWork, IUserRepository userRepository, IMapper mapper, IJwtProvider jwtProvider, IProjectRepository projectRepository)
+    public UserService(IUserRepository userRepository, IMapper mapper, IJwtProvider jwtProvider, IProjectRepository projectRepository, RindoDbContext context)
     {
-        _unitOfWork = unitOfWork;
         _userRepository = userRepository;
         _projectRepository = projectRepository;
+        _context = context;
         _mapper = mapper;
         _jwtProvider = jwtProvider;
     }
@@ -58,7 +59,7 @@ public class UserService : IUserService
         var user = _mapper.Map<User>(userDtoSignUp);
         user.Password = PasswordHandler.GetPasswordHash(userDtoSignUp.Password);
         await _userRepository.CreateUser(user);
-        await _unitOfWork.SaveAsync();
+        await _context.SaveChangesAsync();
         var token = _jwtProvider.GenerateToken(user);
         return Tuple.Create(user, token);
     }

@@ -61,7 +61,6 @@ public static class DependencyInjection
             });
         services.AddAuthorization();
         services.AddScoped<IUserProjectRoleRepository, UserProjectRoleRepository>();
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IProjectRepository, ProjectRepository>();
         services.AddScoped<IChatRepository, ChatRepository>();
         services.AddScoped<IChatMessageRepository, ChatMessageRepository>();

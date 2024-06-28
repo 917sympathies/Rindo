@@ -3,6 +3,7 @@ using Rindo.Domain.Common;
 using Rindo.Domain.DTO;
 using Rindo.Domain.Entities;
 using Rindo.Domain.Repositories;
+using Rindo.Infrastructure.Models;
 
 namespace Application.Services.RoleService;
 
@@ -12,24 +13,24 @@ public class RoleService : IRoleService
     private readonly IRoleRepository _roleRepository;
     private readonly IUserRepository _userRepository;
     private readonly IProjectRepository _projectRepository;
-    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly RindoDbContext _context;
     
-    public RoleService(IRoleRepository roleRepository, IUnitOfWork unitOfWork, IMapper mapper, IUserRepository userRepository, IProjectRepository projectRepository, IUserProjectRoleRepository userProjectRoleRepository)
+    public RoleService(IRoleRepository roleRepository, IMapper mapper, IUserRepository userRepository, IProjectRepository projectRepository, IUserProjectRoleRepository userProjectRoleRepository, RindoDbContext context)
     {
         _roleRepository = roleRepository;
-        _unitOfWork = unitOfWork;
         _mapper = mapper;
         _userRepository = userRepository;
         _projectRepository = projectRepository;
         _userProjectRoleRepository = userProjectRoleRepository;
+        _context = context;
     }
     
     public async Task<Result> CreateRole(RoleDtoOnCreate roleDto)
     {
         var role = _mapper.Map<Role>(roleDto);
         await _roleRepository.CreateRole(role);
-        await _unitOfWork.SaveAsync();
+        await _context.SaveChangesAsync();
         return Result.Success();
     }
 
@@ -38,7 +39,7 @@ public class RoleService : IRoleService
         var role = await _roleRepository.GetRoleById(id);
         if (role is null) return Error.NotFound("Нет такой роли!");
         await _roleRepository.DeleteRole(role);
-        await _unitOfWork.SaveAsync();
+        await _context.SaveChangesAsync();
         return Result.Success();
     }
 
@@ -48,7 +49,7 @@ public class RoleService : IRoleService
         if (role is null) return Error.NotFound("Нет такой роли!");
         role.Name = name;
         await _roleRepository.UpdateProperty(role, r => r.Name);
-        await _unitOfWork.SaveAsync();
+        await _context.SaveChangesAsync();
         return Result.Success();
     }
 
@@ -61,7 +62,7 @@ public class RoleService : IRoleService
         var relation = new UserProjectRole() { ProjectId = role.ProjectId, RoleId = role.Id, UserId = user.Id };
         await _userProjectRoleRepository.CreateRelation(relation);
         role.UserProjectRoles.Add(relation);
-        await _unitOfWork.SaveAsync();
+        await _context.SaveChangesAsync();
         return Result.Success();
     }
 
@@ -73,7 +74,7 @@ public class RoleService : IRoleService
         if(role is null) return Result.Failure(Error.NotFound("Нет такой роли!"));
         var relation = await _userProjectRoleRepository.GetRelationByIds(role.ProjectId, role.Id, user.Id);
         await _userProjectRoleRepository.DeleteRelation(relation);
-        await _unitOfWork.SaveAsync();
+        await _context.SaveChangesAsync();
         return Result.Success();
     }
 
@@ -95,13 +96,12 @@ public class RoleService : IRoleService
         role.CanUseChat = rights.CanUseChat;
         //await _roleRepository.UpdateProperty(role, r => r.CanAddTask);
         await _roleRepository.UpdateRole(role);
-        await _unitOfWork.SaveAsync();
+        await _context.SaveChangesAsync();
         return Result.Success();
     }
 
     public async Task<RolesRights> GetRightsByProjectId(Guid projectId, Guid userId)
     {
-        // var projRoles = await GetRolesForUser(projectId);
         var user = await _userRepository.GetUserById(userId);
         var project = await _projectRepository.GetProjectById(projectId);
         if (user is null || project is null) return null;

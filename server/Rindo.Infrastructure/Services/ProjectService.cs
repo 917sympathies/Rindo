@@ -12,15 +12,13 @@ namespace Application.Services;
 
 public class ProjectService : IProjectService
 {
-    private readonly IUnitOfWork _unitOfWork;
     private readonly IProjectRepository _projectRepository;
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
     private readonly RindoDbContext _context;
 
-    public ProjectService(IUnitOfWork unitOfWork, IProjectRepository projectRepository, IUserRepository userRepository, IMapper mapper, RindoDbContext context)
+    public ProjectService(IProjectRepository projectRepository, IUserRepository userRepository, IMapper mapper, RindoDbContext context)
     {
-        _unitOfWork = unitOfWork;
         _projectRepository = projectRepository;
         _userRepository = userRepository;
         _mapper = mapper;
@@ -43,7 +41,7 @@ public class ProjectService : IProjectService
                 new Stage() { Name = "Завершены", Index = 2 },
             };
             project.Chat = new Chat(){ProjectId = project.Id};
-            await _unitOfWork.SaveAsync();
+            await _context.SaveChangesAsync();
         }
         catch (Exception exception)
         {
@@ -96,7 +94,7 @@ public class ProjectService : IProjectService
         users.Add(user);
         project.Users = users;
         await _projectRepository.UpdateProject(project);
-        await _unitOfWork.SaveAsync();
+        await _context.SaveChangesAsync();
         return user;
     }
 
@@ -116,7 +114,7 @@ public class ProjectService : IProjectService
         var project = await _projectRepository.GetProjectById(projectId);
         project!.Name = name;
         await _projectRepository.UpdateProperty(project, p => p.Name);
-        await _unitOfWork.SaveAsync();
+        await _context.SaveChangesAsync();
         return Result.Success();
     }
 
@@ -125,7 +123,7 @@ public class ProjectService : IProjectService
         var project = await _projectRepository.GetProjectById(projectId);
         project!.Description = description;
         await _projectRepository.UpdateProperty(project, p => p.Description);
-        await _unitOfWork.SaveAsync();
+        await _context.SaveChangesAsync();
         return Result.Success();
     }
 
@@ -136,7 +134,7 @@ public class ProjectService : IProjectService
         var tags = await _context.Tags.Where(t => t.ProjectId == id).ToListAsync();
         _context.RemoveRange(tags);
         await _projectRepository.DeleteProject(project);
-        await _unitOfWork.SaveAsync();
+        await _context.SaveChangesAsync();
         return Result.Success();
     }
 
@@ -145,7 +143,7 @@ public class ProjectService : IProjectService
         var project = await _projectRepository.GetProjectById(projectId);
         if (project is null) return Result.Failure(Error.Failure("Проекта с таким Id не существует"));
         project.Stages = stages;
-        await _unitOfWork.SaveAsync();
+        await _context.SaveChangesAsync();
         return Result.Success();
     }
 }
