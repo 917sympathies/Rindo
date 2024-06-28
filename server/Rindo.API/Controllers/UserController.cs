@@ -57,7 +57,7 @@ namespace Rindo.API.Controllers
         [HttpPut("{id:guid}/firstName")]
         public async Task<IActionResult> ChangeUserFirstName(Guid id, string firstName)
         {
-            var result = await _service.ChangeUserLastName(id, firstName);
+            var result = await _service.ChangeUserFirstName(id, firstName);
             if (!result.IsSuccess) return NotFound(result.Error.Description); 
             return Ok();
         }
