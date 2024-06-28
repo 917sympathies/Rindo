@@ -1,17 +1,9 @@
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Threading.Tasks;
 using Application.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Rindo.Domain.DTO;
 using Rindo.Domain.Entities;
-using Rindo.Infrastructure.Models;
-using Task = System.Threading.Tasks.Task;
 
 namespace Rindo.API.Controllers
 {
@@ -22,11 +14,9 @@ namespace Rindo.API.Controllers
     {
         private readonly IProjectService _service;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly RindoDbContext _context;
-        public ProjectController(IProjectService service, RindoDbContext context, IHttpContextAccessor httpContextAccessor)
+        public ProjectController(IProjectService service, IHttpContextAccessor httpContextAccessor)
         {
             _service = service;
-            _context = context;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -78,8 +68,8 @@ namespace Rindo.API.Controllers
             var handler = new JwtSecurityTokenHandler();
             var jwtSecurityToken = handler.ReadJwtToken(token);
             var userId = jwtSecurityToken.Claims.First(c => c.Type == "userId").Value;
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == Guid.Parse(userId));
-            var result = await _service.InviteUserToProject(id, username, user.Username);
+            // var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == Guid.Parse(userId));
+            var result = await _service.InviteUserToProject(id, username, Guid.Parse(userId));
             if (!result.IsSuccess) return BadRequest(result.Error);
             return Ok();
         }
@@ -87,38 +77,16 @@ namespace Rindo.API.Controllers
         [HttpPost("{id:guid}")]
         public async Task<IActionResult> AddUserToProject(Guid id, Guid userId)
         {
-            //var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
-            //await _service.AddUserToProject(id, userId);
-            //if (!result.IsSuccess) return BadRequest(result.Error);
-            var invitation =
-                await _context.Invitations.FirstOrDefaultAsync(inv =>
-                    inv.ProjectId == id && userId == inv.UserId);
-            _context.Invitations.Remove(invitation);
-            await _context.SaveChangesAsync();
-            var project = await _context.Projects.Include(p => p.Users).FirstOrDefaultAsync(p => p.Id == id);
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            project.Users.Add(user);
-            await _context.SaveChangesAsync();
+            var result = await _service.AddUserToProject(id, userId);
+            if (!result.IsSuccess) return NotFound(result.Error.Description);
             return Ok();
         }
 
         [HttpPost("{id:guid}/remove")]
         public async Task<IActionResult> RemoveUserFromProject(Guid id, string username)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
-            if (user is null) return NotFound("Такого пользователя не существует!");
-            var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);
-            await _context.Entry(project).Collection(p => p.Users).LoadAsync();
-            project.Users.Remove(user);
-            
-            var upr = await _context.UserProjectRoles.Where(up => up.UserId == user.Id && up.ProjectId == id).ToListAsync();
-            _context.UserProjectRoles.RemoveRange(upr);
-
-            var tasks = await _context.Tasks.Where(t => t.ResponsibleUserId == user.Id && t.ProjectId == id).ToListAsync();
-            foreach (var task in tasks) task.ResponsibleUserId = null;
-            
-            await _context.SaveChangesAsync();
-            
+            var result = await _service.RemoveUserFromProject(id, username);
+            if (!result.IsSuccess) return NotFound(result.Error.Description);
             return Ok();
         }
         
@@ -141,20 +109,17 @@ namespace Rindo.API.Controllers
         [HttpPut("{projectId:guid}/stages")]
         public async Task<IActionResult> UpdateProjectStages(Guid projectId,[FromBody] Stage[] stages)
         {
-            var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
-            project.Stages = stages;
-            await _context.SaveChangesAsync();           
+            var result = await _service.UpdateProjectStages(projectId, stages);
+            if (!result.IsSuccess) return NotFound(result.Error.Description);
             return Ok();
         }
 
-        [HttpGet("{userId:guid}/usertasks")]
+        [HttpGet("{userId:guid}/userTasks")]
         public async Task<IActionResult> GetProjectsWithUserTasks(Guid userId)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            var tasks = await _context.Tasks.Where(t => t.ResponsibleUserId == userId).ToListAsync();
-            var projects = await _context.Projects.Where(p => p.Users.Contains(user) || p.OwnerId == user.Id).ToListAsync();
-            var result = projects.Select(p => new {p.Name, p.Id, tasks = tasks.Where(t => t.ProjectId == p.Id) }).ToList();
-            return Ok(result);
+            var result = await _service.GetProjectsWithUserTasks(userId);
+            if (!result.IsSuccess) return NotFound(result.Error.Description);
+            return Ok(result.Value);
         }
     }
 }

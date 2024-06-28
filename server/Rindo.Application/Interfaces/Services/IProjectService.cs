@@ -7,17 +7,17 @@ namespace Application.Services;
 
 public interface IProjectService
 {
-    Task<Result> CreateProject(ProjectOnCreateDto projectOnCreateDto);
+    Task<IEnumerable<ProjectInfoSidebar>> GetProjectsWhereUserAttends(Guid userId);
     Task<ProjectOnReturnDto?> GetProjectById(Guid id);
     Task<ProjectOnReturnDto> GetProjectSettings(Guid id);
-    Task<IEnumerable<ProjectInfoSidebar>> GetProjectsWhereUserAttends(Guid userId);
-    Task<Result<User>> InviteUserToProject(Guid projectId, string username, string senderUsername);
-    Task<Result<User>> AddUserToProject(Guid projectId, Guid userId);
-    Task<Result> RemoveUserFromProject(Guid projectId, string username);
     Task<ProjectInfoHeader> GetProjectsInfoForHeader(Guid id);
-    //Task<Result> UpdateProject(ProjectOnReturnDto project);
+    Task<Result<User>> InviteUserToProject(Guid projectId, string username, Guid senderId);
+    Task<Result> AddUserToProject(Guid projectId, Guid userId);
+    Task<Result> CreateProject(ProjectOnCreateDto projectOnCreateDto);
+    Task<Result> RemoveUserFromProject(Guid projectId, string username);
     Task<Result> UpdateProjectName(Guid projectId, string name);
     Task<Result> UpdateProjectDescription(Guid projectId, string description);
     Task<Result> DeleteProject(Guid id);
     Task<Result> UpdateProjectStages(Guid projectId, Stage[] stages);
+    Task<Result<object>> GetProjectsWithUserTasks(Guid userId);
 }
