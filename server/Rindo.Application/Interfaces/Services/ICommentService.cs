@@ -1,6 +1,6 @@
 ﻿using Rindo.Domain.Entities;
 
-namespace Application.Services.CommentsService;
+namespace Application.Interfaces.Services;
 
 public interface ICommentService
 {

@@ -1,9 +1,8 @@
 ﻿using Rindo.Domain.Common;
 using Rindo.Domain.DTO;
 using Rindo.Domain.Entities;
-using Task = System.Threading.Tasks.Task;
 
-namespace Application.Services;
+namespace Application.Interfaces.Services;
 
 public interface IProjectService
 {

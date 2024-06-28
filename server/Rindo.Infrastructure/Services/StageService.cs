@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Application.Interfaces.Services;
+using AutoMapper;
 using Rindo.Domain.Common;
 using Rindo.Domain.DTO;
 using Rindo.Domain.Entities;

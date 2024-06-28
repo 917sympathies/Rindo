@@ -1,7 +1,7 @@
 ﻿using Rindo.Domain.Common;
 using Rindo.Domain.Entities;
 
-namespace Application.Services.ChatService;
+namespace Application.Interfaces.Services;
 
 public interface IChatService
 {

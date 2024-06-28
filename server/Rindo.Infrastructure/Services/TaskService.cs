@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Application.Interfaces.Services;
+using Microsoft.EntityFrameworkCore;
 using Rindo.Domain.Common;
 using Rindo.Domain.Entities;
 using Rindo.Domain.Repositories;

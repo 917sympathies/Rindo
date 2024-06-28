@@ -1,8 +1,7 @@
 ﻿using Rindo.Domain.Common;
-using Rindo.Domain.Entities;
 
-namespace Application.Services;
-using Task = System.Threading.Tasks.Task;
+namespace Application.Interfaces.Services;
+
 using ProjectTask = Rindo.Domain.Entities.Task;
 
 public interface ITaskService
