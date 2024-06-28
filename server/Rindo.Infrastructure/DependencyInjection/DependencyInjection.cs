@@ -78,6 +78,7 @@ public static class DependencyInjection
         services.AddScoped<ICommentService, CommentService>();
         services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<IInvitationService, InvitationService>();
+        services.AddScoped<ITagService, TagService>();
         services.AddScoped<IJwtProvider, JwtProvider>();
         services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
         return services;

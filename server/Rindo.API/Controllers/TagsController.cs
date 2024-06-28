@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,34 +15,31 @@ namespace Rindo.API.Controllers
     [ApiController]
     public class TagsController : ControllerBase
     {
-        private readonly RindoDbContext _context;
-        public TagsController(RindoDbContext context)
+        private readonly ITagService _service;
+        public TagsController(ITagService service)
         {
-            _context = context;
+            _service = service;
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateTag(string name, Guid projectId)
         {
-            var tag = new Tag() { Name = name, ProjectId = projectId };
-            _context.Tags.Add(tag);
-            await _context.SaveChangesAsync();
+            var tag = await _service.CreateTag(name, projectId);
             return Ok(tag);
         }
 
         [HttpGet]
         public async Task<IActionResult> GetTagsByProjectId(Guid projectId)
         {
-            var tags = await _context.Tags.Where(t => t.ProjectId == projectId).ToListAsync();
+            var tags = await _service.GetTagsByProjectId(projectId);
             return Ok(tags);
         }
 
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteTag(Guid id)
         {
-            var tag = await _context.Tags.FirstOrDefaultAsync(t => t.Id == id);
-            _context.Tags.Remove(tag);
-            await _context.SaveChangesAsync();
+            var result = await _service.DeleteTag(id);
+            if (!result.IsSuccess) return NotFound(result.Error.Description);
             return Ok();
         }
     }
