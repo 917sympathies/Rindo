@@ -1,6 +1,6 @@
 "use client";
 import styles from "./styles.module.css";
-import { useParams } from "next/navigation";
+import { useParams, notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { IProject, ITask, IStageDto, IStage } from "@/types";
@@ -83,7 +83,7 @@ export default function Kanban() {
       credentials: "include",
     });
     const data = await response.json();
-    console.log(data)
+    if(data.status === 400) notFound();
     setStages(data);
   }
 
