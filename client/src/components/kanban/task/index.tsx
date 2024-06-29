@@ -1,5 +1,4 @@
 "use client";
-import styles from "./styles.module.css";
 import {
   useState,
   useEffect,
@@ -14,9 +13,8 @@ import { MessageCircle } from "lucide-react";
 import TaskModal from "@/components/taskModal";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { PencilLine } from "lucide-react";
+import { EllipsisVertical } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-// import { Avatar } from "@/components/ui/avatar";
 
 interface ITaskProps {
   task: ITask;
@@ -28,7 +26,6 @@ function Task({ task, setFetch, rights }: ITaskProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [responsibleUser, setResponsibleUser] = useState<IUser | null>(null);
   const [commentsAmount, setCommentsAmount] = useState<number | null>(null);
   const [commentLabel, setCommentLabel] = useState<string>("комментариев");
@@ -86,57 +83,26 @@ function Task({ task, setFetch, rights }: ITaskProps) {
 
   return (
     <>
-      <div className="bg-white rounded-lg mt-[10px] w-full self-center">
-        <p
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            color: "black",
-            fontSize: "0.95rem",
-            fontWeight: "600",
-            margin: "0",
-            padding: "0.8rem 1rem 0rem 1rem",
-            textOverflow: "clip",
-          }}
-        >
+      <div className="bg-white rounded-lg mt-[10px] w-full self-center shadow">
+        <p className="flex justify-between items-center text-black text-[0.95rem] font-semibold m-0 pt-[0.8rem] px-[1rem] pb-0 text-clip">
           <div>{task.name}</div>
           <div
-            className={styles.editBtn}
+            className="h-fit w-fit flex justify-center p-[0.2rem] rounded-[6px] hover:cursor-pointer hover:bg-[rgba(1,1,1,0.03)] ease-in-out duration-200"
             onClick={() => router.push(pathname + "?" + handleOpenModal(true))}
           >
-            <PencilLine size={16} color="rgb(102,102,102)" />
+            <EllipsisVertical size={16} color="rgb(102,102,102)" />
           </div>
         </p>
-        <div style={{ fontSize: "0.7rem", margin: "0.2rem 0.8rem" }}>
+        <div className="text-[0.7rem] my-[0.2rem] mx-[0.8rem]">
           <textarea
             value={task.description}
             disabled
             cols={30}
             maxLength={100}
-            style={{
-              backgroundColor: "inherit",
-              fontFamily: "inherit",
-              resize: "none",
-              border: "0",
-              overflow: "hidden",
-              height: "auto",
-            }}
+            className="resize-none border-0 overflow-hidden h-auto bg-inherit"
           ></textarea>
         </div>
-        {/* <div className="w-full flex justify-center items-center">
-          <Progress className="h-1 w-4/5 dark:bg-gray-300 mb-1" value={task.progress}/>
-        </div> */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignContent: "center",
-            paddingBottom: "0.4rem",
-            margin: "0 0.4rem",
-          }}
-        >
+        <div className="flex flex-row justify-between content-center pb-[0.4rem] my-0 mx-[0.4rem]">
           <div>
             {responsibleUser == null ? (
               <>
@@ -154,27 +120,8 @@ function Task({ task, setFetch, rights }: ITaskProps) {
                 </p> */}
               </>
             ) : (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  margin: "0.2rem 0",
-                }}
-              >
-                <Avatar
-                  style={{
-                    backgroundColor: "#4198FF",
-                    color: "white",
-                    width: "2.5vh",
-                    height: "2.5vh",
-                    fontSize: "0.6rem",
-                    margin: "0.1rem",
-                    marginLeft: "0.4rem",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
+              <div className="flex flex-row items-center my-[0.2rem] mx-0">
+                <Avatar className="bg-[#4198FF] text-white w-[2.5vh] h-[2.5vh] text-[0.6rem] m-[0.1rem] ml-[0.4rem] flex justify-center items-center"  
                   // src="/static/images/avatar/1.jpg"
                 >
                   {responsibleUser?.firstName?.slice(0, 1)}
@@ -189,25 +136,9 @@ function Task({ task, setFetch, rights }: ITaskProps) {
               value={task.progress}
             />
           </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "flex-end",
-              alignItems: "center",
-            }}
-          >
-            <MessageCircle style={{ marginRight: "0.4rem" }} size={16} />
-            <div
-              style={{
-                marginRight: "0.4rem",
-                fontFamily: "inherit",
-                fontSize: "0.8rem",
-                textOverflow: "hidden",
-                overflow: "hidden",
-                whiteSpace: "nowrap",
-              }}
-            >
+          <div className="flex flex-row justify-end items-center">
+            <MessageCircle className="mr-[0.4rem]" size={16} />
+            <div className="mr-[0.4rem] text-[0.8rem] text-hidden overflow-hidden whitespace-nowrap">
               {commentsAmount
                 ? commentsAmount + " " + commentLabel
                 : "0 комментариев"}
@@ -216,8 +147,7 @@ function Task({ task, setFetch, rights }: ITaskProps) {
         </div>
       </div>
       <Dialog open={searchParams.get("task") === task.id}>
-        <DialogContent
-          style={{ width: "140vh" }}
+        <DialogContent className="w-[140vh]"
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
           <TaskModal
