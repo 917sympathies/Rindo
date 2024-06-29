@@ -1,4 +1,3 @@
-import styles from "./styles.module.css";
 import {useState, useEffect, Dispatch, SetStateAction} from 'react'
 import { IStage, IUserRights } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -56,24 +55,24 @@ export default function Stage({ stage, onClick, handleDeleteStage, setFetch, rig
 
 
   return (
-    <div className="bg-[rgba(1,1,1,0.03)] min-w-[300px] max-w-[300px] flex flex-col justify-center items-center h-[80vh] text-[rgb(102,102,102)] mt-5 rounded-lg dark:bg-black/50">
-      <div className={styles.header}>
+    <div className="bg-[rgba(1,1,1,0.03)] min-w-[300px] max-w-[300px] flex flex-col justify-center items-center h-[80vh] text-[rgb(102,102,102)] mt-2 rounded-lg dark:bg-black/50">
+      <div className="flex items-center font-semibold justify-around w-full grow-1 py-[0.4rem] border-b-[0.25rem] border-white">
         <TurnOffDefaultPropsWarning/>
-        <p style={{ margin: "0", display: "flex", justifyContent: "center", flexGrow: "1" }}>
+        <p className="m-0 flex justify-center grow">
           {stage.name}
         </p>
         {rights.canDeleteStage ? 
-        <X className={styles.closeBtn} size={24} onClick={() => setIsModalOpen(true)}/> : <></> }
+        <X className="text-[1.2rem] p-[0.3rem] mr-[0.4rem] text-[rgb(114,115,118)] self-center hover: rounded-[12px] hover:bg-[rgba(1,1,1,0.03)] ease-in-out duration-200" size={24} onClick={() => setIsModalOpen(true)}/> : <></> }
       </div>
-      <div style={{ flexGrow: "20", maxHeight: "80vh", width: "90%", margin: "8px 0px" }}>
+      <div className="w-full max-h-[80vh] my-[8px] grow-[20] flex flex-col">
         {rights.canAddTask ? 
-        <Button className={styles.addbutton} onClick={onClick}>
+        <Button className="text-black bg-[rgba(102,153,255,0.6)] w-[90%] hover:bg-[rgba(102,153,255,0.3)] self-center" onClick={onClick}>
           <Plus style={{ color: "inherit" }} size={16}/>
         </Button>
         : <div></div> }
         <Droppable key={stage.name} droppableId={stage.id}>
           {(provided) => (
-            <ScrollArea className="h-[70vh]">
+            <ScrollArea className="h-[70vh] px-3 mx-1 mt-2">
             <div
               ref={provided.innerRef}
               {...provided.droppableProps}

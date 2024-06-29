@@ -1,5 +1,4 @@
 "use client";
-import styles from "./styles.module.css";
 import { useParams, notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -114,14 +113,7 @@ export default function Kanban() {
 
   return (
     <div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-evenly",
-          height: "100%"
-        }}
-      >
+      <div className="flex flex-row justify-evenly h-full">
         <DragDropContext onDragEnd={onDragEnd}>
           {stages &&
             stages.map((stage) => (
@@ -139,7 +131,7 @@ export default function Kanban() {
             ))}
         </DragDropContext>
         {stages && rights.canAddStage && stages.length !== 4 ? (
-          <div className="min-w-72 h-fit flex flex-col justify-center items-center mt-6">
+          <div className="min-w-72 h-fit flex flex-col justify-center items-center mt-2">
             <div className="flex flex-row items-center gap-1">
             <Input
               className="rounded-lg text-center border-0 bg-background w-60 border focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-slate-950 focus-visible:ring-offset-0 dark:bg-none"

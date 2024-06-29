@@ -43,10 +43,11 @@ public class InvitationService : IInvitationService
         return !result.IsSuccess ? result.Error : result;
     }
 
-    public async Task<IEnumerable<Invitation>> GetInvitationsByProjectId(Guid projectId)
+    public async Task<IEnumerable<object>> GetInvitationsByProjectId(Guid projectId)
     {
         var invites = await _context.Invitations.Where(inv => inv.ProjectId == projectId).ToListAsync();
-        return invites;
+        var result = invites.Select(inv => new { id = inv.Id, sender = inv.SenderUsername , user = _context.Users.FirstOrDefault(u => u.Id == inv.UserId)?.Username });
+        return result;
     }
 
     public async Task<IEnumerable<Invitation>> GetInvitationsByUserId(Guid userId)
