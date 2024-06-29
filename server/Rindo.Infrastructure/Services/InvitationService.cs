@@ -46,7 +46,7 @@ public class InvitationService : IInvitationService
     public async Task<IEnumerable<object>> GetInvitationsByProjectId(Guid projectId)
     {
         var invites = await _context.Invitations.Where(inv => inv.ProjectId == projectId).ToListAsync();
-        var result = invites.Select(inv => new { sender = inv.SenderUsername , user = _context.Users.FirstOrDefault(u => u.Id == inv.UserId)?.Username });
+        var result = invites.Select(inv => new { id = inv.Id, sender = inv.SenderUsername , user = _context.Users.FirstOrDefault(u => u.Id == inv.UserId)?.Username });
         return result;
     }
 

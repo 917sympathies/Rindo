@@ -7,6 +7,7 @@ import {
   Drama,
   Settings2,
   Users,
+  Mails
 } from "lucide-react";
 
 interface Props {
@@ -60,8 +61,19 @@ export default function Layout({children} : Props) {
           <Drama size={18} />
           <Label style={{ font: "inherit" }}>Роли</Label>
         </Link>
+        <Link
+         href={`invites`}
+          className={
+            currentSetting === "invites"
+              ? "hover:cursor-pointer text-white flex flex-row items-center gap-[0.5em] w-[80%] text-[1rem] font-normal my-[0.5rem] mx-0 py-[0.4rem] px-[0.8rem] rounded-lg bg-[#48cae4]"
+              : "hover:cursor-pointer text-white flex flex-row items-center gap-[0.5em] w-[80%] text-[1rem] font-normal my-[0.5rem] mx-0 py-[0.4rem] px-[0.8rem] rounded-lg bg-[#48cae4] hover:bg-[#37c5e1]"
+          }
+        >
+          <Mails size={18} />
+          <Label style={{ font: "inherit" }}>Приглашения</Label>
+        </Link>
       </div>
-      <div className="mt-[4rem] flex items-start justify-center">
+      <div className="mt-[2.4rem] flex items-start justify-center">
         {children}
       </div>
     </div>
