@@ -42,6 +42,7 @@ export interface IMessage {
     chatId: string,
     content: string,
     username: string
+    time: string
 }
 
 export interface IChat {

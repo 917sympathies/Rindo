@@ -13,6 +13,7 @@ import {
   LogLevel,
   HubConnectionState
 } from "@microsoft/signalr";
+import dayjs from "dayjs";
 
 interface ChatProps {
   chatId: string | undefined;
@@ -43,8 +44,8 @@ export default function Chat({
       });
       const data = await response.json();
       console.log(data)
-      setChat(data.value);
-      setChatMessages(data.value.messages)
+      setChat(data);
+      setChatMessages(data.messages)
     };
     const getUserInfo = async () => {
       // const token = cookies["test-cookies"];
@@ -137,8 +138,8 @@ export default function Chat({
           </div> : <></>}
           {chatMessages?.map((message, index) =>
             user && message.username === user?.username ? (
-              <div key={index}>
-                <div>
+              <div key={index} className="flex flex-col">
+                <div className="self-end">
                   <Label
                     style={{
                       textAlign: "center",
@@ -146,7 +147,7 @@ export default function Chat({
                       color: "#87888C",
                     }}
                   >
-                    {/* {message ? moment(message.createdAt).format("DD.MM") : ""} */}
+                    {message ? dayjs(message.time).format("DD.MM.YY HH:MM") : ""}
                   </Label>
                 </div>
                 <div
@@ -203,7 +204,7 @@ export default function Chat({
                       color: "#87888C",
                     }}
                   >
-                    {/* {message ? moment(message.createdAt).format("DD.MM") : ""} */}
+                    {message ? dayjs(message.time).format("DD.MM.YY HH:MM") : ""}
                   </Label>
                 </div>
                 <div
