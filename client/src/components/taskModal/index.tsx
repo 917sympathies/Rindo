@@ -414,7 +414,7 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
             justifyContent: "space-evenly",
           }}
         >
-          <div className="flex flex-row" style={{ width: "80%", margin: "1rem 3rem" }}>
+          <div className="flex flex-row items-center w-[80%] mx-[3rem] my-[1rem]">
             <Label
               style={{
                 color: "inherit",
@@ -457,12 +457,13 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
                 justifyContent: "space-between",
               }}
             >
-              {/* <Label
+            <div className="flex flex-col w-full">
+              <Label
                 id="responsibleinput"
-                style={{ color: "black", marginRight: "1rem" }}
+                className="text-black mr-[1rem] mb-[0.2rem]"
               >
                 Исполнитель
-              </Label> */}
+              </Label>
               <Select
                 // className={styles.select}
                 value={ responsibleUser ? responsibleUser.id : "Все"}
@@ -615,6 +616,7 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
                   ))}
                 </SelectContent>
               </Select>
+              </div>
             </div>
             <div
               style={{
@@ -628,12 +630,13 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
                 justifyContent: "space-between",
               }}
             >
-              {/* <Label
+            <div className="flex flex-col w-full">
+              <Label
                 id="statusinput"
-                style={{ color: "black", marginRight: "1rem" }}
+                className="text-black mr-[1rem] mb-[0.2rem]"
               >
                 Статус
-              </Label> */}
+              </Label>
               <Select
                 // className={styles.select}
                 // placeholder="Выберите"
@@ -655,6 +658,7 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
                     ))}
                 </SelectContent>
               </Select>
+              </div>
             </div>
           </div>
           <div className="flex flex-col ml-12 mr-12 w-2/5">
