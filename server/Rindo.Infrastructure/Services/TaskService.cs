@@ -182,10 +182,15 @@ public class TaskService : ITaskService
         return tasks;
     }
 
-    public async Task<Result<ProjectTask?>> GetTaskById(Guid id)
+    public async Task<Result<object>> GetTaskById(Guid id)
     {
         var task = await _taskRepository.GetById(id);
         if (task is null) return Error.NotFound("Такой задачи не существует!");
-        return task;
+        var comments = _context.TaskComments.Where(cm => cm.TaskId == task.Id).Select(cm =>
+            new
+            {
+                cm.Id, cm.Content, cm.TaskId, cm.UserId, cm.Time, username = _context.Users.FirstOrDefault(user => user.Id == cm.UserId)!.Username
+            }).ToList();
+        return new { task = task, comments = comments };
     }
 }

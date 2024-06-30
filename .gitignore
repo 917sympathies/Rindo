@@ -483,4 +483,4 @@ $RECYCLE.BIN/
 # Vim temporary swap files
 *.swp
 
-Rindo.API/Migrations
+server/Rindo.API/Migrations

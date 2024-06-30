@@ -22,7 +22,7 @@ public class CommentService : ICommentService
     public async Task<TaskComment> AddComment(Guid userId, Guid taskId, string content)
     {
         var user = (await _userService.GetUserById(userId)).Value;
-        var comment = new TaskComment() { TaskId = taskId, UserId = userId, Content = content, Username = user.Username};
+        var comment = new TaskComment() { TaskId = taskId, UserId = userId, Content = content, Time = DateTime.UtcNow};
         await _commentRepository.CreateComment(comment);
         await _context.SaveChangesAsync();
         return comment;

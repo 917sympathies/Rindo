@@ -22,7 +22,7 @@ public class MessageService : IMessageService
     public async Task<Tuple<string, string>> AddMessage(Guid userId, Guid chatId, string content)
     {
         var user = (await _userService.GetUserById(userId)).Value;
-        var msg = new ChatMessage() { ChatId = chatId, SenderId = userId, Content = content, Username = user!.Username};
+        var msg = new ChatMessage() { ChatId = chatId, SenderId = userId, Content = content, Username = user!.Username, Time = DateTime.UtcNow};
         await _messageRepository.AddMessage(msg);
         await _context.SaveChangesAsync();
         return new Tuple<string, string>(user.Username, msg.Id.ToString());

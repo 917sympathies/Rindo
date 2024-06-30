@@ -25,7 +25,9 @@ namespace Rindo.API.Controllers
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetChatById(Guid id)
         {
-            return Ok(await _service.GetChatById(id));
+            var result = await _service.GetChatById(id);
+            if (!result.IsSuccess) return NotFound(result.Error.Description);
+            return Ok(result.Value);
         }
     }
 }
