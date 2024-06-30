@@ -17,5 +17,5 @@ public interface ITaskService
     Task<IEnumerable<ProjectTask>> GetTasksByStageId(Guid stageId);
     Task<IEnumerable<object>> GetTasksByProjectId(Guid projectId);
     Task<IEnumerable<ProjectTask>> GetTasksByUserId(Guid userId);
-    Task<Result<ProjectTask?>>  GetTaskById(Guid id);
+    Task<Result<object>>  GetTaskById(Guid id);
 }

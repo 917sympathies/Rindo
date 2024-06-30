@@ -53,7 +53,7 @@ namespace Rindo.API.Controllers
         {
             var result = await _service.GetTaskById(id);
             if (!result.IsSuccess) return NotFound(result.Error.Description);
-            return Ok(result);
+            return Ok(result.Value);
         }
 
         [HttpDelete("{id:guid}")]
