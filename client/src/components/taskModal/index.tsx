@@ -102,7 +102,7 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
     setName(currentTask.name);
     setDesc(currentTask.description);
     setProgress(currentTask.progress.toString());
-    if (currentTask.comments) setTaskComments(currentTask.comments);
+    //if (currentTask.comments) setTaskComments(currentTask.comments);
     setStartDate(dayjs(currentTask.startDate).format("YYYY-MM-DD"));
     setFinishDate(dayjs(currentTask.finishDate).format("YYYY-MM-DD"));
   }, [currentTask]);
@@ -239,12 +239,14 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
       credentials: "include",
     });
     const data = await response.json();
-    getStagesInfo(data.value);
-    setTask(data.value);
+    console.log(data);
+    getStagesInfo(data.task);
+    setTask(data.task);
+    setTaskComments(data.comments);
     const usersArr = await getUsers(params.id) as IUser[]
-    const usersWithoutResponsible = usersArr.filter(us => us.id !== data.value.responsibleUserId);
+    const usersWithoutResponsible = usersArr.filter(us => us.id !== data.task.responsibleUserId);
     setUsers(usersWithoutResponsible);
-    const user = usersArr.find(us => us.id === data.value.responsibleUserId);
+    const user = usersArr.find(us => us.id === data.task.responsibleUserId);
     if(user) setResponsibleUser(user!);
     else setResponsibleUser({username: "Все"} as IUser);
   };
@@ -442,10 +444,6 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
               Описание
             </Label>
             <Editor desc={desc} setDesc={setDesc} styles="dark:border-black/40"/>
-            {/* <CustomEditor
-              initialData={currentTask?.description}
-              setState={setDesc}
-            /> */}
           </div>
           <div style={{ display: "flex", flexDirection: "row" }}>
             <div
@@ -455,7 +453,6 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
                 margin: "1rem 3rem",
                 display: "flex",
                 flexDirection: "row",
-                // borderBottom: "1px solid rgba(1, 1, 1, 0.1)",
                 alignItems: "center",
                 justifyContent: "space-between",
               }}
@@ -642,9 +639,7 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
                 // placeholder="Выберите"
                 value={status?.name || ""}
                 onValueChange={(value) => handleChangeStage(value)}
-                // onChange={(e) => handleChangeStage(e.target.value)}
               >
-                {/* <SelectValue placeholder="Выберите" ></SelectValue> */}
                 <SelectTrigger className="SelectTrigger dark:bg-[#111] dark:border-black/20" aria-label="Food">
                   <SelectValue placeholder="Выберите стадию" />
                 </SelectTrigger>
@@ -785,71 +780,6 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
                 </PopoverContent>
               </Popover>
             </div>
-            {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                }}
-              >
-                <div
-                  style={{
-                    margin: "1rem 3rem",
-                    padding: "0.6rem 0",
-                    width: "40%",
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    borderBottom: "1px solid rgba(1, 1, 1, 0.1)",
-                  }}
-                >
-                  <Label
-                    id="statusinput"
-                    style={{ color: "black", marginRight: "1rem" }}
-                  >
-                    Дата начала
-                  </Label>
-                  <DatePicker
-                    label={"Выберите начало"}
-                    format="YYYY-MM-DD"
-                    value={currentTask && dayjs(currentTask.startDate)}
-                    defaultValue={dayjs()}
-                    onChange={(date) => {
-                      if (date != null) handleChangeStartDate(date);
-                    }}
-                  />
-                </div>
-                <div
-                  style={{
-                    margin: "1rem 3rem",
-                    padding: "0.6rem 0",
-                    width: "40%",
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    borderBottom: "1px solid rgba(1, 1, 1, 0.1)",
-                  }}
-                >
-                  <Label
-                    id="statusinput"
-                    style={{ color: "black", marginRight: "1rem" }}
-                  >
-                    Дата начала
-                  </Label>
-                  <DatePicker
-                    label={"Выберите конец"}
-                    format="YYYY-MM-DD"
-                    value={currentTask && dayjs(currentTask.finishDate)}
-                    defaultValue={dayjs()}
-                    onChange={(date) => {
-                      if (date != null) handleChangeFinishDate(date);
-                    }}
-                  />
-                </div>
-              </div>
-            </LocalizationProvider> */}
           </div>
           <div
             style={{
@@ -861,11 +791,6 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
           >
             <Button
               className={isModified ? "border border-green-500 bg-white text-green-500 hover:bg-green-500 hover:text-white ease-in-out duration-300 dark:bg-green-500 dark:text-white dark:hover:bg-green-600" : "invisible"}
-              // style={
-              //   isModified
-              //     ? { border: "1px solid #1976d2" }
-              //     : { visibility: "hidden" }
-              // }
               onClick={() => handleSaveChanges()}
             >
               Применить
@@ -873,8 +798,6 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
             <Button
               variant={"destructive"}
               className={rights.canDeleteTask ? "" : "invisible"}
-              //className="bg-white text-red-700 border border-red-700 hover:bg-red-500 hover:text-white dark:bg-red-700 dark:text-white dark:hover:bg-red-900"
-              // style={{ color: "red", border: "1px solid red" }}
               onClick={() => setIsModalOpen(true)}
             >
               Удалить
@@ -885,13 +808,6 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
       <Dialog
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
-        // onClose={() => setIsModalOpen(false)}
-        // style={{
-        //   display: "flex",
-        //   justifyContent: "center",
-        //   alignSelf: "center",
-        //   alignContent: "center",
-        // }}
       >
         <DialogContent className="sm:max-w-[425px]">
           <div
@@ -965,28 +881,16 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
           >
             {taskComments.map((message, index) =>
               currentUserId && message.userId === currentUserId ? (
-                <div key={index}>
-                  <div
-                  // style={{
-                  //   display: `${
-                  //     moment(message?.createdAt).format("DD.MM") !==
-                  //     moment(discussion?.message[index - 1]?.createdAt).format(
-                  //       "DD.MM"
-                  //     )
-                  //       ? ""
-                  //       : "none"
-                  //   }`,
-                  // }}
-                  >
+                <div key={index} className="flex flex-col">
+                <div className="self-end">
                     <Label
                       style={{
                         textAlign: "center",
-                        fontSize: ".8rem",
-                        // color: "#87888C",
-                        textTransform: "capitalize",
+                        fontSize: ".7rem",
+                        color: "#87888C",
                       }}
                     >
-                      {/* {message ? moment(message.createdAt).format("DD.MM") : ""} */}
+                      {message ? dayjs(message.time).format("DD.MM.YY HH:MM") : ""}
                     </Label>
                   </div>
                   <div
@@ -1016,21 +920,9 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
                             textTransform: "capitalize",
                             fontWeight: "500",
                             fontSize: ".9rem",
-                            // color: "white",
                           }}
                         >
                           {message.content}
-                        </Label>
-                        <Label
-                          style={{
-                            textTransform: "capitalize",
-                            fontSize: ".6rem",
-                            fontWeight: "500",
-                            color: "white",
-                            marginLeft: ".5rem",
-                          }}
-                        >
-                          {/* {moment(message.createdAt).format("HH:mm")} */}
                         </Label>
                       </div>
                     </div>
@@ -1038,27 +930,15 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
                 </div>
               ) : (
                 <div key={index}>
-                  <div
-                  // style={{
-                  //   display: `${
-                  //     moment(message?.createdAt).format("DD.MM") !==
-                  //     moment(discussion?.message[index - 1]?.createdAt).format(
-                  //       "DD.MM"
-                  //     )
-                  //       ? ""
-                  //       : "none"
-                  //   }`,
-                  // }}
-                  >
+                  <div>
                     <Label
                       style={{
                         textAlign: "center",
-                        fontSize: ".8rem",
+                        fontSize: ".7rem",
                         color: "#87888C",
-                        textTransform: "capitalize",
                       }}
                     >
-                      {/* {message ? moment(message.createdAt).format("DD.MM") : ""} */}
+                      {message ? dayjs(message.time).format("DD.MM.YY HH:MM") : ""}
                     </Label>
                   </div>
                   <div
