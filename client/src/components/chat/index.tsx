@@ -7,6 +7,7 @@ import { Send } from "lucide-react";
 import { IChat, IUserInfo, IMessage, ICookieInfo } from "@/types";
 import { jwtDecode } from "jwt-decode";
 import { useCookies } from "react-cookie";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   HubConnectionBuilder,
   HubConnection,
@@ -121,11 +122,9 @@ export default function Chat({
         </Label>
         <X onClick={() => setIsChatActive(false)} className=""/>
       </div>
-      <div>
+        <ScrollArea className="grow h-full">
         <div
           style={{
-            maxHeight: "48vh",
-            minHeight: "48vh",
             overflow: "auto",
             display: "flex",
             flexDirection: "column",
@@ -257,7 +256,7 @@ export default function Chat({
             )
           )}
         </div>
-      </div>
+        </ScrollArea>
       <div className="flex justify-center">
         <div className="py-[.6rem] px-[.8rem] flex justify-between items-center mt-[.5rem] mr-0 mb-[1vh] ml-0 gap-7 w-[85%]">
           <Input
