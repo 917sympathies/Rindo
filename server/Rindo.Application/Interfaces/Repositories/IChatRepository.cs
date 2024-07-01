@@ -7,5 +7,5 @@ public interface IChatRepository
 {
     Task Create(Chat chat);
     Task Delete(Chat chat);
-    Task<Chat> GetChatById(Guid id);
+    Task<Chat?> GetChatById(Guid id);
 }

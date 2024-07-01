@@ -16,7 +16,7 @@ public class ChatRepository : RepositoryBase<Chat>, IChatRepository
 
     public async Task Delete(Chat chat) => await DeleteAsync(chat);
 
-    public async Task<Chat> GetChatById(Guid id) =>
+    public async Task<Chat?> GetChatById(Guid id) =>
         await FindByCondition(c => c.Id == id)
             .Include(c => c.Messages)
             .AsNoTracking()

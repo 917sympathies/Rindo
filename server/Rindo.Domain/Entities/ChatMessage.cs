@@ -10,7 +10,6 @@ public class ChatMessage
     [IgnoreDataMember]
     public Chat Chat { get; set; } = default!;
     public Guid ChatId { get; set; }
-    public string Username { get; set; }
     public string Content { get; set; }
     public DateTime Time { get; set; } = default!;
 }
