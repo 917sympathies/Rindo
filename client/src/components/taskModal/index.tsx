@@ -1,26 +1,19 @@
 "use client";
 import styles from "./styles.module.css";
 import { useState, useEffect, Dispatch, SetStateAction } from "react";
-import { ITask, ITaskComment, IUser, IUserInfo, ICookieInfo, IUserRights } from "@/types";
+import { ITask, ITaskComment, IUser, IUserRights } from "@/types";
 import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectValue,
   SelectTrigger,
 } from "@/components/ui/select";
 import { Avatar } from "@/components/ui/avatar";
 import { ArrowDown } from "lucide-react";
 import { Label } from "@/components/ui/label";
-import {
-  Dialog,
-  DialogContent,
-  DialogOverlay,
-  DialogPortal,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { X, Send } from "lucide-react";
 import { useParams, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -36,17 +29,17 @@ import Editor from "@/components/editor";
 import {
   HubConnectionBuilder,
   HubConnection,
-  LogLevel,
   HubConnectionState,
 } from "@microsoft/signalr";
 import { jwtDecode } from "jwt-decode";
 import { useCookies } from "react-cookie";
 import { Input } from "@/components/ui/input";
+import { ScrollArea } from "../ui/scroll-area";
 
 interface ITaskModalProps {
   onClose: () => void;
   setFetch: Dispatch<SetStateAction<boolean>>;
-  rights:  IUserRights;
+  rights: IUserRights;
 }
 
 interface IStageDto {
@@ -55,23 +48,26 @@ interface IStageDto {
 }
 
 const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
-  const params = useParams<{id: string}>();
+  const params = useParams<{ id: string }>();
   const [isActive] = useState<boolean>(true);
   const searchParams = useSearchParams();
-  const [cookies] = useCookies();
   const [currentTask, setTask] = useState<ITask | null>(null);
   const [responsibleUser, setResponsibleUser] = useState<IUser>({
     username: "Все",
   } as IUser);
-  const [users, setUsers]= useState<IUser[]>([]);
+  const [users, setUsers] = useState<IUser[]>([]);
   const [statusList, setStatusList] = useState<IStageDto[]>([]);
   const [status, setStatus] = useState<IStageDto>();
   const [progress, setProgress] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [desc, setDesc] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [finishDate, setFinishDate] = useState<string>(dayjs().format("YYYY-MM-DD"));
-  const [startDate, setStartDate] = useState<string>(dayjs().format("YYYY-MM-DD"));
+  const [finishDate, setFinishDate] = useState<string>(
+    dayjs().format("YYYY-MM-DD")
+  );
+  const [startDate, setStartDate] = useState<string>(
+    dayjs().format("YYYY-MM-DD")
+  );
   const [isModified, setIsModified] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -85,7 +81,8 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
 
   useEffect(() => {
     if (!currentTask) return;
-    if (desc !== currentTask.description || name !== currentTask.name) setIsModified(true);
+    if (desc !== currentTask.description || name !== currentTask.name)
+      setIsModified(true);
     else setIsModified(false);
   }, [desc, name]);
 
@@ -96,13 +93,9 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
         ...prev,
         username: "Все",
       }));
-    else {
-      getUserInfo(currentTask.responsibleUserId);
-    }
     setName(currentTask.name);
     setDesc(currentTask.description);
     setProgress(currentTask.progress.toString());
-    //if (currentTask.comments) setTaskComments(currentTask.comments);
     setStartDate(dayjs(currentTask.startDate).format("YYYY-MM-DD"));
     setFinishDate(dayjs(currentTask.finishDate).format("YYYY-MM-DD"));
   }, [currentTask]);
@@ -127,14 +120,11 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
         credentials: "include",
       }
     );
-    
+
     setProgress(value);
-  }
+  };
 
   const getUserId = () => {
-    // const token = cookies["test-cookies"];
-    // if (!token) return;
-    // const decoded = jwtDecode(token) as ICookieInfo;
     const userId = localStorage.getItem("userId");
     setCurrentUserId(userId);
   };
@@ -148,10 +138,10 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify(date)
+        body: JSON.stringify(date),
       }
     );
-  }
+  };
 
   const handleSaveFinishDate = async (date: string) => {
     const taskId = searchParams.get("task");
@@ -162,24 +152,23 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify(date)
+        body: JSON.stringify(date),
       }
     );
-  }
+  };
 
   const handleSaveChanges = async () => {
     const taskId = searchParams.get("task");
     if (!taskId) return;
-    if(currentTask?.name !== name) saveName(taskId);
-    if(currentTask?.description !== desc) saveDescription(taskId);
-    // if (response1.ok && response2.ok) 
+    if (currentTask?.name !== name) saveName(taskId);
+    if (currentTask?.description !== desc) saveDescription(taskId);
     setIsModified(false);
   };
 
   const handleChangeResponsibleUser = async (value: string) => {
     const taskId = searchParams.get("task");
     if (!taskId) return;
-    if(value === "Все") {
+    if (value === "Все") {
       const response = await fetch(
         `http://localhost:5000/api/task/${taskId}/responsible?userId=${""}`,
         {
@@ -188,12 +177,13 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
           credentials: "include",
         }
       );
-      setResponsibleUser({} as IUser)
-    }
-    else{
-      const newResponsibleUser = users.find(us => us.id === value);
-      const newUsersArr = users.filter(user => user.id !== newResponsibleUser!.id);
-      setUsers([...newUsersArr, responsibleUser])
+      setResponsibleUser({} as IUser);
+    } else {
+      const newResponsibleUser = users.find((us) => us.id === value);
+      const newUsersArr = users.filter(
+        (user) => user.id !== newResponsibleUser!.id
+      );
+      setUsers([...newUsersArr, responsibleUser]);
       setResponsibleUser(newResponsibleUser!);
       const response = await fetch(
         `http://localhost:5000/api/task/${taskId}/responsible?userId=${value}`,
@@ -204,7 +194,7 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
         }
       );
     }
-  }
+  };
 
   const saveName = async (taskId: string) => {
     const response = await fetch(
@@ -216,7 +206,7 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
       }
     );
     return response;
-  }
+  };
 
   const saveDescription = async (taskId: string) => {
     const response = await fetch(
@@ -228,7 +218,7 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
       }
     );
     return response;
-  }
+  };
 
   const getTaskInfo = async () => {
     const taskId = searchParams.get("task");
@@ -239,16 +229,17 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
       credentials: "include",
     });
     const data = await response.json();
-    console.log(data);
     getStagesInfo(data.task);
     setTask(data.task);
     setTaskComments(data.comments);
-    const usersArr = await getUsers(params.id) as IUser[]
-    const usersWithoutResponsible = usersArr.filter(us => us.id !== data.task.responsibleUserId);
+    const usersArr = (await getUsers(params.id)) as IUser[];
+    const usersWithoutResponsible = usersArr.filter(
+      (us) => us.id !== data.task.responsibleUserId
+    );
     setUsers(usersWithoutResponsible);
-    const user = usersArr.find(us => us.id === data.task.responsibleUserId);
-    if(user) setResponsibleUser(user!);
-    else setResponsibleUser({username: "Все"} as IUser);
+    const user = usersArr.find((us) => us.id === data.task.responsibleUserId);
+    if (user) setResponsibleUser(user!);
+    else setResponsibleUser({ username: "Все" } as IUser);
   };
 
   const handleChangeStage = async (stageName: string | undefined) => {
@@ -279,16 +270,6 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
     setStatusList(data);
   };
 
-  const getUserInfo = async (id: string) => {
-    // const response = await fetch(`http://localhost:5000/api/user/${id}`, {
-    //   method: "GET",
-    //   headers: { "Content-Type": "application/json" },
-    //   credentials: "include",
-    // });
-    // const data = await response.json();
-    // setResponsibleUser(data);
-  };
-
   const handleDelete = async () => {
     if (!currentTask) return;
     const response = await fetch(
@@ -299,7 +280,6 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
         credentials: "include",
       }
     );
-    console.log(response);
     setFetch(true);
     onClose();
   };
@@ -337,23 +317,7 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
       const taskId = searchParams.get("task");
       if (!taskId) return;
       conn.on(`ReceiveTaskComment${taskId}`, (comment) => {
-        //const str = {content: message, user: user} as ITaskComment;
         setTaskComments([...taskComments, comment]);
-        // console.log(taskComments)
-        // setChat((prevState) => ({
-        //   ...prevState,
-        //   messages: [...messages, str],
-        // }));
-      });
-    }
-  } catch (exception) {
-    console.log(exception);
-  }
-
-  try {
-    if (conn) {
-      conn.on(`HelloMsg`, (message) => {
-        console.log(message);
       });
     }
   } catch (exception) {
@@ -373,56 +337,15 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
   };
 
   return (
-    <div 
-    className={"bg-white dark:bg-[#111]"}
-    style={{width: "140vh", height: "80vh", display: "grid", gridTemplateColumns: "3fr 1fr", padding: "0.4rem"}}>
+    <div
+      className="bg-white dark:bg-[#111] w-[140vh] h-[80vh] grid grid-cols-[3fr_1fr] p-[0.4rem]">
       <div
         className="border-r dark:border-gray-100 h-full flex flex-col"
-        style={rights.canModifyTask ? {} : {pointerEvents: "none"}}
+        style={rights.canModifyTask ? {} : { pointerEvents: "none" }}
       >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            margin: "0.4rem",
-          }}
-        >
-          {/* <Label
-            style={{
-              color: "black",
-              fontSize: "2rem",
-              flexGrow: "5",
-              textAlign: "center",
-            }}
-          >
-            {currentTask?.name}
-          </Label> */}
-          {/* <X
-            onClick={() => {
-              onClose();
-              setFetch(true);
-            }}
-            className={styles.closeBtn}
-          /> */}
-        </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-evenly",
-          }}
-        >
+        <div className="flex flex-col justify-evenly">
           <div className="flex flex-row items-center w-[80%] mx-[3rem] my-[1rem]">
-            <Label
-              style={{
-                color: "inherit",
-                fontSize: "2rem",
-                flexGrow: "5",
-                // textAlign: "flex-start",
-              }}
-            >
+            <Label className="text-inherit text-[2rem] grow-[5]">
               Название
             </Label>
             <Input
@@ -432,290 +355,149 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
               placeholder={name}
             />
           </div>
-          <div style={{ width: "80%", margin: "1rem 3rem" }}>
-            <Label
-              style={{
-                color: "inherit",
-                fontSize: "2rem",
-                flexGrow: "5",
-                // textAlign: "flex-start",
-              }}
-            >
+          <div className="w-[80%] mx-[3rem] my-[1rem]">
+            <Label className="text-inherit text-[2rem] grow-[5]">
               Описание
             </Label>
-            <Editor desc={desc} setDesc={setDesc} styles="dark:border-black/40"/>
+            <Editor
+              desc={desc}
+              setDesc={setDesc}
+              styles="dark:border-black/40"
+            />
           </div>
-          <div style={{ display: "flex", flexDirection: "row" }}>
-            <div
-              style={{
-                width: "40%",
-                padding: "0.3rem 0",
-                margin: "1rem 3rem",
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-            <div className="flex flex-col w-full">
-              <Label
-                id="responsibleinput"
-                className="text-black mr-[1rem] mb-[0.2rem]"
-              >
-                Исполнитель
-              </Label>
-              <Select
-                // className={styles.select}
-                value={ responsibleUser ? responsibleUser.id : "Все"}
-                onValueChange={(value) => handleChangeResponsibleUser(value)}
-              >
-                <SelectTrigger className="dark:bg-[#111] dark:border-black/20">
-                  <SelectValue placeholder="Выберите"></SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {/* <SelectItem
-                    key={responsibleUser.id}
-                    value={responsibleUser.username}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: 8,
-                      }}
-                    >
-                      {responsibleUser.username !== "Все" ? (
-                        <Avatar
-                          style={{
-                            backgroundColor: "#4198FF",
-                            color: "white",
-                            width: "2.5vh",
-                            height: "2.5vh",
-                            fontSize: "0.6rem",
-                            margin: "0.1rem",
-                            marginLeft: "0.4rem",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                          // src="/static/images/avatar/1.jpg"
-                        >
-                          {responsibleUser?.firstName?.slice(0, 1)}
-                          {responsibleUser?.lastName?.slice(0, 1)}
-                        </Avatar>
-                      ) : (
-                        <div></div>
-                      )}
-                      <div>
-                        {responsibleUser.username !== "Все"
-                          ? responsibleUser.lastName +
-                            " " +
-                            responsibleUser.firstName
-                          : "Все"}
-                      </div>
-                    </div>
-                  </SelectItem> */}
-                  <SelectItem
-                    key={"all"}
-                    value={"Все"}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: 8,
-                      }}
-                    >
-                      <div>
-                         Все
-                      </div>
-                    </div>
-                  </SelectItem>
-                  { responsibleUser.firstName !== undefined ? 
-                    <SelectItem
-                    key={responsibleUser.id}
-                    value={responsibleUser.id}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: 8,
-                      }}
-                    >
-                        <Avatar
-                          style={{
-                            backgroundColor: "#4198FF",
-                            color: "white",
-                            width: "2.5vh",
-                            height: "2.5vh",
-                            fontSize: "0.6rem",
-                            margin: "0.1rem",
-                            marginLeft: "0.4rem",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                          // src="/static/images/avatar/1.jpg"
-                        >
-                          {responsibleUser?.firstName?.slice(0, 1)}
-                          {responsibleUser?.lastName?.slice(0, 1)}
-                        </Avatar>
-                      <div>
-                          {responsibleUser.lastName + " " + responsibleUser.firstName}
-                      </div>
-                    </div>
-                  </SelectItem> : <></>}
-                  {users.map(user => (
-                    <SelectItem
-                    key={user.id}
-                    value={user.id}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: 8,
-                      }}
-                    >
-                      {user.username !== "Все" ? (
-                        <Avatar
-                          style={{
-                            backgroundColor: "#4198FF",
-                            color: "white",
-                            width: "2.5vh",
-                            height: "2.5vh",
-                            fontSize: "0.6rem",
-                            margin: "0.1rem",
-                            marginLeft: "0.4rem",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                          // src="/static/images/avatar/1.jpg"
-                        >
-                          {user?.firstName?.slice(0, 1)}
-                          {user?.lastName?.slice(0, 1)}
-                        </Avatar>
-                      ) : (
-                        <div></div>
-                      )}
-                      <div>
-                        {user.username !== "Все"
-                          ? user.lastName +
-                            " " +
-                            user.firstName
-                          : "Все"}
-                      </div>
-                    </div>
-                  </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              </div>
-            </div>
-            <div
-              style={{
-                width: "40%",
-                padding: "0.3rem 0",
-                margin: "1rem 3rem",
-                display: "flex",
-                flexDirection: "row",
-                // borderBottom: "1px solid rgba(1, 1, 1, 0.1)",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-            <div className="flex flex-col w-full">
-              <Label
-                id="statusinput"
-                className="text-black mr-[1rem] mb-[0.2rem]"
-              >
-                Статус
-              </Label>
-              <Select
-                // className={styles.select}
-                // placeholder="Выберите"
-                value={status?.name || ""}
-                onValueChange={(value) => handleChangeStage(value)}
-              >
-                <SelectTrigger className="SelectTrigger dark:bg-[#111] dark:border-black/20" aria-label="Food">
-                  <SelectValue placeholder="Выберите стадию" />
-                </SelectTrigger>
-                <SelectContent>
-                  {statusList &&
-                    statusList?.map((status) => (
+          <div className="flex flex-row">
+            <div className="w-[40%] py-[0.3rem] my-[1rem] mx-[3rem] flex flex-row items-center justify-between">
+              <div className="flex flex-col w-full">
+                <Label
+                  id="responsibleinput"
+                  className="text-black mr-[1rem] mb-[0.2rem]"
+                >
+                  Исполнитель
+                </Label>
+                <Select
+                  value={responsibleUser ? responsibleUser.id : "Все"}
+                  onValueChange={(value) => handleChangeResponsibleUser(value)}
+                >
+                  <SelectTrigger className="dark:bg-[#111] dark:border-black/20">
+                    <SelectValue placeholder="Выберите"></SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem key={"all"} value={"Все"}>
+                      <div>Все</div>
+                    </SelectItem>
+                    {responsibleUser.firstName !== undefined ? (
                       <SelectItem
-                        key={status.id}
-                        value={status.name.toString()}
+                        key={responsibleUser.id}
+                        value={responsibleUser.id}
                       >
-                        {status.name}
+                        <div className="flex flex-row items-center gap-4">
+                          <Avatar
+                            className="bg-[#4198FF] text-white w-[2.5vh] h-[2.5vh] text-[0.6rem] m-[0.1rem] ml-[0.4rem] flex justify-center items-center"
+                            // src="/static/images/avatar/1.jpg"
+                          >
+                            {responsibleUser?.firstName?.slice(0, 1)}
+                            {responsibleUser?.lastName?.slice(0, 1)}
+                          </Avatar>
+                          <div>
+                            {responsibleUser.lastName +
+                              " " +
+                              responsibleUser.firstName}
+                          </div>
+                        </div>
+                      </SelectItem>
+                    ) : (
+                      <></>
+                    )}
+                    {users.map((user) => (
+                      <SelectItem key={user.id} value={user.id}>
+                        <div className="flex flex-row items-center gap-2">
+                          {user.username !== "Все" ? (
+                            <Avatar
+                              className="bg-[#4198FF] text-white w-[2.5vh] h-[2.5vh] text-[0.6rem] m-[0.1rem] ml-[0.4rem] flex justify-center items-center"
+                              // src="/static/images/avatar/1.jpg"
+                            >
+                              {user?.firstName?.slice(0, 1)}
+                              {user?.lastName?.slice(0, 1)}
+                            </Avatar>
+                          ) : (
+                            <div></div>
+                          )}
+                          <div>
+                            {user.username !== "Все"
+                              ? user.lastName + " " + user.firstName
+                              : "Все"}
+                          </div>
+                        </div>
                       </SelectItem>
                     ))}
-                </SelectContent>
-              </Select>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="w-[40%] py-[0.3rem] mx-[3rem] my-[1rem] flex flex-row items-center justify-between">
+              <div className="flex flex-col w-full">
+                <Label
+                  id="statusinput"
+                  className="text-black mr-[1rem] mb-[0.2rem]"
+                >
+                  Статус
+                </Label>
+                <Select
+                  value={status?.name || ""}
+                  onValueChange={(value) => handleChangeStage(value)}
+                >
+                  <SelectTrigger
+                    className="SelectTrigger dark:bg-[#111] dark:border-black/20"
+                    aria-label="Food"
+                  >
+                    <SelectValue placeholder="Выберите стадию" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {statusList &&
+                      statusList?.map((status) => (
+                        <SelectItem
+                          key={status.id}
+                          value={status.name.toString()}
+                        >
+                          {status.name}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
           <div className="flex flex-col ml-12 mr-12 w-2/5">
-          <Label style={{ marginBottom: "0.2rem" }}>Прогресс</Label>
-          <Select
-                // className={styles.select}
-                value={progress}
-                onValueChange={(value) => {
-                  changeProgress(value);
-                }}
-              >
-                {/* <SelectValue placeholder="Выберите" ></SelectValue> */}
-                <SelectTrigger className="SelectTrigger dark:bg-[#111] dark:border-black/20" aria-label="Food">
-                  <SelectValue placeholder="Прогресс" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem
-                        value={"0"}
-                      >
-                        0
-                    </SelectItem>
-                    <SelectItem
-                        value={"25"}
-                      >
-                        25
-                    </SelectItem>
-                    <SelectItem
-                        value={"50"}
-                      >
-                        50
-                    </SelectItem>
-                    <SelectItem
-                        value={"75"}
-                      >
-                        75
-                    </SelectItem>
-                    <SelectItem
-                        value={"100"}
-                      >
-                        100
-                    </SelectItem>
-                </SelectContent>
-              </Select>
-          </div>
-          <div style={{ display: "flex", flexDirection: "row" }}>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                margin: "1rem 3rem",
-                padding: "0.6rem 0",
-                width: "40%",
+            <Label className="mb-[0.2rem]">Прогресс</Label>
+            <Select
+              value={progress}
+              onValueChange={(value) => {
+                changeProgress(value);
               }}
             >
-              <Label style={{ marginBottom: "0.2rem" }}>Начало</Label>
+              <SelectTrigger
+                className="SelectTrigger dark:bg-[#111] dark:border-black/20"
+                aria-label="Food"
+              >
+                <SelectValue placeholder="Прогресс" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={"0"}>0</SelectItem>
+                <SelectItem value={"25"}>25</SelectItem>
+                <SelectItem value={"50"}>50</SelectItem>
+                <SelectItem value={"75"}>75</SelectItem>
+                <SelectItem value={"100"}>100</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex flex-row">
+            <div className="flex flex-col mx-[3rem] my-[1rem] py-[0.6rem] w-[40%]">
+              <Label className="mb-[0.2rem]">Начало</Label>
               <Popover>
-                <PopoverTrigger asChild className="dark:bg-[#111] dark:border-black/20 dark:hover:bg-black/20">
+                <PopoverTrigger
+                  asChild
+                  className="dark:bg-[#111] dark:border-black/20 dark:hover:bg-black/20"
+                >
                   <Button
                     variant={"outline"}
                     className={cn(
@@ -736,26 +518,20 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
                     mode="single"
                     selected={new Date(startDate)}
                     onSelect={(value) => {
-                        setStartDate(dayjs(value).format("YYYY-MM-DD"))
-                        handleSaveStartDate(dayjs(value).format("YYYY-MM-DD"));
-                      }
-                    }
+                      setStartDate(dayjs(value).format("YYYY-MM-DD"));
+                      handleSaveStartDate(dayjs(value).format("YYYY-MM-DD"));
+                    }}
                   />
                 </PopoverContent>
               </Popover>
             </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                margin: "1rem 3rem",
-                padding: "0.6rem 0",
-                width: "40%",
-              }}
-            >
-              <Label style={{ marginBottom: "0.2rem" }}>Конец</Label>
+            <div className="flex flex-col mx-[3rem] my-[1rem] py-[0.6rem] w-[40%]">
+              <Label className="mb-[0.2rem]">Конец</Label>
               <Popover>
-                <PopoverTrigger asChild className="dark:bg-[#111] dark:border-black/20  dark:hover:bg-black/20">
+                <PopoverTrigger
+                  asChild
+                  className="dark:bg-[#111] dark:border-black/20  dark:hover:bg-black/20"
+                >
                   <Button
                     variant={"outline"}
                     className={cn(
@@ -776,25 +552,21 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
                     mode="single"
                     selected={new Date(finishDate)}
                     onSelect={(value) => {
-                        setFinishDate(dayjs(value).format("YYYY-MM-DD"))
-                        handleSaveFinishDate(dayjs(value).format("YYYY-MM-DD"));
-                      }
-                    }
+                      setFinishDate(dayjs(value).format("YYYY-MM-DD"));
+                      handleSaveFinishDate(dayjs(value).format("YYYY-MM-DD"));
+                    }}
                   />
                 </PopoverContent>
               </Popover>
             </div>
           </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              marginRight: "4rem",
-              marginLeft: "3rem",
-            }}
-          >
+          <div className="flex justify-between mr-[4.8rem] ml-[3rem]">
             <Button
-              className={isModified ? "border border-green-500 bg-white text-green-500 hover:bg-green-500 hover:text-white ease-in-out duration-300 dark:bg-green-500 dark:text-white dark:hover:bg-green-600" : "invisible"}
+              className={
+                isModified
+                  ? "border border-green-500 bg-white text-green-500 hover:bg-green-500 hover:text-white ease-in-out duration-300 dark:bg-green-500 dark:text-white dark:hover:bg-green-600"
+                  : "invisible"
+              }
               onClick={() => handleSaveChanges()}
             >
               Применить
@@ -809,40 +581,22 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
           </div>
         </div>
       </div>
-      <Dialog
-        open={isModalOpen}
-        onOpenChange={setIsModalOpen}
-      >
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="sm:max-w-[425px]">
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              backgroundColor: "white",
-              width: "100%",
-              gap: 8,
-              borderRadius: "8px",
-              padding: "10px",
-            }}
-          >
-            <Label style={{ color: "black", alignSelf: "center" }}>
+          <div className="flex flex-col justify-center bg-white w-full gap-2 rounded-[8px] p-[10px]">
+            <Label className="text-black self-center">
               Вы действительно хотите удалить задачу?
             </Label>
-            <div style={{ display: "flex", alignSelf: "center" }}>
+            <div className="text-black self-center">
               <Button
+                className="text-white bg-green-600 hover:bg-green-700 mr-[0.4rem]"
                 onClick={() => handleDelete()}
-                style={{
-                  color: "white",
-                  backgroundColor: "green",
-                  marginRight: "0.4rem",
-                }}
               >
                 Да
               </Button>
               <Button
+                className="text-white bg-red-600 hover:bg-red-900"
                 onClick={() => setIsModalOpen(false)}
-                style={{ color: "white", backgroundColor: "red" }}
               >
                 Нет
               </Button>
@@ -852,80 +606,31 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
       </Dialog>
       <div className={styles.chat}>
         <div className={styles.container}>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              padding: "0.6rem 0.6rem",
-              justifyContent: "space-between",
-            }}
-          >
-            <Label
-              style={{
-                fontSize: "1.2rem",
-                marginLeft: "2rem",
-                //color: "rgb(114, 115, 118)",
+          <div className="flex flex-row p-[0.6rem] justify-between">
+            <Label className="text-[1.2rem] ml-[2rem]">{`Комментарии`}</Label>
+            <X
+              onClick={() => {
+                onClose();
+                setFetch(true);
               }}
-            >{`Комментарии`}</Label>
-            <X onClick={ () => {
-              onClose();
-              setFetch(true)
-              }
-              } className={styles.closeBtn} />
+              className={styles.closeBtn}
+            />
           </div>
-          <div
-            style={{
-              maxHeight: "48vh",
-              minHeight: "48vh",
-              overflow: "auto",
-              display: "flex",
-              flexDirection: "column",
-              padding: "0 1rem",
-            }}
-          >
+          <ScrollArea className="max-h-[58vh] min-h-[48vh] overflow-auto flex flex-col px-[1rem] grow">
             {taskComments.map((message, index) =>
               currentUserId && message.userId === currentUserId ? (
                 <div key={index} className="flex flex-col">
-                <div className="self-end">
-                    <Label
-                      style={{
-                        textAlign: "center",
-                        fontSize: ".7rem",
-                        color: "#87888C",
-                      }}
-                    >
-                      {message ? dayjs(message.time).format("DD.MM.YY HH:MM") : ""}
+                  <div className="self-end">
+                    <Label className="text-center text-[0.7rem] text-[#87888C]">
+                      {message
+                        ? dayjs(message.time).format("DD.MM.YY HH:mm")
+                        : ""}
                     </Label>
                   </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "flex-end",
-                      margin: ".15rem 0",
-                    }}
-                  >
-                    <div
-                      style={{
-                        backgroundColor: "#3288F0",
-                        padding: ".2rem .8rem",
-                        borderRadius: ".6rem",
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "baseline",
-                        }}
-                      >
-                        <Label
-                          className="text-white dark:text-white"
-                          style={{
-                            textTransform: "capitalize",
-                            fontWeight: "500",
-                            fontSize: ".9rem",
-                          }}
-                        >
+                  <div className="flex justify-end my-[0.15rem]">
+                    <div className="bg-[#3288F0] px-[0.8rem] py-[0.2rem] rounded-[0.6rem]">
+                      <div className="flex justify-between items-baseline">
+                        <Label className="text-white dark:text-white">
                           {message.content}
                         </Label>
                       </div>
@@ -935,96 +640,36 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
               ) : (
                 <div key={index}>
                   <div>
-                    <Label
-                      style={{
-                        textAlign: "center",
-                        fontSize: ".7rem",
-                        color: "#87888C",
-                      }}
-                    >
-                      {message ? dayjs(message.time).format("DD.MM.YY HH:MM") : ""}
+                    <Label className="text-center text-[0.7rem] text-[#87888C]">
+                      {message
+                        ? dayjs(message.time).format("DD.MM.YY HH:mm")
+                        : ""}
                     </Label>
                   </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "flex-start",
-                      margin: ".15rem 0",
-                    }}
-                  >
-                    <div
-                      style={{
-                        backgroundColor: "#ECF0F3",
-                        padding: ".2rem .8rem",
-                        borderRadius: ".6rem",
-                      }}
-                    >
-                      <Label color={"#87888C"} style={{ fontSize: ".7rem", color: "#87888C" }}>
+                  <div className="flex justify-start my-[0.15rem]">
+                    <div className="bg-[#ECF0F3] px-[0.8rem] py-[0.2rem] rounded-[0.6rem]">
+                      <Label className="text-[#87888C] text-[0.7rem]">
                         {message.username}
                       </Label>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "baseline",
-                        }}
-                      >
-                        <Label
-                          style={{
-                            textTransform: "capitalize",
-                            fontWeight: "500",
-                            fontSize: ".9rem",
-                            color: "black",
-                          }}
-                        >
-                          {message.content}
-                        </Label>
-                        <Label
-                          style={{
-                            textTransform: "capitalize",
-                            fontWeight: "500",
-                            fontSize: ".6rem",
-                            color: "black",
-                            marginLeft: ".9rem",
-                          }}
-                        >
-                          {/* {moment(message.createdAt).format("HH:mm")} */}
-                        </Label>
+                      <div className="flex justify-between items-baseline">
+                        <Label>{message.content}</Label>
                       </div>
                     </div>
                   </div>
                 </div>
               )
             )}
-          </div>
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            <div
-              style={{
-                // backgroundColor: "#ECF0F3",
-                padding: ".4rem .8rem",
-                borderRadius: ".6rem",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                margin: ".5rem 0 1vh 0",
-                width: "80%",
-                gap: 8,
-              }}
-            >
+          </ScrollArea>
+          <div className="flex justify-center">
+            <div className="px-[0.8rem] py-[0.4rem] rounded-[0.6rem] flex justify-between items-center w-[80%] gap-2 mt-[0.5rem] mb-[1vh]">
               <Input
                 className="flex-1 dark:text-white dark:bg-[#111] dark:border-black/20"
-                //style={{ flex: 1, fontSize: ".9rem" }}
                 placeholder="Написать сообщение..."
-                // inputProps={{ "aria-label": "Написать сообщение..." }}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
               />
               <Send
-                style={{
-                  fontSize: ".9rem",
-                  color: "rgba(102, 153, 255, 0.6)",
-                  // "&:hover": { color: "rgba(102, 153, 255, 0.3)" },
-                }}
+                className="text-[0.9rem] text-[rgba(102,153,255,0.6)]"
                 onClick={() => sendMessage()}
               />
             </div>

@@ -5,12 +5,10 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Send } from "lucide-react";
 import { IChat, IUserInfo, IMessage, ICookieInfo } from "@/types";
-import { jwtDecode } from "jwt-decode";
-import { useCookies } from "react-cookie";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   HubConnectionBuilder,
   HubConnection,
-  LogLevel,
   HubConnectionState
 } from "@microsoft/signalr";
 import dayjs from "dayjs";
@@ -33,7 +31,6 @@ export default function Chat({
   const [chat, setChat] = useState<IChat | null>(null);
   const [user, setUser] = useState<IUserInfo | null>(null);
   const [conn, setConnection] = useState<HubConnection | null>(null);
-  const [cookies] = useCookies();
 
   useEffect(() => {
     const getChatInfo = async () => {
@@ -43,14 +40,10 @@ export default function Chat({
         credentials: "include",
       });
       const data = await response.json();
-      console.log(data)
       setChat(data);
       setChatMessages(data.messages)
     };
     const getUserInfo = async () => {
-      // const token = cookies["test-cookies"];
-      // if (!token) return;
-      // const decoded = jwtDecode(token) as ICookieInfo;
       const userId = localStorage.getItem("userId");
       const response = await fetch(
         `http://localhost:5000/api/user/${userId}`,
@@ -93,16 +86,6 @@ export default function Chat({
     console.log(exception);
   }
 
-  try {
-    if(conn){
-    conn.on(`HelloMsg`, (message) => {
-      console.log(message);
-    });
-  }
-  } catch (exception) {
-    console.log(exception);
-  }
-
   const sendMessage = async () => {
     if(!conn) return;
     if (conn.state === HubConnectionState.Connected) {
@@ -121,17 +104,8 @@ export default function Chat({
         </Label>
         <X onClick={() => setIsChatActive(false)} className=""/>
       </div>
-      <div>
-        <div
-          style={{
-            maxHeight: "48vh",
-            minHeight: "48vh",
-            overflow: "auto",
-            display: "flex",
-            flexDirection: "column",
-            padding: "0 1rem",
-          }}
-        >
+        <ScrollArea className="grow h-full">
+        <div className="flex flex-col px-[1rem]">
           {chatMessages.length == 0 ? 
           <div className="flex self-center text-gray-400">
             Тут пока нет сообщений...
@@ -140,55 +114,15 @@ export default function Chat({
             user && message.username === user?.username ? (
               <div key={index} className="flex flex-col">
                 <div className="self-end">
-                  <Label
-                    style={{
-                      textAlign: "center",
-                      fontSize: ".8rem",
-                      color: "#87888C",
-                    }}
-                  >
-                    {message ? dayjs(message.time).format("DD.MM.YY HH:MM") : ""}
+                  <Label className="text-center text-[0.8rem] text-[#87888C]">
+                    {message ? dayjs(message.time).format("DD.MM.YY HH:mm") : ""}
                   </Label>
                 </div>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    margin: ".15rem 0",
-                  }}
-                >
-                  <div
-                    style={{
-                      backgroundColor: "#3288F0",
-                      padding: ".2rem .8rem",
-                      borderRadius: ".6rem",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "baseline",
-                      }}
-                    >
-                      <Label
-                        style={{
-                          fontSize: ".9rem",
-                          fontWeight: "500",
-                          color: "white",
-                        }}
-                      >
+                <div className="flex justify-end my-[.15rem]">
+                  <div className="bg-[#3288F0] px-[0.8rem] py-[0.2rem] rounded-[0.6rem]">
+                    <div className="flex justify-between items-baseline">
+                      <Label className="text-white">
                         {message.content}
-                      </Label>
-                      <Label
-                        style={{
-                          fontWeight: "500",
-                          fontSize: ".6rem",
-                          color: "white",
-                          marginLeft: ".5rem",
-                        }}
-                      >
-                        {/* {moment(message.createdAt).format("HH:mm")} */}
                       </Label>
                     </div>
                   </div>
@@ -197,58 +131,18 @@ export default function Chat({
             ) : (
               <div key={index}>
                 <div>
-                  <Label
-                    style={{
-                      textAlign: "center",
-                      fontSize: ".8rem",
-                      color: "#87888C",
-                    }}
-                  >
-                    {message ? dayjs(message.time).format("DD.MM.YY HH:MM") : ""}
+                  <Label className="text-center text-[0.8rem] text-[#87888C]">
+                    {message ? dayjs(message.time).format("DD.MM.YY HH:mm") : ""}
                   </Label>
                 </div>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "flex-start",
-                    margin: ".15rem 0",
-                  }}
-                >
-                  <div
-                    style={{
-                      backgroundColor: "#ECF0F3",
-                      padding: ".2rem .8rem",
-                      borderRadius: ".6rem",
-                    }}
-                  >
-                    <Label color={"#87888C"} style={{ fontSize: ".7rem", color: "#87888C" }}>
+                <div className="flex justify-start my-[0.15rem]">
+                  <div className="bg-[#ECF0F3] px-[0.8rem] py-[0.2rem] rounded-[0.6rem]">
+                    <Label className="text-[#87888C] text-[0.7rem]">
                       {message.username}
                     </Label>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "baseline",
-                      }}
-                    >
-                      <Label
-                        style={{
-                          fontWeight: "500",
-                          fontSize: ".9rem",
-                          color: "black",
-                        }}
-                      >
+                    <div className="flex justify-between items-baseline">
+                      <Label className="font-medium text-[0.9rem] text-black">
                         {message.content}
-                      </Label>
-                      <Label
-                        style={{
-                          fontSize: ".6rem",
-                          fontWeight: "500",
-                          color: "black",
-                          marginLeft: ".9rem",
-                        }}
-                      >
-                        {/* {moment(message.createdAt).format("HH:mm")} */}
                       </Label>
                     </div>
                   </div>
@@ -257,7 +151,7 @@ export default function Chat({
             )
           )}
         </div>
-      </div>
+        </ScrollArea>
       <div className="flex justify-center">
         <div className="py-[.6rem] px-[.8rem] flex justify-between items-center mt-[.5rem] mr-0 mb-[1vh] ml-0 gap-7 w-[85%]">
           <Input

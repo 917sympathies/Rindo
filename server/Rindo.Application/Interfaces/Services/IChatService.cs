@@ -5,5 +5,5 @@ namespace Application.Interfaces.Services;
 
 public interface IChatService
 {
-    Task<Result<Chat>> GetChatById(Guid id);
+    Task<Result<object>> GetChatById(Guid id);
 }
