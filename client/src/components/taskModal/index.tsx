@@ -1,5 +1,4 @@
 "use client";
-import styles from "./styles.module.css";
 import { useState, useEffect, Dispatch, SetStateAction } from "react";
 import { ITask, ITaskComment, IUser, IUserRights } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,6 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 import { Avatar } from "@/components/ui/avatar";
-import { ArrowDown } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { X, Send } from "lucide-react";
@@ -31,8 +29,6 @@ import {
   HubConnection,
   HubConnectionState,
 } from "@microsoft/signalr";
-import { jwtDecode } from "jwt-decode";
-import { useCookies } from "react-cookie";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "../ui/scroll-area";
 
@@ -604,8 +600,8 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
           </div>
         </DialogContent>
       </Dialog>
-      <div className={styles.chat}>
-        <div className={styles.container}>
+      <div>
+        <div className="h-full flex flex-col justify-between">
           <div className="flex flex-row p-[0.6rem] justify-between">
             <Label className="text-[1.2rem] ml-[2rem]">{`Комментарии`}</Label>
             <X
@@ -613,7 +609,7 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
                 onClose();
                 setFetch(true);
               }}
-              className={styles.closeBtn}
+              className="text-[1.6rem] p-[0.1rem] self-center hover:rounded-[12px] ease-in-out duration-200"
             />
           </div>
           <ScrollArea className="max-h-[58vh] min-h-[48vh] overflow-auto flex flex-col px-[1rem] grow">
