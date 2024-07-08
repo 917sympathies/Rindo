@@ -1,25 +1,10 @@
 "use client";
-import styles from "./styles.module.css";
-import {
-  useContext,
-  useEffect,
-  useState,
-  Dispatch,
-  SetStateAction,
-} from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useParams, redirect } from "next/navigation";
 import { Button } from "../ui/button";
 import { Sheet, SheetContent } from "../ui/sheet";
-// import {  Drawer,
-//   DrawerClose,
-//   DrawerContent,
-//   DrawerDescription,
-//   DrawerFooter,
-//   DrawerHeader,
-//   DrawerTitle,
-//   DrawerTrigger,} from "../ui/drawer";
-import { SquareActivity, ArrowDown, Plus, ClipboardList } from "lucide-react";
+import { SquareActivity, Plus, ClipboardList } from "lucide-react";
 import AddProjectModal from "../addProjectModal";
 import { useCookies } from "react-cookie";
 import { jwtDecode } from "jwt-decode";
@@ -33,27 +18,17 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   HubConnectionBuilder,
   HubConnection,
   LogLevel,
-  HubConnectionState
+  HubConnectionState,
 } from "@microsoft/signalr";
 
-
-interface ISidebarProps {
-  // toFetch: boolean;
-  // setFetch: Dispatch<SetStateAction<boolean>>;
-  // onCreate: () => void;
-}
+interface ISidebarProps {}
 
 interface IProjectInfo {
   id: string;
@@ -65,7 +40,9 @@ const Sidebar = ({}: ISidebarProps) => {
   const [cookies, setCookie, removeCookie] = useCookies(["test-cookies"]);
   const { id } = useParams();
   const [user, setUser] = useState<IUser>();
-  const [projects, setProjects] = useState<IProjectInfo[] | []>( [] as IProjectInfo[]);
+  const [projects, setProjects] = useState<IProjectInfo[] | []>(
+    [] as IProjectInfo[]
+  );
   const [conn, setConnection] = useState<HubConnection | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [toFetch, setFetch] = useState(false);
@@ -90,36 +67,28 @@ const Sidebar = ({}: ISidebarProps) => {
   }, []);
 
   try {
-    if(conn){
-    conn.on(`ReceiveDeleteProject`, (projectId) => {
-      setProjects(projects?.filter(p => p.id !== projectId))
-    });
-    conn.on(`ReceiveAcceptInvite${user?.id}`, (projectId, name) => {
-      const project = {id: projectId, name: name} as IProjectInfo;
-      setProjects([...projects, project])
-    });
-    conn.on(`ReceiveChangeProjectName`, (projectId, name) => {
-      setProjects(projects?.map(project => {
-        if(project.id !== projectId) return project;
-        else{
-          return {
-            ...project,
-            name: name
-          }
-        }
-      }))
-    })
+    if (conn) {
+      conn.on(`ReceiveDeleteProject`, (projectId) => {
+        setProjects(projects?.filter((p) => p.id !== projectId));
+      });
+      conn.on(`ReceiveAcceptInvite${user?.id}`, (projectId, name) => {
+        const project = { id: projectId, name: name } as IProjectInfo;
+        setProjects([...projects, project]);
+      });
+      conn.on(`ReceiveChangeProjectName`, (projectId, name) => {
+        setProjects(
+          projects?.map((project) => {
+            if (project.id !== projectId) return project;
+            else {
+              return {
+                ...project,
+                name: name,
+              };
+            }
+          })
+        );
+      });
     }
-  } catch (exception) {
-    console.log(exception);
-  }
-
-  try {
-    if(conn){
-    conn.on(`HelloMsg`, (message) => {
-      console.log(message);
-    });
-  }
   } catch (exception) {
     console.log(exception);
   }
@@ -128,7 +97,6 @@ const Sidebar = ({}: ISidebarProps) => {
     const fetchProjectsInfo = async () => {
       const token = cookies["test-cookies"];
       if (token === undefined) {
-        // return;
         router.push("/login");
         redirect("/login");
       }
@@ -146,7 +114,6 @@ const Sidebar = ({}: ISidebarProps) => {
         router.push("/login");
       }
       const data = await response.json();
-      //setUser(data);
       setProjects(data);
     };
 
@@ -165,15 +132,8 @@ const Sidebar = ({}: ISidebarProps) => {
 
   return (
     <div className="pt-[10px] pb-[10px] flex flex-col items-center justify-between border-r border-[rgba(1,1,1,0.1)] w-full dark:border-gray-400">
-      <ul style={{ width: "90%", maxHeight: "80vh" }} className="list-none">
-        {/* <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
+      <ul className="list-none w-[90%] max-h-[80vh]">
+        {/* <div className="flex flex-row items-center justify-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="36"
@@ -203,65 +163,45 @@ const Sidebar = ({}: ISidebarProps) => {
               fill-opacity="0.4"
             />
           </svg>
-          <Typography
-            style={{
-              textTransform: "uppercase",
-              fontFamily: "inherit",
-              fontSize: "1.1rem",
-              color: "rgba(136, 255, 212, 0.4)",
-            }}
-          >
-            indo
-          </Typography>
         </div> */}
-        <li
-          className="items-center justify-between"
-          style={{ display: "grid", gridTemplateColumns: "9fr 1fr" }}
-        >
+        <li className="items-center justify-between grid grid-cols-[9fr_1fr]">
           <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <div className="m-0 p-0 text-[#727376] font-inherit ml-2 flex flex-row items-center gap-2 p-1 rounded-lg hover:bg-gray-50 ease-in-out duration-300 dark:hover:bg-black/20">
-            <Avatar
-              className="rounded-lg bg-blue-400"
-              style={{
-                backgroundColor: "#4198FF",
-                color: "white",
-                width: "2.5vh",
-                height: "2.5vh",
-                fontSize: "0.6rem",
-                margin: "0.1rem",
-                marginLeft: "0.4rem",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {user?.username?.slice(0,1)}
-            </Avatar>
-            <h1 className="m-0 p-0 text-[1.1rem]">{user?.username}</h1>
-          </div>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56 dark:bg-[#111] dark:border-black/20">
-        <DropdownMenuLabel>{user?.username}</DropdownMenuLabel>
-        <DropdownMenuSeparator className="dark:bg-black/20"/>
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <Link href="/profile" className="w-full" passHref={true}>
-              Профиль
-            </Link>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator className="dark:bg-black/20"/>
-        <DropdownMenuItem>
-          <Link href="https://github.com/917sympathies" className="w-full" passHref={true} target="_blank">
-            GitHub
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem>Поддержка</DropdownMenuItem>
-        <DropdownMenuSeparator className="dark:bg-black/20"/>
-        <DropdownMenuItem onClick={() => signOut()}>Выйти</DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="m-0 p-0 text-[#727376] font-inherit ml-2 flex flex-row items-center gap-2 p-1 rounded-lg hover:bg-gray-50 ease-in-out duration-300 dark:hover:bg-black/20">
+                <Avatar className="rounded-lg bg-blue-400 bg-[#4198FF] text-white w-[2.5vh] h-[2.5vh] text-[0.6rem] m-[0.1rem] ml-[0.4rem] flex justify-center items-center">
+                  {user?.username?.slice(0, 1)}
+                </Avatar>
+                <h1 className="m-0 p-0 text-[1.1rem]">{user?.username}</h1>
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56 dark:bg-[#111] dark:border-black/20">
+              <DropdownMenuLabel>{user?.username}</DropdownMenuLabel>
+              <DropdownMenuSeparator className="dark:bg-black/20" />
+              <DropdownMenuGroup>
+                <DropdownMenuItem>
+                  <Link href="/profile" className="w-full" passHref={true}>
+                    Профиль
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator className="dark:bg-black/20" />
+              <DropdownMenuItem>
+                <Link
+                  href="https://github.com/917sympathies"
+                  className="w-full"
+                  passHref={true}
+                  target="_blank"
+                >
+                  GitHub
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem>Поддержка</DropdownMenuItem>
+              <DropdownMenuSeparator className="dark:bg-black/20" />
+              <DropdownMenuItem onClick={() => signOut()}>
+                Выйти
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <ModeToggle />
         </li>
         <li>
@@ -274,11 +214,10 @@ const Sidebar = ({}: ISidebarProps) => {
         {projects &&
           projects.map((project) => (
             <div
-              className={styles.sidebarproject}
-              style={
+              className={
                 project.id == id
-                  ? { backgroundColor: "rgba(1, 1, 1, 0.1)", color: "black" }
-                  : {}
+                  ? "flex flex-row items-center py-[4px] pr-[10px] pl-[30px] text-[0.9rem] font-medium text-clip rounded-[6px] text-[rgb(114,115,118)] my-[10px] bg-black/10 text-black"
+                  : "flex flex-row items-center py-[4px] pr-[10px] pl-[30px] text-[0.9rem] font-medium text-clip rounded-[6px] text-[rgb(114,115,118)] my-[10px]"
               }
               key={project.id}
             >
@@ -286,30 +225,29 @@ const Sidebar = ({}: ISidebarProps) => {
                 href={`/project/${project.id}/board`}
                 className="no-underline w-full flex items-center dark:text-white"
               >
-                <SquareActivity
-                  className="mr-3"
-                  size={20}
-                />
+                <SquareActivity className="mr-3" size={20} />
                 <div className="text-[1rem]">{project.name}</div>
               </Link>
             </div>
           ))}
-        <Button className="w-full rounded-md text-white bg-[#3A86FF] hover:bg-blue-800 ease-in-out duration-300" onClick={() => setIsOpen(true)}>
+        <Button
+          className="w-full rounded-md text-white bg-[#3A86FF] hover:bg-blue-800 ease-in-out duration-300"
+          onClick={() => setIsOpen(true)}
+        >
           <div className="flex flex-row items-center">
             <Plus className="mr-[6px]" size={18} />
-            <span className="font-normal text-[1rem]">
-              Новый проект
-            </span>
+            <span className="font-normal text-[1rem]">Новый проект</span>
           </div>
         </Button>
-        <div 
-        className="flex flex-row items-center 
+        <div
+          className="flex flex-row items-center 
         p-4 
-        text-[1rem] text-[#727376] justify-center w-full dark:text-white">
-            <Link href="/tasks" className="flex flex-row items-center gap-2">
-              <ClipboardList size={18}></ClipboardList>
-              Мои задачи
-            </Link>
+        text-[1rem] text-[#727376] justify-center w-full dark:text-white"
+        >
+          <Link href="/tasks" className="flex flex-row items-center gap-2">
+            <ClipboardList size={18}></ClipboardList>
+            Мои задачи
+          </Link>
         </div>
       </ul>
       <Sheet key="right" open={isOpen}>

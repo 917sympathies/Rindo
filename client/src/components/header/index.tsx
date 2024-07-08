@@ -1,23 +1,9 @@
 "use client";
-import styles from "./styles.module.css";
 import { useState, useEffect, Dispatch, SetStateAction } from "react";
 import Link from "next/link";
 import Chat from "../chat";
 import { Sheet, SheetContent } from "../ui/sheet";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "../ui/drawer";
 import { useParams } from "next/navigation";
-import { jwtDecode } from "jwt-decode";
-import { ICookieInfo } from "@/types";
-import { useCookies } from "react-cookie";
 
 interface HeaderProps {
   setIsSelectorVisible: Dispatch<SetStateAction<boolean>>;
@@ -38,7 +24,6 @@ export default function Header({
 }: HeaderProps) {
   const { id } = useParams<{ id: string }>();
   const [isOwner, setIsOwner] = useState<boolean>(false);
-  const [cookies, setCookie, removeCookie] = useCookies(["test-cookies"]);
   const [project, setProject] = useState<IProject | null>(null);
 
   useEffect(() => {
@@ -58,26 +43,15 @@ export default function Header({
         }
       );
       const data = await response.json();
-      console.log(data);
       setProject(data);
     };
     getProjectInfo(id);
   }, [id]);
 
   return (
-    <div
-      style={{
-        margin: 0,
-        padding: "20px 10px",
-        borderBottom: "1px solid rgba(1, 1, 1, 0.1)",
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-evenly",
-        alignItems: "center",
-        width: `${isChatActive ? "calc(100% - 18vw)" : "100%"}`,
-        transition: "all .3s ease-out",
-        fontWeight: "500",
-      }}
+    <div className={isChatActive ? "w-[calc(100%-18vw)] m-0 py-[20px] px-[10px] flex flex-row justify-evenly items-center ease-out duration-300 font-medium border-b border-b-black/10"
+      : "w-full m-0 py-[20px] px-[10px] flex flex-row justify-evenly items-center ease-out duration-300 font-medium border-b border-b-black/10"
+    }
     >
       <Link
         className="m-[10px] text-[1.4rem]"
@@ -87,7 +61,7 @@ export default function Header({
         {project && project.name}
       </Link>
       <div
-        className={styles.chatButton}
+        className="cursor-pointer"
         onClick={() => setIsChatActive(!isChatActive)}
       >
         <h3 className="text-[1.2rem]">Чат проекта</h3>

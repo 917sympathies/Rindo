@@ -2,6 +2,6 @@
 export default function Main() {
 
     return (
-      <h1 style={{display: "flex", alignSelf: "center", justifyContent: "center"}}>Откройте проект!</h1>
+      <h1 className="flex self-center justify-center">Откройте проект!</h1>
     );
 }

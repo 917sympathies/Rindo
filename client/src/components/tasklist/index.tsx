@@ -1,28 +1,18 @@
 "use client";
-import styles from "./styles.module.css";
 import { useCallback } from "react";
-import { IProject, ITask, IUserInfo, IUserRights } from "@/types";
+import { ITask, IUserInfo, IUserRights } from "@/types";
 import {
   useParams,
   usePathname,
   useRouter,
   useSearchParams,
 } from "next/navigation";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardFooter,
-  CardTitle,
-} from "@/components/ui/card";
 import { useState, useEffect } from "react";
 import { Avatar } from "../ui/avatar";
 import { Dialog, DialogContent } from "../ui/dialog";
 import TaskModal from "../taskModal";
-import { Trash2, PencilLine, EllipsisVertical } from "lucide-react";
+import { EllipsisVertical } from "lucide-react";
 import { Progress } from "../ui/progress";
-import { Label } from "../ui/label";
 import {
   Table,
   TableBody,
@@ -44,10 +34,10 @@ interface ITaskDto{
 export default function TaskList({}: TaskListProps) {
   const { id } = useParams<{ id: string }>();
   const [toFetch, setFetch] = useState<boolean>(false);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  // const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [tasks, setTasks] = useState<ITaskDto[]>([] as ITaskDto[]);
   const [rights, setRights] = useState<IUserRights>({} as IUserRights);
-  const [task, setTask] = useState<ITask>({} as ITask);
+  // const [task, setTask] = useState<ITask>({} as ITask);
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -76,7 +66,6 @@ export default function TaskList({}: TaskListProps) {
     );
     const data = await response.json();
     setRights(data);
-    console.log(data);
   };
 
   const getTasks = async (id: string) => {
@@ -89,13 +78,7 @@ export default function TaskList({}: TaskListProps) {
       }
     );
     const data = await response.json();
-    console.log(data);
     setTasks(data);
-  };
-
-  const openModal = (task: ITask) => {
-    setTask(task);
-    setIsModalOpen(true);
   };
 
   const handleOpenModal = useCallback(
@@ -136,14 +119,17 @@ export default function TaskList({}: TaskListProps) {
                   {dayjs(ent.task.finishDate).format("DD.MM.YYYY")}
                 </TableCell>
                 <TableCell className="flex flex-row items-center gap-2">
-                  <Avatar
-                    className="bg-[#4198FF] text-white w-[2.5vh] h-[2.5vh] text-[0.6rem] flex justify-center items-center"
-                    // src="/static/images/avatar/1.jpg"
-                  >
-                    {ent.user?.firstName?.slice(0, 1)}
-                    {ent.user?.lastName?.slice(0, 1)}
-                  </Avatar>
-                  <div>{ent.user?.firstName + " " + ent.user?.lastName}</div>
+                  {ent.user ?
+                  <div className="flex flex-row items-center gap-2">
+                    <Avatar className="bg-[#4198FF] text-white w-[2.5vh] h-[2.5vh] text-[0.6rem] flex justify-center items-center">
+                      {ent.user?.firstName?.slice(0, 1)}
+                      {ent.user?.lastName?.slice(0, 1)}
+                    </Avatar>
+                    <div>{ent.user?.firstName + " " + ent.user?.lastName}</div>
+                  </div> :
+                  <div>
+                    Нет ответственного
+                  </div> }
                 </TableCell>
                 <TableCell>
                   <Progress
@@ -166,18 +152,9 @@ export default function TaskList({}: TaskListProps) {
         </Table>
       </div>
       <div>
-        <Dialog
-          open={searchParams.has("task")}
-        >
+        <Dialog open={searchParams.has("task")}>
           <DialogContent>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignSelf: "center",
-                alignContent: "center",
-              }}
-            >
+            <div className="flex justify-center self-center content-center">
               <TaskModal
                 onClose={() => router.push(pathname + "?" + handleOpenModal())}
                 setFetch={setFetch}

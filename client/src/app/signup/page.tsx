@@ -1,5 +1,4 @@
 "use client";
-import styles from "./styles.module.css";
 import { useState } from "react";
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button";
@@ -45,7 +44,7 @@ export default function SignUp() {
   };
 
   return (
-    <div className={styles.container}>
+    <div className="flex flex-col justify-center gap-[0.5rem] items-center h-[100vh] w-[20%] m-auto">
       <Input
         required
         placeholder="Имя пользователя"
@@ -79,19 +78,7 @@ export default function SignUp() {
         onChange={(e) => setLastName(e.target.value)}
       ></Input>
       {errorMessage !== "" && (
-        <Label
-          style={{
-            color: "red",
-            cursor: "pointer",
-            fontSize: ".875rem",
-            wordWrap: "break-word",
-            textAlign: "left",
-            whiteSpace: "pre-wrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            display: "-webkit-box",
-          }}
-        >
+        <Label className="text-red-600 cursor-pointer text-[0.875rem] overflow-hiden text-ellipsis">
           {errorMessage}
         </Label>
       )}
