@@ -55,6 +55,7 @@ namespace Rindo.API.Controllers
             return Ok(result.Value.Item1);
         }
 
+        [Authorize]
         [HttpPut("{id:guid}/firstName")]
         public async Task<IActionResult> ChangeUserFirstName(Guid id, string firstName)
         {
@@ -63,6 +64,7 @@ namespace Rindo.API.Controllers
             return Ok();
         }
         
+        [Authorize]
         [HttpPut("{id:guid}/lastName")]
         public async Task<IActionResult> ChangeUserLastName(Guid id, string lastName)
         {

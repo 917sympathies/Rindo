@@ -22,7 +22,6 @@ public class ProjectRepository : RepositoryBase<Project>, IProjectRepository
         await FindByCondition(p => p.Id == id)
             .Include(p => p.Owner)
             .Include(p => p.Users)
-            //.Include(p => p.Tasks)
             .Include(p => p.Roles)
             .Include(p => p.Chat)
             .ThenInclude(c => c.Messages)

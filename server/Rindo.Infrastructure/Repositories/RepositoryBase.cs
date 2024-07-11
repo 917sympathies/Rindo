@@ -16,21 +16,19 @@ public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
     {
         _context = context;
     }
-
-    // public Task CreateAsync(IEnumerable<T> entities) => Task.Run(() => 
-    //     _context.Set<T>().AddRange(entities));
+    
     public Task CreateAsync(IEnumerable<T> entities)
     {
         _context.AttachRange(entities);
         return Task.CompletedTask;
     }
-    // public Task CreateAsync(T entity) => Task.Run(() =>
-    //     _context.Set<T>().Add(entity));
+    
     public Task CreateAsync(T entity)
     {
         _ = _context.Attach(entity);
         return Task.CompletedTask;
     }
+    
     public Task DeleteAsync(T entity) => Task.Run(() =>
         _context.Set<T>().Remove(entity));
 

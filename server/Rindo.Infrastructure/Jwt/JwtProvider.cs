@@ -18,7 +18,6 @@ public class JwtProvider : IJwtProvider
     {
         Claim[] claims = {
             new Claim("userId", user.Id.ToString()),
-            //new Claim("isAuth", true.ToString()),
         };
         var signingCredentials = new SigningCredentials(
             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey)), SecurityAlgorithms.HmacSha256);

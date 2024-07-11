@@ -34,10 +34,8 @@ interface ITaskDto{
 export default function TaskList({}: TaskListProps) {
   const { id } = useParams<{ id: string }>();
   const [toFetch, setFetch] = useState<boolean>(false);
-  // const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [tasks, setTasks] = useState<ITaskDto[]>([] as ITaskDto[]);
   const [rights, setRights] = useState<IUserRights>({} as IUserRights);
-  // const [task, setTask] = useState<ITask>({} as ITask);
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();

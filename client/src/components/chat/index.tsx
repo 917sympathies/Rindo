@@ -33,6 +33,7 @@ export default function Chat({
   const [conn, setConnection] = useState<HubConnection | null>(null);
 
   useEffect(() => {
+    if(!isActive) return;
     const getChatInfo = async () => {
       const response = await fetch(`http://localhost:5000/api/chat/${chatId}`, {
         method: "GET",

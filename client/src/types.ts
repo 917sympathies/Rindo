@@ -47,7 +47,6 @@ export interface IMessage {
 
 export interface IChat {
     id: string,
-    projectId: string,
     messages: IMessage[]
 }
 

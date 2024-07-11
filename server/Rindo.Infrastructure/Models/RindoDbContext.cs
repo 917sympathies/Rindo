@@ -10,7 +10,6 @@ public class RindoDbContext : DbContext
     public RindoDbContext(DbContextOptions<RindoDbContext> options)
         :base(options)
     {
-        //Database.EnsureCreated();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -19,10 +18,12 @@ public class RindoDbContext : DbContext
             .HasOne(e => e.User)
             .WithMany(u => u.UserProjectRoles)
             .HasForeignKey(e => e.UserId);
+        
         modelBuilder.Entity<UserProjectRole>()
             .HasOne(e => e.Project)
             .WithMany(u => u.UserProjectRoles)
             .HasForeignKey(e => e.ProjectId);
+        
         modelBuilder.Entity<UserProjectRole>()
             .HasOne(e => e.Role)
             .WithMany(u => u.UserProjectRoles)
@@ -32,6 +33,7 @@ public class RindoDbContext : DbContext
             .HasMany(c => c.Messages)
             .WithOne(c => c.Chat)
             .HasForeignKey(b => b.ChatId);
+        
         modelBuilder.Entity<Task>()
             .HasMany(c => c.Comments)
             .WithOne(c => c.Task)
@@ -87,14 +89,24 @@ public class RindoDbContext : DbContext
     }
     
     public DbSet<Chat> Chats { get; init; }
+    
     public DbSet<ChatMessage> ChatMessages { get; init; }
+    
     public DbSet<User> Users { get; init; }
+    
     public DbSet<Stage> Stages { get; init; }
+    
     public DbSet<Project> Projects { get; init; }
+    
     public DbSet<Task> Tasks { get; init; }
+    
     public DbSet<TaskComment> TaskComments { get; init; }
+    
     public DbSet<Role> Roles { get; init; }
+    
     public DbSet<UserProjectRole> UserProjectRoles { get; init; }
+    
     public DbSet<Tag> Tags { get; init; }
+    
     public DbSet<Invitation> Invitations { get; init; }
 }
