@@ -15,6 +15,7 @@ namespace Rindo.API.Controllers
     public class ProjectController : ControllerBase
     {
         private readonly IProjectService _service;
+        
         private readonly IHttpContextAccessor _httpContextAccessor;
         public ProjectController(IProjectService service, IHttpContextAccessor httpContextAccessor)
         {
@@ -72,7 +73,6 @@ namespace Rindo.API.Controllers
             var handler = new JwtSecurityTokenHandler();
             var jwtSecurityToken = handler.ReadJwtToken(token);
             var userId = jwtSecurityToken.Claims.First(c => c.Type == "userId").Value;
-            // var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == Guid.Parse(userId));
             var result = await _service.InviteUserToProject(id, username, Guid.Parse(userId));
             if (!result.IsSuccess) return BadRequest(result.Error);
             return Ok();

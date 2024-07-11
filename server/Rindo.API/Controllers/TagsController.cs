@@ -18,6 +18,7 @@ namespace Rindo.API.Controllers
     public class TagsController : ControllerBase
     {
         private readonly ITagService _service;
+        
         public TagsController(ITagService service)
         {
             _service = service;

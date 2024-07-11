@@ -12,43 +12,29 @@ namespace Rindo.Infrastructure.Repositories;
 public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
 {
     private readonly RindoDbContext _context;
+    
     protected RepositoryBase(RindoDbContext context)
     {
         _context = context;
     }
-    
-    public Task CreateAsync(IEnumerable<T> entities)
-    {
-        _context.AttachRange(entities);
-        return Task.CompletedTask;
-    }
-    
-    public Task CreateAsync(T entity)
-    {
-        _ = _context.Attach(entity);
-        return Task.CompletedTask;
-    }
+
+    public Task CreateAsync(IEnumerable<T> entities) => Task.Run(() =>
+        _context.AttachRange(entities));
+
+    public Task CreateAsync(T entity) => Task.Run(() =>
+        _context.Attach(entity)); 
     
     public Task DeleteAsync(T entity) => Task.Run(() =>
         _context.Set<T>().Remove(entity));
 
-    public Task UpdateAsync(T entity)
-    {
-        _context.Set<T>().Update(entity);
-        return Task.CompletedTask;
-    }
+    public Task UpdateAsync(T entity) => Task.Run(() =>
+        _context.Set<T>().Update(entity));
 
-    public Task UpdatePropertyAsync<TProperty>(T entity, Expression<Func<T,TProperty>> expression)
-    {
-        _context.Entry(entity).Property(expression).IsModified = true;
-        return Task.CompletedTask;
-    }
+    public Task UpdatePropertyAsync<TProperty>(T entity, Expression<Func<T, TProperty>> expression) => Task.Run(() =>
+        _context.Entry(entity).Property(expression).IsModified = true);
 
-    public Task UpdateCollectionAsync<TProperty>(T entity, Expression<Func<T,IEnumerable<TProperty>>> expression) where TProperty : class
-    {
-        _context.Entry(entity).Collection(expression).IsModified = true;
-        return Task.CompletedTask;
-    }
+    public bool UpdateCollectionAsync<TProperty>(T entity, Expression<Func<T,IEnumerable<TProperty>>> expression) where TProperty : class
+     => _context.Entry(entity).Collection(expression).IsModified = true;
 
     public IQueryable<T> FindAll() =>
         _context.Set<T>().AsNoTracking();

@@ -11,6 +11,7 @@ namespace Rindo.API.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _service;
+        
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public UserController(IUserService service, IHttpContextAccessor httpContextAccessor)
@@ -42,7 +43,6 @@ namespace Rindo.API.Controllers
         {
             var result = await _service.SignUpUser(userDtoSignUp);
             if (!result.IsSuccess) return BadRequest(result.Error);
-            //_httpContextAccessor.HttpContext?.Response.Cookies.Append("test-cookies", result.Value.Item2);
             return Ok(result.IsSuccess);
         }
 
