@@ -1,6 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
 using Application.Interfaces.Services;
-using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Rindo.API.Filters;
@@ -15,6 +14,7 @@ namespace Rindo.API.Controllers
     public class ProjectController : ControllerBase
     {
         private readonly IProjectService _service;
+        
         private readonly IHttpContextAccessor _httpContextAccessor;
         public ProjectController(IProjectService service, IHttpContextAccessor httpContextAccessor)
         {
@@ -68,11 +68,10 @@ namespace Rindo.API.Controllers
         [HttpPost("{id:guid}/invite")]
         public async Task<IActionResult> InviteUserToProject(Guid id, string username)
         {
-            var token = _httpContextAccessor.HttpContext?.Request.Cookies["test-cookies"];
+            var token = _httpContextAccessor.HttpContext?.Request.Cookies["_rindo"];
             var handler = new JwtSecurityTokenHandler();
             var jwtSecurityToken = handler.ReadJwtToken(token);
             var userId = jwtSecurityToken.Claims.First(c => c.Type == "userId").Value;
-            // var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == Guid.Parse(userId));
             var result = await _service.InviteUserToProject(id, username, Guid.Parse(userId));
             if (!result.IsSuccess) return BadRequest(result.Error);
             return Ok();

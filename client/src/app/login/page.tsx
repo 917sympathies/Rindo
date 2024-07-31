@@ -7,10 +7,11 @@ import { Label } from "@/components/ui/label";
 import { useCookies } from "react-cookie";
 import { jwtDecode } from "jwt-decode";
 import { ICookieInfo, IUser } from "@/types";
+import { AuthUser } from "@/requests";
 
 export default function Login() {
   const router = useRouter();
-  const [cookies, setCookie, removeCookie] = useCookies(["test-cookies"]);
+  const [cookies, setCookie, removeCookie] = useCookies(["_rindo"]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [usernameInput, setUsername] = useState("");
   const [passwordInput, setPassword] = useState("");
@@ -20,13 +21,7 @@ export default function Login() {
     if (usernameInput == "") setErrorMessage("Вы не ввели имя пользователя!");
     else if (passwordInput == "") setErrorMessage("Вы не ввели пароль!");
     else {
-      const authInfo = { username: usernameInput, password: passwordInput };
-      const response = await fetch("http://localhost:5000/api/user/auth", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(authInfo),
-      });
+      const response = await AuthUser(usernameInput, passwordInput);
       const data = await response.json();
       if (data.code !== undefined) {
         setErrorMessage(data.description);
@@ -35,24 +30,26 @@ export default function Login() {
       setLocalStorage(data);
       setUsername("");
       setPassword("");
+      router.push("/main")
     }
   };
 
   const setLocalStorage = (user: IUser) => {
     localStorage.setItem("user", JSON.stringify(user));
-    if (cookies["test-cookies"]) {
-      const token = cookies["test-cookies"];
+    if (cookies["_rindo"]) {
+      const token = cookies["_rindo"];
       const decoded = jwtDecode(token) as ICookieInfo;
       localStorage.setItem("token", JSON.stringify(decoded));
     }
   };
 
   useEffect(() => {
-    if (cookies["test-cookies"]) {
-      const token = cookies["test-cookies"];
+    if (cookies["_rindo"]) {
+      const token = cookies["_rindo"];
       const decoded = jwtDecode(token) as ICookieInfo;
       if (Date.now() >= decoded.exp * 1000) {
-        removeCookie("test-cookies", { path: "/" });
+        console.log("cookie expired")
+        removeCookie("_rindo", { path: "/" });
         localStorage.removeItem("userId");
         localStorage.removeItem("token");
         console.log("cookie removed");

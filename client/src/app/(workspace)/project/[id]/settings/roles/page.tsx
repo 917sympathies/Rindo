@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Avatar } from "@/components/ui/avatar";
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { IProject, IRole, IUser, IUserRights } from "@/types";
+import { IProject, IRole, IRoleDto, IUser, IUserRights } from "@/types";
 import { X } from "lucide-react";
 import {
   Select,
@@ -21,12 +21,7 @@ import {
   LogLevel,
   HubConnectionState,
 } from "@microsoft/signalr";
-
-interface IRoleDto {
-  name: string;
-  projectId: string;
-  color: string;
-}
+import { AddUserToRole, CreateRole, GetRolesByProjectId, GetSettingsInfo, RemoveUserFromRole, SaveRoleName, SaveRoleRights } from "@/requests";
 
 export default function Page() {
   const { id } = useParams<{ id: string }>();
@@ -57,14 +52,7 @@ export default function Page() {
 
   useEffect(() => {
     async function fetchInfo() {
-      const response = await fetch(
-        `http://localhost:5000/api/project/${id}/settings`,
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-        }
-      );
+      const response = await GetSettingsInfo(id);
       if (response.ok) {
         const data = await response.json();
         setProjectSettings(data);
@@ -75,14 +63,7 @@ export default function Page() {
       }
     }
     async function fetchRoles() {
-      const response = await fetch(
-        `http://localhost:5000/api/role?projectId=${id}`,
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-        }
-      );
+      const response = await GetRolesByProjectId(id);
       if (response.ok) {
         const data = await response.json();
         setRoles(data);
@@ -113,38 +94,17 @@ export default function Page() {
 
   const handleAddUserToRole = async (userId: string) => {
     setUserToRole("");
-    await fetch(
-      `http://localhost:5000/api/role/${selectedRole.id}/adduser?userId=${userId}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      }
-    );
+    const response = await AddUserToRole(selectedRole.id, userId);
     setFetch(true);
   };
 
   const handleRemoveUserFromRole = async (userId: string) => {
-    await fetch(
-      `http://localhost:5000/api/role/${selectedRole.id}/removeuser?userId=${userId}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      }
-    );
+    const response = await RemoveUserFromRole(selectedRole.id, userId);
     setFetch(true);
   };
 
   const handleSaveRole = async () => {
-    await fetch(
-      `http://localhost:5000/api/role/${selectedRole.id}/name?name=${selectedRole.name}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      }
-    );
+    const responseNameChange = await SaveRoleName(selectedRole.id, selectedRole.name);
     const rights = {
       canAddRoles: selectedRole.canAddRoles,
       canAddStage: selectedRole.canAddStage,
@@ -159,29 +119,17 @@ export default function Page() {
       canModifyTask: selectedRole.canModifyTask,
       canUseChat: selectedRole.canUseChat,
     } as IUserRights;
-    const response = await fetch(
-      `http://localhost:5000/api/role/${selectedRole.id}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(rights),
-      }
-    );
+    const response = await SaveRoleRights(selectedRole.id, rights);
     setFetch(true);
   };
 
   const handleCreateRole = async () => {
-    const response = await fetch(`http://localhost:5000/api/role`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({
-        name: newRole === "" ? "Новая роль" : newRole,
-        projectId: id,
-        color: "#FFFF",
-      } as IRoleDto),
-    });
+    const role = {
+      name: newRole === "" ? "Новая роль" : newRole,
+      projectId: id,
+      color: "#FFFF",
+    } as IRoleDto;
+    const response = await CreateRole(role);
     setFetch(true);
     setNewRole("");
   };

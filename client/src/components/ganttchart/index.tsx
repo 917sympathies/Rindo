@@ -1,5 +1,5 @@
 "use client";
-import { ITask, IUserRights } from "@/types";
+import { ITask, IUserInfo, IUserRights } from "@/types";
 import { Dialog, DialogContent } from "../ui/dialog";
 import {
   Gantt,
@@ -19,6 +19,7 @@ import {
 } from "next/navigation";
 import dayjs from "dayjs";
 import TaskModal from "../taskModal";
+import { GetRights, GetTasksByProjectId } from "@/requests";
 
 interface ITaskListHeader {
   headerHeight: number;
@@ -75,6 +76,12 @@ const ExampleTask = [{
         styles: { progressColor: 'rgba(102, 153, 255, 01)', progressSelectedColor: '#ff9e0d' }
 }] as Task[];
 
+
+interface ITaskDto{
+  task: ITask,
+  user: IUserInfo
+}
+
 export default function GanttChart() {
   const [toFetch, setFetch] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -100,39 +107,26 @@ export default function GanttChart() {
 
   const getRights = async () => {
     const userId = localStorage.getItem("userId");
-    const response = await fetch(
-      `http://localhost:5000/api/role/${id}/${userId}`,
-      {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      }
-    );
+    const response = await GetRights(id, userId!);
     const data = await response.json();
     setRights(data);
-    console.log(data);
   };
 
   const getTasks = async (id: string) => {
-    const response = await fetch(
-      `http://localhost:5000/api/task/?projectId=${id}`,
-      {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      }
-    );
+    const response = await GetTasksByProjectId(id);
     const data = await response.json();
+
     if(data.length <= 0) return;
     setTasks([]);
-    data.map((task : ITask)  => {
-        const startDate = new Date(dayjs(task.startDate).toString());
-        const finishDate = new Date(dayjs(task.finishDate).toString());
+
+    data.map((taskDto : ITaskDto)  => {
+        const startDate = new Date(dayjs(taskDto.task.startDate).toString());
+        const finishDate = new Date(dayjs(taskDto.task.finishDate).toString());
         setTasks(tasks => [...tasks, {
-            id: task.id,
-            name: task.name, 
+            id: taskDto.task.id,
+            name: taskDto.task.name, 
             type: 'task', 
-            progress: task.progress,
+            progress: taskDto.task.progress,
             start: startDate, 
             end: finishDate, 
             isDisabled: true,
@@ -140,10 +134,6 @@ export default function GanttChart() {
           }])
     })
   };
-
-  useEffect(() => {
-    if(tasks.length > 0) console.log(tasks)
-  }, [tasks])
 
   const handleOpenModal = useCallback(
     (taskId?: string) => {

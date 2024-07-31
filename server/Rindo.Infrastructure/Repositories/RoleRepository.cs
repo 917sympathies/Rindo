@@ -12,6 +12,7 @@ public class RoleRepository : RepositoryBase<Role>, IRoleRepository
     public RoleRepository(RindoDbContext context) : base(context)
     {
     }
+    
     public Task CreateRole(Role role) => CreateAsync(role);
 
     public Task DeleteRole(Role role) => DeleteAsync(role);

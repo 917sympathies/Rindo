@@ -12,6 +12,7 @@ import {
   HubConnectionState
 } from "@microsoft/signalr";
 import dayjs from "dayjs";
+import { GetChatInfo, GetUserInfo } from "@/requests";
 
 interface ChatProps {
   chatId: string | undefined;
@@ -33,26 +34,16 @@ export default function Chat({
   const [conn, setConnection] = useState<HubConnection | null>(null);
 
   useEffect(() => {
+    if(!isActive) return;
     const getChatInfo = async () => {
-      const response = await fetch(`http://localhost:5000/api/chat/${chatId}`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
+      const response = await GetChatInfo(chatId!);
       const data = await response.json();
       setChat(data);
       setChatMessages(data.messages)
     };
     const getUserInfo = async () => {
       const userId = localStorage.getItem("userId");
-      const response = await fetch(
-        `http://localhost:5000/api/user/${userId}`,
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-        }
-      );
+      const response = await GetUserInfo(userId!);
       const data = await response.json();
       setUser(data);
     };

@@ -11,6 +11,7 @@ namespace Rindo.API.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _service;
+        
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public UserController(IUserService service, IHttpContextAccessor httpContextAccessor)
@@ -42,7 +43,6 @@ namespace Rindo.API.Controllers
         {
             var result = await _service.SignUpUser(userDtoSignUp);
             if (!result.IsSuccess) return BadRequest(result.Error);
-            //_httpContextAccessor.HttpContext?.Response.Cookies.Append("test-cookies", result.Value.Item2);
             return Ok(result.IsSuccess);
         }
 
@@ -51,10 +51,11 @@ namespace Rindo.API.Controllers
         {
             var result = await _service.AuthUser(userAuth);
             if (!result.IsSuccess) return BadRequest(result.Error);
-            _httpContextAccessor.HttpContext?.Response.Cookies.Append("test-cookies", result.Value.Item2);
+            _httpContextAccessor.HttpContext?.Response.Cookies.Append("_rindo", result.Value.Item2);
             return Ok(result.Value.Item1);
         }
 
+        [Authorize]
         [HttpPut("{id:guid}/firstName")]
         public async Task<IActionResult> ChangeUserFirstName(Guid id, string firstName)
         {
@@ -63,6 +64,7 @@ namespace Rindo.API.Controllers
             return Ok();
         }
         
+        [Authorize]
         [HttpPut("{id:guid}/lastName")]
         public async Task<IActionResult> ChangeUserLastName(Guid id, string lastName)
         {

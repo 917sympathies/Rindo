@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { CirclePlus } from "lucide-react";
 import AddUserModal from "@/components/addUserModal";
 import { IUserRights } from "@/types";
+import { GetRights } from "@/requests";
 
 interface Props {
   children: React.ReactNode;
@@ -42,14 +43,7 @@ export default function Layout({ children }: Props) {
 
   const getRights = async () => {
     const userId = localStorage.getItem("userId");
-    const response = await fetch(
-      `http://localhost:5000/api/role/${id}/${userId}`,
-      {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      }
-    );
+    const response = await GetRights(id, userId!);
     const data = await response.json();
     setRights(data);
   };

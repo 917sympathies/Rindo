@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices.JavaScript;
-using Application.Interfaces.Services;
+﻿using Application.Interfaces.Services;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Rindo.Domain.Common;
@@ -7,15 +6,17 @@ using Rindo.Domain.DTO;
 using Rindo.Domain.Entities;
 using Rindo.Domain.Repositories;
 using Rindo.Infrastructure.Models;
-using Task = System.Threading.Tasks.Task;
 
-namespace Application.Services;
+namespace Rindo.Infrastructure.Services;
 
 public class ProjectService : IProjectService
 {
     private readonly IProjectRepository _projectRepository;
+    
     private readonly IUserRepository _userRepository;
+    
     private readonly IMapper _mapper;
+    
     private readonly RindoDbContext _context;
 
     public ProjectService(IProjectRepository projectRepository, IUserRepository userRepository, IMapper mapper, RindoDbContext context)
@@ -28,26 +29,24 @@ public class ProjectService : IProjectService
 
     public async Task<Result> CreateProject(ProjectOnCreateDto projectOnCreateDto)
     {
-        try
+        var project = new Project
         {
-            var project = _mapper.Map<Project>(projectOnCreateDto);
-            var owner = await _userRepository.GetUserById(projectOnCreateDto.OwnerId);
-            if (owner is null) return Result.Failure(Error.NotFound("Такого пользователя не существует!"));
-            await _projectRepository.CreateProject(project);
-            project.Owner = owner;
-            project.Stages = new List<Stage>()
+            Name = projectOnCreateDto.Name,
+            Description = projectOnCreateDto.Description,
+            OwnerId = projectOnCreateDto.OwnerId,
+            StartDate = projectOnCreateDto.StartDate,
+            FinishDate = projectOnCreateDto.FinishDate,
+            Tags = projectOnCreateDto.Tags,
+            Stages = new List<Stage>
             {
-                new Stage() { Name = "Запланированы", Index = 0},
-                new Stage() { Name = "В процессе", Index = 1 },
-                new Stage() { Name = "Завершены", Index = 2 },
-            };
-            project.Chat = new Chat(){ProjectId = project.Id};
-            await _context.SaveChangesAsync();
-        }
-        catch (Exception exception)
-        {
-            return Result.Failure(Error.Failure("Не получилось создать проект!"));
-        }
+                new() { Name = "Запланированы", Index = 0},
+                new() { Name = "В процессе", Index = 1 },
+                new() { Name = "Завершены", Index = 2 }
+            },
+            Chat = new Chat()
+        };
+        await _projectRepository.CreateProject(project);
+        await _context.SaveChangesAsync();
         return Result.Success();
     }
 
@@ -76,11 +75,12 @@ public class ProjectService : IProjectService
     public async Task<Result<User>> InviteUserToProject(Guid projectId, string username, Guid senderId)
     {
         var user = await _userRepository.GetUserByUsername(username);
-        if (user is null) return Error.NotFound("Такого пользователя не существует");
         var project = await _projectRepository.GetProjectById(projectId);
-        if (project is null) return Error.NotFound("Такого проекта не существует");
         var sender = await _userRepository.GetUserById(senderId);
-        if (sender is null) return Error.NotFound("Такого пользователя не существует");
+        
+        if (user is null || project is null || sender is null)
+            return Error.NotFound("Ошибка при приглашении пользователя в проект");
+                    
         var invitation = new Invitation() { UserId = user.Id, ProjectId = projectId, ProjectName = project.Name, SenderUsername = sender.Username};
         _context.Invitations.Add(invitation);
         await _context.SaveChangesAsync();
@@ -92,10 +92,13 @@ public class ProjectService : IProjectService
         var invitation =
             await _context.Invitations.FirstOrDefaultAsync(inv =>
                 inv.ProjectId == id && userId == inv.UserId);
-        _context.Invitations.Remove(invitation);
-        await _context.SaveChangesAsync();
         var project = await _context.Projects.Include(p => p.Users).FirstOrDefaultAsync(p => p.Id == id);
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        
+        if (user is null || project is null || invitation is null)
+            return Error.NotFound("Ошибка при добавлении пользователя в проект");
+        
+        _context.Invitations.Remove(invitation);
         project.Users.Add(user);
         await _context.SaveChangesAsync();
         return Result.Success();

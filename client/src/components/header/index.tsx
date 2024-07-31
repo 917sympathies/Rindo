@@ -4,6 +4,7 @@ import Link from "next/link";
 import Chat from "../chat";
 import { Sheet, SheetContent } from "../ui/sheet";
 import { useParams } from "next/navigation";
+import { GetProjectInfoHeader } from "@/requests";
 
 interface HeaderProps {
   setIsSelectorVisible: Dispatch<SetStateAction<boolean>>;
@@ -34,14 +35,7 @@ export default function Header({
 
   useEffect(() => {
     const getProjectInfo = async (id: string) => {
-      const response = await fetch(
-        `http://localhost:5000/api/project/${id}/header`,
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-        }
-      );
+      const response = await GetProjectInfoHeader(id);
       const data = await response.json();
       setProject(data);
     };

@@ -6,7 +6,7 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { IRole } from "@/types";
-import { setFips } from "crypto";
+import { DeleteRole } from "@/requests";
 
 interface Props {
   selectedRole: IRole;
@@ -24,14 +24,7 @@ export default function RoleEditor({
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const handleDeleteRole = async () => {
-    const response = await fetch(
-      `http://localhost:5000/api/role/${selectedRole.id}`,
-      {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      }
-    );
+    const response = await DeleteRole(selectedRole.id);
     setIsModalOpen(false);
     doFetch();
   }
@@ -79,19 +72,6 @@ export default function RoleEditor({
               Может удалять задачи из проекта
             </Label>
           </div>
-          {/* <div className="flex flex-row items-center pt-4 pr-4 gap-4">
-            <Switch
-              id="canUseChat"
-              checked={selectedRole ? selectedRole.canUseChat : false}
-              onCheckedChange={(value: boolean) =>
-                setSelectedRole({
-                  ...selectedRole,
-                  canUseChat: value,
-                })
-              }
-            ></Switch>
-            <Label htmlFor="canUseChat">Может пользоваться чатом</Label>
-          </div> */}
           <div className="flex flex-row items-center pt-4 pr-4 gap-4">
             <Switch
               id="canAddStage"
@@ -159,16 +139,7 @@ export default function RoleEditor({
           </div>
         </div>
       </div>
-      <Dialog
-        open={isModalOpen}
-        // onClose={() => setIsModalOpen(false)}
-        // style={{
-        //   display: "flex",
-        //   justifyContent: "center",
-        //   alignSelf: "center",
-        //   alignContent: "center",
-        // }}
-      >
+      <Dialog open={isModalOpen}>
         <DialogContent>
           <div
             style={{

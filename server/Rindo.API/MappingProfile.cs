@@ -17,9 +17,7 @@ public class MappingProfile : Profile
                 condition =>
                     condition.MapFrom(p => p.Owner.Id));
         CreateMap<Project, ProjectOnCreateDto>()
-            .ReverseMap()
-            .ForMember(p => p.InviteLink,
-                opt => opt.MapFrom(p => "test"));
+            .ReverseMap();
         CreateMap<UserDtoSignUp, User>().ReverseMap();
         CreateMap<User, UserDto>().ReverseMap();
         CreateMap<Project, ProjectSettingsDto>();

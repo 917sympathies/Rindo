@@ -19,11 +19,10 @@ namespace Rindo.API.Controllers
     [ApiController]
     public class InvitationController : ControllerBase
     {
-        private readonly IProjectService _projectService;
         private readonly IInvitationService _service;
-        public InvitationController(IProjectService projectService, IInvitationService service)
+        
+        public InvitationController(IInvitationService service)
         {
-            _projectService = projectService;
             _service = service;
         }
 

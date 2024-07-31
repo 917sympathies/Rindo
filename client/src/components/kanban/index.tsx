@@ -17,6 +17,7 @@ import AddTaskModal from "../addTaskModal";
 import { IUserRights } from "@/types";
 import { Label } from "../ui/label";
 import { CirclePlus } from "lucide-react";
+import { AddStage, DeleteStage, GetRights, GetStagesByProjectId, UpdateProjectStages } from "@/requests";
 
 
 export default function Kanban() {
@@ -45,42 +46,26 @@ export default function Kanban() {
 
   const getRights = async () => {
     const userId = localStorage.getItem("userId");
-    const response = await fetch(`http://localhost:5000/api/role/${id}/${userId}`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    });
+    const response = await GetRights(id, userId!);
     const data = await response.json();
     setRights(data)
   }
 
   const handleAddStage = async () => {
     setCanAddStage(false);
-    const response = await fetch(`http://localhost:5000/api/stage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({name: newStageName, projectId: id} as IStageDto)
-    });
+    var stage = {name: newStageName, projectId: id} as IStageDto;
+    const response = await AddStage(stage)
     setFetch(true);
   }
 
   const handleDeleteStage = async (id: string) => {
     setCanAddStage(true);
-    const response = await fetch(`http://localhost:5000/api/stage/${id}`, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    });
+    const response = await DeleteStage(id);
     setFetch(true);
   }
 
   const getStages = async(id: string) => {
-    const response = await fetch(`http://localhost:5000/api/stage?projectId=${id}`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    });
+    const response = await GetStagesByProjectId(id);
     const data = await response.json();
     if(data.status === 400) notFound();
     setStages(data);
@@ -100,15 +85,7 @@ export default function Kanban() {
     if (tasksDest!.tasks === undefined) tasksDest!.tasks = Array(item);
     else tasksDest?.tasks.splice(destination!.index, 0, item);
 
-    const response = await fetch(
-      `http://localhost:5000/api/project/${id}/stages`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(stages),
-      }
-    );
+    const response = await UpdateProjectStages(id, stages!);
   }
 
   return (

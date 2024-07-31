@@ -10,7 +10,6 @@ public class Project
     public Guid Id { get; set;}
     public string Name { get; set; } = default!;
     public string? Description { get; set; }
-    public string InviteLink { get; init; } = default!;
     public User Owner { get; set; } = default!; 
     [IgnoreDataMember]
     public Guid OwnerId { get; set; }

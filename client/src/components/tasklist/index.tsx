@@ -23,6 +23,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import dayjs from "dayjs";
+import { GetRights, GetTasksByProjectId } from "@/requests";
 
 interface TaskListProps {}
 
@@ -34,10 +35,8 @@ interface ITaskDto{
 export default function TaskList({}: TaskListProps) {
   const { id } = useParams<{ id: string }>();
   const [toFetch, setFetch] = useState<boolean>(false);
-  // const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [tasks, setTasks] = useState<ITaskDto[]>([] as ITaskDto[]);
   const [rights, setRights] = useState<IUserRights>({} as IUserRights);
-  // const [task, setTask] = useState<ITask>({} as ITask);
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -56,27 +55,13 @@ export default function TaskList({}: TaskListProps) {
 
   const getRights = async () => {
     const userId = localStorage.getItem("userId");
-    const response = await fetch(
-      `http://localhost:5000/api/role/${id}/${userId}`,
-      {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      }
-    );
+    const response = await GetRights(id, userId!);
     const data = await response.json();
     setRights(data);
   };
 
   const getTasks = async (id: string) => {
-    const response = await fetch(
-      `http://localhost:5000/api/task/?projectId=${id}`,
-      {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      }
-    );
+    const response = await GetTasksByProjectId(id);
     const data = await response.json();
     setTasks(data);
   };

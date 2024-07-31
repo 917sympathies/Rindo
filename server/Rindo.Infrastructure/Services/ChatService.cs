@@ -9,6 +9,7 @@ namespace Application.Services.ChatService;
 public class ChatService : IChatService
 {
     private readonly IChatRepository _chatRepository;
+    
     private readonly RindoDbContext _context;
         
     public ChatService(IChatRepository chatRepository, RindoDbContext context)
@@ -25,6 +26,6 @@ public class ChatService : IChatService
             msg.Id, msg.ChatId, msg.Content,
             username = _context.Users.FirstOrDefault(user => user.Id == msg.SenderId)!.Username, msg.Time
         });
-        return new {chat.Id, chat.ProjectId, messages};
+        return new {chat.Id,  messages};
     }
 }

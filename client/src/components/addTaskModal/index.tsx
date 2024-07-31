@@ -32,6 +32,7 @@ import {
   LogLevel,
   HubConnectionState
 } from "@microsoft/signalr";
+import { AddTask, GetUsersByProjectId } from "@/requests";
 
 interface IAddTaskModalProps {
   stageId: string | undefined;
@@ -93,14 +94,7 @@ IAddTaskModalProps) => {
   }, [id]);
 
   const getUsers = async (id: string) => {
-    const response = await fetch(
-      `http://localhost:5000/api/user?projectId=${id}`,
-      {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      }
-    );
+    const response = await GetUsersByProjectId(id);
     const data = await response.json();
     setUsers(data);
   };
@@ -127,16 +121,10 @@ IAddTaskModalProps) => {
       startDate: startDate,
       finishDate: finishDate,
     } as ITask;
-    const response = await fetch("http://localhost:5000/api/task", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify(taskDto),
-    });
+    const response = await AddTask(taskDto);
     sendSignal();
     setFetch(true);
     onClose();
-    console.log(response);
   };
 
   return (
