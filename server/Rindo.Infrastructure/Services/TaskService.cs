@@ -1,24 +1,22 @@
 ﻿using Application.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
 using Rindo.Domain.Common;
-using Rindo.Domain.Entities;
 using Rindo.Domain.Repositories;
 using Rindo.Infrastructure.Models;
 using Task = System.Threading.Tasks.Task;
 using ProjectTask = Rindo.Domain.Entities.Task;
 
-namespace Application.Services;
+namespace Rindo.Infrastructure.Services;
 
 public class TaskService : ITaskService
 {
     private readonly ITaskRepository _taskRepository;
-    private readonly IProjectRepository _projectRepository;
+    
     private readonly RindoDbContext _context;
 
-    public TaskService(ITaskRepository taskRepository, IProjectRepository projectRepository, RindoDbContext context)
+    public TaskService(ITaskRepository taskRepository, RindoDbContext context)
     {
         _taskRepository = taskRepository;
-        _projectRepository = projectRepository;
         _context = context;
     }
 
@@ -72,7 +70,7 @@ public class TaskService : ITaskService
         return Result.Success();
     }
 
-    public async Task<Result> UpdateResponsible(Guid id, Nullable<Guid> userId)
+    public async Task<Result> UpdateResponsible(Guid id, Guid? userId)
     {
         var task = await _taskRepository.GetById(id);
         if (task is null) return Result.Failure(Error.NotFound("Такой задачи не существует!"));
@@ -191,6 +189,6 @@ public class TaskService : ITaskService
             {
                 cm.Id, cm.Content, cm.TaskId, cm.UserId, cm.Time, username = _context.Users.FirstOrDefault(user => user.Id == cm.UserId)!.Username
             }).ToList();
-        return new { task = task, comments = comments };
+        return new { task, comments };
     }
 }

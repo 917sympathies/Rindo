@@ -6,15 +6,20 @@ using Rindo.Domain.Entities;
 using Rindo.Domain.Repositories;
 using Rindo.Infrastructure.Models;
 
-namespace Application.Services.RoleService;
+namespace Rindo.Infrastructure.Services;
 
 public class RoleService : IRoleService
 {
     private readonly IUserProjectRoleRepository _userProjectRoleRepository;
+    
     private readonly IRoleRepository _roleRepository;
+    
     private readonly IUserRepository _userRepository;
+    
     private readonly IProjectRepository _projectRepository;
+    
     private readonly IMapper _mapper;
+    
     private readonly RindoDbContext _context;
     
     public RoleService(IRoleRepository roleRepository, IMapper mapper, IUserRepository userRepository, IProjectRepository projectRepository, IUserProjectRoleRepository userProjectRoleRepository, RindoDbContext context)
@@ -95,7 +100,6 @@ public class RoleService : IRoleService
         role.CanModifyStage = rights.CanModifyStage;
         role.CanModifyTask = rights.CanModifyTask;
         role.CanUseChat = rights.CanUseChat;
-        //await _roleRepository.UpdateProperty(role, r => r.CanAddTask);
         await _roleRepository.UpdateRole(role);
         await _context.SaveChangesAsync();
         return Result.Success();
@@ -110,7 +114,6 @@ public class RoleService : IRoleService
             return new RolesRights(true);
         var userProjectRoles = await _userProjectRoleRepository.GetRelationsByUserId(projectId, userId);
         var roles = userProjectRoles.Select(u => u.Role).ToList();
-        // var roles = projRoles.Where(p => p.UserProjectRoles.Contains(new UserProjectRole() { UserId = user.Id, User = user})).ToList();
         if (roles.Count == 0) return new RolesRights(); 
         var rights = new RolesRights();
         foreach (var role in roles)
@@ -131,6 +134,7 @@ public class RoleService : IRoleService
 
         return rights;
     }
+    
     public async Task<IEnumerable<RoleDto>> GetRolesByProjectId(Guid projectId)
     {
         var roles = (await _roleRepository.GetRolesByProjectId(projectId)).ToList();

@@ -1,12 +1,5 @@
 ﻿using System.Text;
 using Application.Interfaces.Services;
-using Application.Services;
-using Application.Services.ChatService;
-using Application.Services.CommentsService;
-using Application.Services.IChatMessageService;
-using Application.Services.RoleService;
-using Application.Services.StageService;
-using Application.Services.UserService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Rindo.Domain.Repositories;
+using Rindo.Infrastructure.Jwt;
 using Rindo.Infrastructure.Models;
 using Rindo.Infrastructure.Repositories;
 using Rindo.Infrastructure.Services;
@@ -36,7 +30,7 @@ public static class DependencyInjection
     {
         var jwtOptions = configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>();
         services.AddDbContext<RindoDbContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("Database"),
+            options.UseNpgsql(configuration.GetConnectionString("DbConnectionString"),
                 b => b.MigrationsAssembly("Rindo.API")));
         services.AddHttpContextAccessor();
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

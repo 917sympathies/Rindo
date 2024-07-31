@@ -10,14 +10,11 @@ public class TagService : ITagService
 {
     private readonly RindoDbContext _context;
 
-    public TagService(RindoDbContext context)
-    {
-        _context = context;
-    }
+    public TagService(RindoDbContext context) => _context = context;
 
     public async Task<Tag> CreateTag(string name, Guid projectId)
     {
-        var tag = new Tag() { Name = name, ProjectId = projectId };
+        var tag = new Tag { Name = name, ProjectId = projectId };
         _context.Tags.Add(tag);
         await _context.SaveChangesAsync();
         return tag;

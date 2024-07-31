@@ -1,5 +1,4 @@
 ﻿using Application.Interfaces.Services;
-using Application.Services;
 using Microsoft.EntityFrameworkCore;
 using Rindo.Domain.Common;
 using Rindo.Domain.Entities;
@@ -11,6 +10,7 @@ namespace Rindo.Infrastructure.Services;
 public class InvitationService : IInvitationService
 {
     private readonly RindoDbContext _context;
+    
     private readonly IProjectService _projectService;
 
     public InvitationService(RindoDbContext context, IProjectService projectService)
@@ -21,7 +21,7 @@ public class InvitationService : IInvitationService
 
     public async Task CreateInvitation(Guid projectId, Guid userId)
     {
-        var inv = new Invitation() { ProjectId = projectId, UserId = userId };
+        var inv = new Invitation { ProjectId = projectId, UserId = userId };
         _context.Invitations.Add(inv);
         await _context.SaveChangesAsync();
     }

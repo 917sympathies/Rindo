@@ -1,24 +1,24 @@
-﻿using System.Runtime.InteropServices.JavaScript;
-using Application.Interfaces.Services;
+﻿using Application.Interfaces.Services;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Rindo.Domain;
 using Rindo.Domain.Common;
 using Rindo.Domain.DTO;
 using Rindo.Domain.Entities;
 using Rindo.Domain.Repositories;
-using Rindo.Infrastructure;
 using Rindo.Infrastructure.Models;
-using Task = System.Threading.Tasks.Task;
 
-namespace Application.Services.UserService;
+namespace Rindo.Infrastructure.Services;
 
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
+    
     private readonly IProjectRepository _projectRepository;
+    
     private readonly IMapper _mapper;
+    
     private readonly IJwtProvider _jwtProvider;
+    
     private readonly RindoDbContext _context;
     
     public UserService(IUserRepository userRepository, IMapper mapper, IJwtProvider jwtProvider, IProjectRepository projectRepository, RindoDbContext context)
@@ -47,6 +47,7 @@ public class UserService : IUserService
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
         if (user is null) return Error.NotFound("Пользователя с таким идентификатором не существует");
+        
         user.LastName = lastName;
         await _context.SaveChangesAsync();
         return Result.Success();
@@ -56,6 +57,7 @@ public class UserService : IUserService
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
         if (user is null) return Error.NotFound("Пользователя с таким идентификатором не существует");
+        
         user.FirstName = firstName;
         await _context.SaveChangesAsync();
         return Result.Success();
@@ -65,8 +67,7 @@ public class UserService : IUserService
     {
         var project = await _projectRepository.GetProjectById(projectId);
         if (project is null) return Error.NotFound("Такого проекта не существует");
-        // var users = project.Users;
-        // users.Add(project.Owner);
+        
         var users = project.Users.ToList();
         users.Add(project.Owner);
         return _mapper.Map<UserDto[]>(users);
@@ -74,12 +75,15 @@ public class UserService : IUserService
 
     public async Task<Result<Tuple<User, string>>> SignUpUser(UserDtoSignUp userDtoSignUp)
     {
-        var isUserExist = (await _userRepository.GetUserByUsername(userDtoSignUp.Username)) is not null;
+        var isUserExist = await _userRepository.GetUserByUsername(userDtoSignUp.Username) is not null;
         if (isUserExist) return Error.Validation("Пользователь с таким именем уже существует");
+        
         var user = _mapper.Map<User>(userDtoSignUp);
         user.Password = PasswordHandler.GetPasswordHash(userDtoSignUp.Password);
+        
         await _userRepository.CreateUser(user);
         await _context.SaveChangesAsync();
+        
         var token = _jwtProvider.GenerateToken(user);
         return Tuple.Create(user, token);
     }
@@ -88,6 +92,7 @@ public class UserService : IUserService
     {
         var user = await _userRepository.GetUserByUsername(userDtoAuth.Username);
         if (user is null) return Error.NotFound("Пользователя с таким именем пользователя не существует");
+        
         if (!user.Password.Equals(userDtoAuth.Password))
         {
             var pass = PasswordHandler.GetPasswordHash(userDtoAuth.Password);

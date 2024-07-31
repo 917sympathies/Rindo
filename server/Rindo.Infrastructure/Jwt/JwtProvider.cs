@@ -5,20 +5,18 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Rindo.Domain.Entities;
 
-namespace Rindo.Infrastructure;
+namespace Rindo.Infrastructure.Jwt;
 
 public class JwtProvider : IJwtProvider
 {
     private readonly JwtOptions _options;
-    public JwtProvider(IOptions<JwtOptions> options)
-    {
-        _options = options.Value;
-    }
+    public JwtProvider(IOptions<JwtOptions> options) => _options = options.Value;
     public string GenerateToken(User user)
     {
-        Claim[] claims = {
-            new Claim("userId", user.Id.ToString()),
-        };
+        Claim[] claims =
+        [
+            new Claim("userId", user.Id.ToString())
+        ];
         var signingCredentials = new SigningCredentials(
             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey)), SecurityAlgorithms.HmacSha256);
         var token = new JwtSecurityToken(

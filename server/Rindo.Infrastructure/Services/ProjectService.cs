@@ -81,7 +81,7 @@ public class ProjectService : IProjectService
         if (user is null || project is null || sender is null)
             return Error.NotFound("Ошибка при приглашении пользователя в проект");
                     
-        var invitation = new Invitation() { UserId = user.Id, ProjectId = projectId, ProjectName = project.Name, SenderUsername = sender.Username};
+        var invitation = new Invitation { UserId = user.Id, ProjectId = projectId, ProjectName = project.Name, SenderUsername = sender.Username};
         _context.Invitations.Add(invitation);
         await _context.SaveChangesAsync();
         return user;

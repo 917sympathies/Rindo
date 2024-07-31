@@ -95,7 +95,7 @@ export default function Layout({ children }: Props) {
             }
             onClick={() => setIsModalOpen(true)}
           >
-            <Button className="text-white bg-blue-500 hover:bg-blue-800 rounded-lg flex flex-row gap-2 flex">
+            <Button className="text-white bg-blue-500 hover:bg-blue-800 rounded-lg flex flex-row gap-2">
               <CirclePlus size={18} />
               <div>Пригласить пользователя</div>
             </Button>
