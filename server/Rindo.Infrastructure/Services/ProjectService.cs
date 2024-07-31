@@ -7,13 +7,11 @@ using Rindo.Domain.Entities;
 using Rindo.Domain.Repositories;
 using Rindo.Infrastructure.Models;
 
-namespace Application.Services;
+namespace Rindo.Infrastructure.Services;
 
 public class ProjectService : IProjectService
 {
     private readonly IProjectRepository _projectRepository;
-
-    private readonly IChatRepository _chatRepository;
     
     private readonly IUserRepository _userRepository;
     
@@ -21,18 +19,17 @@ public class ProjectService : IProjectService
     
     private readonly RindoDbContext _context;
 
-    public ProjectService(IProjectRepository projectRepository, IUserRepository userRepository, IMapper mapper, RindoDbContext context, IChatRepository chatRepository)
+    public ProjectService(IProjectRepository projectRepository, IUserRepository userRepository, IMapper mapper, RindoDbContext context)
     {
         _projectRepository = projectRepository;
         _userRepository = userRepository;
         _mapper = mapper;
         _context = context;
-        _chatRepository = chatRepository;
     }
 
     public async Task<Result> CreateProject(ProjectOnCreateDto projectOnCreateDto)
     {
-        var project = new Project()
+        var project = new Project
         {
             Name = projectOnCreateDto.Name,
             Description = projectOnCreateDto.Description,
@@ -40,11 +37,11 @@ public class ProjectService : IProjectService
             StartDate = projectOnCreateDto.StartDate,
             FinishDate = projectOnCreateDto.FinishDate,
             Tags = projectOnCreateDto.Tags,
-            Stages = new List<Stage>()
+            Stages = new List<Stage>
             {
-                new Stage() { Name = "Запланированы", Index = 0},
-                new Stage() { Name = "В процессе", Index = 1 },
-                new Stage() { Name = "Завершены", Index = 2 },
+                new() { Name = "Запланированы", Index = 0},
+                new() { Name = "В процессе", Index = 1 },
+                new() { Name = "Завершены", Index = 2 }
             },
             Chat = new Chat()
         };

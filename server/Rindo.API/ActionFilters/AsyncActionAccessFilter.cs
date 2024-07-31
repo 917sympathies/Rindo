@@ -18,7 +18,7 @@ public class AsyncActionAccessFilter : IAsyncActionFilter
 
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        var token = context.HttpContext?.Request.Cookies["test-cookies"];
+        var token = context.HttpContext?.Request.Cookies["_rindo"];
         var handler = new JwtSecurityTokenHandler();
         var jwtSecurityToken = handler.ReadJwtToken(token);
         var userId = jwtSecurityToken.Claims.First(c => c.Type == "userId").Value;

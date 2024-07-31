@@ -76,11 +76,14 @@ public class StageService : IStageService
             await _stageRepository.DeleteStage(stage);
             await _context.SaveChangesAsync();
             var stages = _context.Stages.Where(st => st.Index >= stage.Index).ToList();
-            var index = stages.Max(s => s.Index);
-            if (index != stage.Index)
-                foreach (var st in stages)
-                    st.Index -= 1;
-            await _context.SaveChangesAsync();
+            if (stages.Count > 0)
+            {
+                var index = stages.Max(s => s.Index);
+                if (index != stage.Index)
+                    foreach (var st in stages)
+                        st.Index -= 1;
+                await _context.SaveChangesAsync();
+            }
         }
         catch (Exception e)
         {

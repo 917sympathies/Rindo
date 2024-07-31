@@ -10,10 +10,11 @@ using Application.Services.UserService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Rindo.Domain.Entities;
 using Rindo.Domain.Repositories;
 using Rindo.Infrastructure.Models;
 using Rindo.Infrastructure.Repositories;
@@ -26,15 +27,16 @@ public static class DependencyInjection
 {
     public static void ApplyMigrations(this IApplicationBuilder app)
     {
-        using IServiceScope scope = app.ApplicationServices.CreateScope();
-        using RindoDbContext dbContext = scope.ServiceProvider.GetRequiredService<RindoDbContext>();
-        dbContext.Database.Migrate();
+        using var scope = app.ApplicationServices.CreateScope();
+        using var dbContext = scope.ServiceProvider.GetRequiredService<RindoDbContext>();
+        if(!(dbContext.Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator)!.Exists())
+            dbContext.Database.Migrate();
     }
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         var jwtOptions = configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>();
         services.AddDbContext<RindoDbContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("DbConnectionString"),
+            options.UseNpgsql(configuration.GetConnectionString("Database"),
                 b => b.MigrationsAssembly("Rindo.API")));
         services.AddHttpContextAccessor();
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -50,11 +52,11 @@ public static class DependencyInjection
                         new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey))
                 };
 
-                options.Events = new JwtBearerEvents()
+                options.Events = new JwtBearerEvents
                 {
                     OnMessageReceived = context =>
                     {
-                        context.Token = context.Request.Cookies["test-cookies"];
+                        context.Token = context.Request.Cookies["_rindo"];
                         return Task.CompletedTask;
                     }
                 };

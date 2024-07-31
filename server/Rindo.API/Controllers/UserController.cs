@@ -51,7 +51,7 @@ namespace Rindo.API.Controllers
         {
             var result = await _service.AuthUser(userAuth);
             if (!result.IsSuccess) return BadRequest(result.Error);
-            _httpContextAccessor.HttpContext?.Response.Cookies.Append("test-cookies", result.Value.Item2);
+            _httpContextAccessor.HttpContext?.Response.Cookies.Append("_rindo", result.Value.Item2);
             return Ok(result.Value.Item1);
         }
 

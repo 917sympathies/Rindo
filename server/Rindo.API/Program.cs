@@ -1,11 +1,7 @@
-using System.Text;
 using AutoMapper;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using Rindo.API.Filters;
 using Rindo.Chat;
 using Rindo.Infrastructure.DependencyInjection;
-using Rindo.Infrastructure.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +13,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 builder.Services.AddCors(options =>
     options.AddPolicy("CorsPolicy", 
-        conf => conf.AllowAnyMethod().AllowAnyHeader().AllowCredentials().SetIsOriginAllowed(x => true)));
+        conf => conf.AllowAnyMethod().AllowAnyHeader().AllowCredentials().SetIsOriginAllowed(_ => true)));
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddScoped<AsyncActionAccessFilter>();
 builder.Services.AddSignalR();
@@ -29,12 +25,12 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    //app.ApplyMigrations();   
+    app.ApplyMigrations();    
 }
 
 app.UseCors("CorsPolicy");
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
