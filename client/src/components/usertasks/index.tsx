@@ -6,14 +6,13 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardFooter,
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "../ui/progress";
-import { Button } from "../ui/button";
 import Link from "next/link";
 import { Label } from "../ui/label";
 import dayjs from "dayjs";
+import { GetTasksByUserId } from "@/requests";
 
 interface IProjectTasks {
   name: string;
@@ -30,22 +29,10 @@ export default function UserTasks() {
 
   const fetchTasks = async () => {
     const userId = localStorage.getItem("userId");
-    const response = await fetch(
-      `http://localhost:5000/api/project/${userId}/usertasks`,
-      {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      }
-    );
+    const response = await GetTasksByUserId(userId!);
     const data = await response.json();
-    console.log(data);
     setProjects(data);
   };
-
-  useEffect(() => {
-    console.log(projects);
-  }, [projects]);
 
   return (
     <>
@@ -74,7 +61,6 @@ export default function UserTasks() {
                           </div>
                         </CardTitle>
                         <CardDescription className="flex flex-col dark:text-gray-400">
-                          <div>
                             <textarea
                               style={{
                                 border: "0",
@@ -88,8 +74,6 @@ export default function UserTasks() {
                               rows={ (task.description.length / 40 + 1) > 2 ? 2 : (task.description.length / 40 + 1)}
                               value={task.description}
                             ></textarea>
-                          </div>
-                          <div></div>
                         </CardDescription>
                       </CardHeader>
                       <CardContent>

@@ -27,6 +27,7 @@ import {
   LogLevel,
   HubConnectionState,
 } from "@microsoft/signalr";
+import { GetProjectsByUserId } from "@/requests";
 
 interface ISidebarProps {}
 
@@ -37,7 +38,7 @@ interface IProjectInfo {
 
 const Sidebar = ({}: ISidebarProps) => {
   const router = useRouter();
-  const [cookies, setCookie, removeCookie] = useCookies(["test-cookies"]);
+  const [cookies, setCookie, removeCookie] = useCookies(["_rindo"]);
   const { id } = useParams();
   const [user, setUser] = useState<IUser>();
   const [projects, setProjects] = useState<IProjectInfo[] | []>(
@@ -95,22 +96,15 @@ const Sidebar = ({}: ISidebarProps) => {
 
   useEffect(() => {
     const fetchProjectsInfo = async () => {
-      const token = cookies["test-cookies"];
+      const token = cookies["_rindo"];
       if (token === undefined) {
         router.push("/login");
         redirect("/login");
       }
       const decoded = jwtDecode(token) as ICookieInfo;
-      const response = await fetch(
-        `http://localhost:5000/api/project?userId=${decoded.userId}`,
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-        }
-      );
+      const response = await GetProjectsByUserId(decoded.userId);
       if (response.status === 401 || response.status === 404) {
-        removeCookie("test-cookies", { path: "/" });
+        removeCookie("_rindo", { path: "/" });
         router.push("/login");
       }
       const data = await response.json();
@@ -124,7 +118,7 @@ const Sidebar = ({}: ISidebarProps) => {
   }, [toFetch]);
 
   const signOut = () => {
-    removeCookie("test-cookies", { path: "/" });
+    removeCookie("_rindo", { path: "/" });
     localStorage.removeItem("userId");
     localStorage.removeItem("token");
     router.push("/login");
@@ -187,7 +181,7 @@ const Sidebar = ({}: ISidebarProps) => {
               <DropdownMenuSeparator className="dark:bg-black/20" />
               <DropdownMenuItem>
                 <Link
-                  href="https://github.com/917sympathies"
+                  href="https://github.com/917sympathies/Rindo"
                   className="w-full"
                   passHref={true}
                   target="_blank"

@@ -21,6 +21,7 @@ import {
   LogLevel,
   HubConnectionState,
 } from "@microsoft/signalr";
+import { ChangeProjectDescription, ChangeProjectName, DeleteProject, GetSettingsInfo } from "@/requests";
 
 export default function Page() {
   const { id } = useParams<{ id: string }>();
@@ -37,14 +38,7 @@ export default function Page() {
 
   useEffect(() => {
     async function fetchInfo() {
-      const response = await fetch(
-        `http://localhost:5000/api/project/${id}/settings`,
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-        }
-      );
+      const response = await GetSettingsInfo(id);
       if (response.ok) {
         const data = await response.json();
         setProjectSettings(data);
@@ -105,11 +99,7 @@ export default function Page() {
   };
 
   const handleDeleteProject = async () => {
-    const response = await fetch(`http://localhost:5000/api/project/${id}`, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    });
+    const response = await DeleteProject(id);
     if (response.ok === true) {
       sendMessageDeleteProject(id);
       router.push("/main");
@@ -117,14 +107,7 @@ export default function Page() {
   };
 
   const handleChangeProjectName = async () => {
-    const response = await fetch(
-      `http://localhost:5000/api/project/${projectSettings.id}/name?name=${name}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      }
-    );
+    const response = await ChangeProjectName(projectSettings.id, name);
     sendMessageChangeProjectName(projectSettings.id);
     setProjectSettings((prev) => ({
       ...prev,
@@ -133,14 +116,7 @@ export default function Page() {
   };
 
   const handleChangeProjectDescription = async () => {
-    const response = await fetch(
-      `http://localhost:5000/api/project/${projectSettings.id}/desc?description=${desc}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      }
-    );
+    const response = await ChangeProjectDescription(projectSettings.id, desc);
     setProjectSettings((prev) => ({
       ...prev,
       description: desc,

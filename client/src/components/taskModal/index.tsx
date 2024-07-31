@@ -31,6 +31,7 @@ import {
 } from "@microsoft/signalr";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "../ui/scroll-area";
+import { DeleteTask, GetStagesByProjectId, GetTask, GetUsersByProjectId, UpdateTaskDescription, UpdateTaskFinishDate, UpdateTaskName, UpdateTaskProgress, UpdateTaskResponsibleUser, UpdateTaskStage, UpdateTaskStartDate } from "@/requests";
 
 interface ITaskModalProps {
   onClose: () => void;
@@ -108,15 +109,7 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
   const changeProgress = async (value: string) => {
     const taskId = searchParams.get("task");
     if (!taskId) return;
-    const response = await fetch(
-      `http://localhost:5000/api/task/${taskId}/progress?number=${value}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      }
-    );
-
+    const response = await UpdateTaskProgress(taskId, value);
     setProgress(value);
   };
 
@@ -128,29 +121,13 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
   const handleSaveStartDate = async (date: string) => {
     const taskId = searchParams.get("task");
     if (!taskId) return;
-    const response = await fetch(
-      `http://localhost:5000/api/task/${taskId}/start`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(date),
-      }
-    );
+    const response = await UpdateTaskStartDate(taskId, date);
   };
 
   const handleSaveFinishDate = async (date: string) => {
     const taskId = searchParams.get("task");
     if (!taskId) return;
-    const response = await fetch(
-      `http://localhost:5000/api/task/${taskId}/finish`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(date),
-      }
-    );
+    const response = await UpdateTaskFinishDate(taskId, date);
   };
 
   const handleSaveChanges = async () => {
@@ -165,14 +142,7 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
     const taskId = searchParams.get("task");
     if (!taskId) return;
     if (value === "Все") {
-      const response = await fetch(
-        `http://localhost:5000/api/task/${taskId}/responsible?userId=${""}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-        }
-      );
+      const response = await UpdateTaskResponsibleUser(taskId, "");
       setResponsibleUser({} as IUser);
     } else {
       const newResponsibleUser = users.find((us) => us.id === value);
@@ -181,57 +151,36 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
       );
       setUsers([...newUsersArr, responsibleUser]);
       setResponsibleUser(newResponsibleUser!);
-      const response = await fetch(
-        `http://localhost:5000/api/task/${taskId}/responsible?userId=${value}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-        }
-      );
+      const response = await UpdateTaskResponsibleUser(taskId, value);
     }
   };
 
   const saveName = async (taskId: string) => {
-    const response = await fetch(
-      `http://localhost:5000/api/task/${taskId}/name?name=${name}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      }
-    );
+    const response = await UpdateTaskName(taskId, name);
     return response;
   };
 
   const saveDescription = async (taskId: string) => {
-    const response = await fetch(
-      `http://localhost:5000/api/task/${taskId}/description?description=${desc}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      }
-    );
+    const response = await UpdateTaskDescription(taskId, desc);
     return response;
   };
 
   const getTaskInfo = async () => {
     const taskId = searchParams.get("task");
     if (!taskId) return;
-    const response = await fetch(`http://localhost:5000/api/task/${taskId}`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    });
+
+    const response = await GetTask(taskId);
     const data = await response.json();
+
     getStagesInfo(data.task);
     setTask(data.task);
     setTaskComments(data.comments);
+
     const usersArr = (await getUsers(params.id)) as IUser[];
     const usersWithoutResponsible = usersArr.filter(
       (us) => us.id !== data.task.responsibleUserId
     );
+
     setUsers(usersWithoutResponsible);
     const user = usersArr.find((us) => us.id === data.task.responsibleUserId);
     if (user) setResponsibleUser(user!);
@@ -241,54 +190,26 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
   const handleChangeStage = async (stageName: string | undefined) => {
     const taskId = searchParams.get("task");
     if (!taskId || stageName === undefined) return;
-    const stage = statusList?.find((st) => st.name === stageName);
-    const response = await fetch(
-      `http://localhost:5000/api/stage/${stage?.id}?taskId=${taskId}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      }
-    );
+    const stage = statusList.find((st) => st.name === stageName)!;
+    const response = await UpdateTaskStage(taskId, stage.id);
     setStatus(stage);
   };
 
   const getStagesInfo = async (task: ITask) => {
-    const response = await fetch(
-      `http://localhost:5000/api/stage?projectId=${task.projectId}`,
-      {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      }
-    );
+    const response = await GetStagesByProjectId(task.projectId);
     const data = await response.json();
     setStatusList(data);
   };
 
   const handleDelete = async () => {
     if (!currentTask) return;
-    const response = await fetch(
-      `http://localhost:5000/api/task/${currentTask.id}`,
-      {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      }
-    );
+    const response = await DeleteTask(currentTask.id);
     setFetch(true);
     onClose();
   };
 
   const getUsers = async (id: string) => {
-    const response = await fetch(
-      `http://localhost:5000/api/user?projectId=${id}`,
-      {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      }
-    );
+    const response = await GetUsersByProjectId(id);
     const data = await response.json();
     return data;
   };

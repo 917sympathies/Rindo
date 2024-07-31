@@ -11,6 +11,7 @@ import {
   LogLevel,
   HubConnectionState,
 } from "@microsoft/signalr";
+import { DeleteInvite, GetInvitesByUserId, UpdateUserEmail, UpdateUserFirstName, UpdateUserLastName } from "@/requests";
 
 export default function ProfileSettings() {
   const [user, setUser] = useState<IUser>({} as IUser);
@@ -34,17 +35,6 @@ export default function ProfileSettings() {
     }
     start();
   }, []);
-
-  //   try {
-  //     if(conn){
-  //     conn.on(`ReceiveProject${chatId}`, (id, username, message) => {
-  //       const str = {id: id, username: username, content: message} as IMessage;
-  //       setChatMessages([...chatMessages, str])
-  //     });
-  //     }
-  //   } catch (exception) {
-  //     console.log(exception);
-  //   }
 
   try {
     if (conn) {
@@ -86,67 +76,31 @@ export default function ProfileSettings() {
   }, [user]);
 
   const getInvitations = async (id: string) => {
-    const response = await fetch(
-      `http://localhost:5000/api/invitation/user?userId=${id}`,
-      {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      }
-    );
+    const response = await GetInvitesByUserId(id);
     const data = await response.json();
-    console.log(data);
     setInvites(data);
   };
 
   const handleDeclineInvite = async (invite: IInvitation) => {
-    await fetch(`http://localhost:5000/api/invitation/${invite.id}`, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    });
-    setInvites(invites.filter((inv) => inv.id != invite.id));
+    const response = await DeleteInvite(invite.id);
+    if(response.ok) setInvites(invites.filter((inv) => inv.id != invite.id));
   };
 
   const updateUser = async () => {
-    if (firstName !== user?.firstName) {
-      const response = await fetch(
-        `http://localhost:5000/api/user/${user.id}/firstname?firstName=${firstName}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-        }
-      );
-      if (response.ok === true) {
-        setUser({ ...user, firstName: firstName });
-      }
+    if (firstName !== user?.firstName) 
+    {
+      const response = await UpdateUserFirstName(user.id, firstName);
+      if (response.ok ) setUser({ ...user, firstName: firstName });
     }
-    if (lastName !== user?.lastName) {
-      const response = await fetch(
-        `http://localhost:5000/api/user/${user.id}/lastname?lastName=${lastName}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-        }
-      );
-      if (response.ok === true) {
-        setUser({ ...user, lastName: lastName });
-      }
+    if (lastName !== user?.lastName) 
+    {
+      const response = await UpdateUserLastName(user.id, lastName);
+      if (response.ok) setUser({ ...user, lastName: lastName });
     }
-    if (email != user?.email) {
-      const response = await fetch(
-        `http://localhost:5000/api/user/${user.id}/email?email=${email}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-        }
-      );
-      if (response.ok === true) {
-        setUser({ ...user, email: email });
-      }
+    if (email != user?.email) 
+      {
+      const response = await UpdateUserEmail(user.id, email);
+      if (response.ok) setUser({ ...user, email: email });
     }
   };
 

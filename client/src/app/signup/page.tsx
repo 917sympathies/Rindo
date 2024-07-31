@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SignUpUser } from "@/requests";
 
 export default function SignUp() {
   const router = useRouter();
@@ -15,18 +16,7 @@ export default function SignUp() {
   const [errorMessage, setErrorMessage] = useState("");
 
   const signUp = async () => {
-      const response = await fetch("http://localhost:5000/api/user/signup", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        credentials: 'include',
-        body: JSON.stringify({
-          username: username,
-          password: password,
-          email: email,
-          firstName: firstName,
-          lastName: lastName
-        })
-      });
+      const response = await SignUpUser(username, password, email, firstName, lastName);
       const data = await response.json();
       if(data.errors === undefined && data.description === undefined){
           router.push("/login")

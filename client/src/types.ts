@@ -1,16 +1,3 @@
-// export interface IProject {
-//     id: string,
-//     name: string,
-//     description: string,
-//     inviteLink: string,
-//     chat: {} | null,
-//     stages: [] | null,
-//     tasks: [] | null,
-//     users: [] | null,
-//     startDate: string,
-//     finishDate: string
-// }
-  
 export interface IInvitation{
     id: string,
     userId: string,
@@ -91,6 +78,12 @@ export interface IRole {
     users: IUserInfo[]
 }
 
+export interface IRoleDto {
+    name: string;
+    projectId: string;
+    color: string;
+}
+
 export interface IUserRights{
     canAddRoles: boolean,
     canAddStage: boolean,
@@ -123,12 +116,23 @@ export interface IProject{
     startDate: string,
     finishDate: string,
     ownerId: string,
-    // owner: IUserInfo,
     owner: IUser,
     users: IUser[],
-    // tasks: ITask[],
     stages: IStage[],
     roles: IRole[]
+}
+
+export interface IProjectDto {
+    name: string;
+    description: string;
+    ownerId: string;
+    startDate: string;
+    finishDate: string;
+    tags: IProjectTag[];
+}
+  
+export interface IProjectTag {
+    name: string;
 }
 
 export interface ICookieInfo {

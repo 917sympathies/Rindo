@@ -17,6 +17,7 @@ import {
   CardFooter,
   CardTitle,
 } from "@/components/ui/card";
+import { GetSettingsInfo, RemoveUserFromProject } from "@/requests";
 
 export default function Page() {
   const { id } = useParams<{ id: string }>();
@@ -45,14 +46,7 @@ export default function Page() {
 
   useEffect(() => {
     async function fetchInfo() {
-      const response = await fetch(
-        `http://localhost:5000/api/project/${id}/settings`,
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-        }
-      );
+      const response = await GetSettingsInfo(id);
       if (response.ok) {
         const data = await response.json();
         setProjectSettings(data);
@@ -69,14 +63,7 @@ export default function Page() {
   }, [fetchRolesInfo]);
 
   const handleRemoveUser = async () => {
-    await fetch(
-      `http://localhost:5000/api/project/${id}/remove?username=${userOnDelete.username}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      }
-    );
+    const response = await RemoveUserFromProject(id, userOnDelete.username);
     setFetch(true);
     setIsUserDeleteModal(false);
     setUserOnDelete({} as IUser);
@@ -131,9 +118,9 @@ export default function Page() {
                     )}
                   </CardTitle>
                   <CardDescription className="flex flex-col dark:text-gray-400 text-[0.9rem]">
-                    <div>Имя: {user.firstName}</div>
-                    <div>Фамилия: {user.lastName}</div>
-                    <div>E-Mail: {user.email}</div>
+                    <span>Имя: {user.firstName}</span>
+                    <span>Фамилия: {user.lastName}</span>
+                    <span>E-Mail: {user.email}</span>
                   </CardDescription>
                 </CardHeader>
                 <CardContent>

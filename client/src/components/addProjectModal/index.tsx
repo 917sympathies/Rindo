@@ -15,32 +15,20 @@ import React from "react";
 import { useCookies } from "react-cookie";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
-import { ICookieInfo } from "@/types";
+import { ICookieInfo, IProjectDto } from "@/types";
 import { X } from "lucide-react";
 import dayjs from "dayjs";
 import Editor from "../editor";
+import { CreateProject } from "@/requests";
 
 interface IAddProjectModalProps {
   setFetch: Dispatch<SetStateAction<boolean>>;
   onClose: () => void;
 }
 
-interface IProjectDto {
-  name: string;
-  description: string;
-  ownerId: string;
-  startDate: string;
-  finishDate: string;
-  tags: IProjectTag[];
-}
-
-interface IProjectTag {
-  name: string;
-}
-
 const AddProjectModal = ({ setFetch, onClose }: IAddProjectModalProps) => {
   const router = useRouter();
-  const [cookies, setCookie, removeCookie] = useCookies(["test-cookies"]);
+  const [cookies, setCookie, removeCookie] = useCookies(["_rindo"]);
   const [project, setProject] = useState<IProjectDto>({} as IProjectDto);
   const [tagName, setTagName] = useState<string>("");
   const [startDate, setStart] = useState(dayjs().format("YYYY-MM-DD"));
@@ -55,13 +43,7 @@ const AddProjectModal = ({ setFetch, onClose }: IAddProjectModalProps) => {
     }
     const userId = localStorage.getItem("userId");
     project.ownerId = userId!;
-    console.log(project);
-    const response = await fetch("http://localhost:5000/api/project", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify(project),
-    });
+    const response = await CreateProject(project);
     const data = await response.json();
     if (data.errors === undefined) {
       setFetch(true);

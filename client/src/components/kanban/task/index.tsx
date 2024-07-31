@@ -15,6 +15,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { EllipsisVertical } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { GetTasksCommentsAmount, GetUserInfo } from "@/requests";
 
 interface ITaskProps {
   task: ITask;
@@ -36,24 +37,13 @@ function Task({ task, setFetch, rights }: ITaskProps) {
   }, []);
 
   const getUserInfo = async (id: string) => {
-    const response = await fetch(`http://localhost:5000/api/user/${id}`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    });
+    const response = await GetUserInfo(id);
     const data = await response.json();
     setResponsibleUser(data);
   };
 
   const getCommentsCount = async () => {
-    const response = await fetch(
-      `http://localhost:5000/api/comment?taskId=${task.id}`,
-      {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      }
-    );
+    const response = await GetTasksCommentsAmount(task.id);
     const data = await response.json();
     setCommentsAmount(data);
     changeLabel(data);
@@ -84,7 +74,7 @@ function Task({ task, setFetch, rights }: ITaskProps) {
   return (
     <>
       <div className="bg-white rounded-lg mt-[10px] w-full self-center shadow">
-        <p className="flex justify-between items-center text-black text-[0.95rem] font-semibold m-0 pt-[0.8rem] px-[1rem] pb-0 text-clip">
+        <div className="flex justify-between items-center text-black text-[0.95rem] font-semibold m-0 pt-[0.8rem] px-[1rem] pb-0 text-clip">
           <div>{task.name}</div>
           <div
             className="h-fit w-fit flex justify-center p-[0.2rem] rounded-[6px] hover:cursor-pointer hover:bg-[rgba(1,1,1,0.03)] ease-in-out duration-200"
@@ -92,7 +82,7 @@ function Task({ task, setFetch, rights }: ITaskProps) {
           >
             <EllipsisVertical size={16} color="rgb(102,102,102)" />
           </div>
-        </p>
+        </div>
         <div className="text-[0.7rem] my-[0.2rem] mx-[0.8rem]">
           <textarea
             value={task.description}

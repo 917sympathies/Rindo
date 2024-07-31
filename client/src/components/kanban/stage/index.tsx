@@ -45,7 +45,6 @@ export default function Stage({ stage, onClick, handleDeleteStage, setFetch, rig
   try {
     if(conn){
     conn.on(`ReceiveTaskAdd${stage.projectId}`, (needToFetch) => {
-      console.log("JDOSAKJDASLDJA")
       setFetch(needToFetch);
     });
     }
