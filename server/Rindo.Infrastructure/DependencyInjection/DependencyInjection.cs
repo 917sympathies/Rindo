@@ -30,7 +30,7 @@ public static class DependencyInjection
     {
         var jwtOptions = configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>();
         services.AddDbContext<RindoDbContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("DbConnectionString"),
+            options.UseNpgsql(configuration.GetConnectionString("Database"),
                 b => b.MigrationsAssembly("Rindo.API")));
         services.AddHttpContextAccessor();
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
