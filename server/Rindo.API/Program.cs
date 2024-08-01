@@ -10,6 +10,11 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddStackExchangeRedisCache(redisOptions =>
+{
+    var connection = builder.Configuration.GetConnectionString("Redis");
+    redisOptions.Configuration = connection;
+});
 builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 builder.Services.AddCors(options =>
     options.AddPolicy("CorsPolicy", 
@@ -28,9 +33,7 @@ if (app.Environment.IsDevelopment())
     app.ApplyMigrations();    
 }
 
-app.UseCors("CorsPolicy");
-
-//app.UseHttpsRedirection();
+app.UseCors("CorsPolicy"); 
 
 app.UseAuthentication();
 app.UseAuthorization();

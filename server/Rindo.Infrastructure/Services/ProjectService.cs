@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces.Services;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Rindo.Domain.Common;
 using Rindo.Domain.DTO;
 using Rindo.Domain.Entities;
@@ -19,16 +20,20 @@ public class ProjectService : IProjectService
     
     private readonly RindoDbContext _context;
 
-    public ProjectService(IProjectRepository projectRepository, IUserRepository userRepository, IMapper mapper, RindoDbContext context)
+    private readonly IDistributedCache _distributedCache;
+
+    public ProjectService(IProjectRepository projectRepository, IUserRepository userRepository, IMapper mapper, RindoDbContext context, IDistributedCache distributedCache)
     {
         _projectRepository = projectRepository;
         _userRepository = userRepository;
         _mapper = mapper;
         _context = context;
+        _distributedCache = distributedCache;
     }
 
     public async Task<Result> CreateProject(ProjectOnCreateDto projectOnCreateDto)
     {
+        var chat = (await _context.Chats.AddAsync(new Chat())).Entity;
         var project = new Project
         {
             Name = projectOnCreateDto.Name,
@@ -43,7 +48,7 @@ public class ProjectService : IProjectService
                 new() { Name = "В процессе", Index = 1 },
                 new() { Name = "Завершены", Index = 2 }
             },
-            Chat = new Chat()
+            ChatId = chat.Id
         };
         await _projectRepository.CreateProject(project);
         await _context.SaveChangesAsync();
@@ -59,6 +64,8 @@ public class ProjectService : IProjectService
     public async Task<ProjectOnReturnDto> GetProjectSettings(Guid id)
     {
         var project = await _projectRepository.GetProjectById(id);
+        var projectOwner = await _context.Users.FirstOrDefaultAsync(u => u.Id == project!.OwnerId);
+        project!.Users.Add(projectOwner!);
         return _mapper.Map<ProjectOnReturnDto>(project);
     }
 
@@ -101,6 +108,7 @@ public class ProjectService : IProjectService
         _context.Invitations.Remove(invitation);
         project.Users.Add(user);
         await _context.SaveChangesAsync();
+        await _distributedCache.RemoveAsync($"project-{project.Id}");
         return Result.Success();
     }
 
@@ -113,14 +121,12 @@ public class ProjectService : IProjectService
         
         await _context.Entry(project).Collection(p => p.Users).LoadAsync();
         project.Users.Remove(user);
-            
-        var upr = await _context.UserProjectRoles.Where(up => up.UserId == user.Id && up.ProjectId == id).ToListAsync();
-        _context.UserProjectRoles.RemoveRange(upr);
 
         var tasks = await _context.Tasks.Where(t => t.ResponsibleUserId == user.Id && t.ProjectId == id).ToListAsync();
         foreach (var task in tasks) task.ResponsibleUserId = null;
             
         await _context.SaveChangesAsync();
+        await _distributedCache.RemoveAsync($"project-{project.Id}");
         return Result.Success();
     }
 
@@ -164,7 +170,8 @@ public class ProjectService : IProjectService
         var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
         if (project is null) return Error.NotFound("Такого проекта не существует");
         project.Stages = stages;
-        await _context.SaveChangesAsync(); 
+        await _context.SaveChangesAsync();
+        await _distributedCache.RemoveAsync($"project-{project.Id}");
         return Result.Success();
     }
 
