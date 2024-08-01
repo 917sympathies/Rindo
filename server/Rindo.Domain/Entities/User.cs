@@ -13,7 +13,6 @@ public class User
     public string Email { get; set; } = default!;
     public string FirstName { get; set; } = default!;
     public string LastName { get; set; } = default!;
-    public ICollection<UserProjectRole> UserProjectRoles { get; set; } = default!;
     public ICollection<Project> Projects { get; set; } = default!;
     public ICollection<Invitation> Invitations { get; set; } = default!;
     public override bool Equals(object? obj)

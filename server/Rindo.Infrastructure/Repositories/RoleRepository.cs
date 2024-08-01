@@ -24,13 +24,11 @@ public class RoleRepository : RepositoryBase<Role>, IRoleRepository
 
     public async Task<Role?> GetRoleById(Guid id) =>
         await FindByCondition(r => r.Id == id)
-            .Include(r => r.UserProjectRoles)
-            .ThenInclude(u => u.User)
+            .Include(r => r.Users)
             .FirstOrDefaultAsync();
 
     public async Task<IEnumerable<Role>> GetRolesByProjectId(Guid projectId) => 
         await FindByCondition(r => r.ProjectId == projectId)
-            .Include(r => r.UserProjectRoles)
-            .ThenInclude(u => u.User)
+            .Include(r => r.Users)
             .ToListAsync();
 }

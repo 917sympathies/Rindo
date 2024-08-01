@@ -1,10 +1,9 @@
 ﻿using Application.Interfaces.Services;
 using Rindo.Domain.Common;
-using Rindo.Domain.Entities;
 using Rindo.Domain.Repositories;
 using Rindo.Infrastructure.Models;
 
-namespace Application.Services.ChatService;
+namespace Rindo.Infrastructure.Services;
 
 public class ChatService : IChatService
 {
@@ -17,6 +16,7 @@ public class ChatService : IChatService
         _chatRepository = chatRepository;
         _context = context;
     }
+    
     public async Task<Result<object>> GetChatById(Guid id)
     {
         var chat = await _chatRepository.GetChatById(id);

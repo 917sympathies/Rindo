@@ -1,12 +1,5 @@
 ﻿using System.Text;
 using Application.Interfaces.Services;
-using Application.Services;
-using Application.Services.ChatService;
-using Application.Services.CommentsService;
-using Application.Services.IChatMessageService;
-using Application.Services.RoleService;
-using Application.Services.StageService;
-using Application.Services.UserService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Rindo.Domain.Repositories;
+using Rindo.Infrastructure.Jwt;
 using Rindo.Infrastructure.Models;
 using Rindo.Infrastructure.Repositories;
 using Rindo.Infrastructure.Services;
@@ -28,9 +22,13 @@ public static class DependencyInjection
     public static void ApplyMigrations(this IApplicationBuilder app)
     {
         using var scope = app.ApplicationServices.CreateScope();
-        using var dbContext = scope.ServiceProvider.GetRequiredService<RindoDbContext>();
-        if(!(dbContext.Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator)!.Exists())
-            dbContext.Database.Migrate();
+        var services = scope.ServiceProvider;
+
+        var context = services.GetRequiredService<RindoDbContext>();
+        if (context.Database.GetPendingMigrations().Any())
+        {
+            context.Database.Migrate();
+        }
     }
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
@@ -42,7 +40,7 @@ public static class DependencyInjection
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
-                options.TokenValidationParameters = new TokenValidationParameters()
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = false,
                     ValidateAudience = false,
@@ -62,8 +60,8 @@ public static class DependencyInjection
                 };
             });
         services.AddAuthorization();
-        services.AddScoped<IUserProjectRoleRepository, UserProjectRoleRepository>();
-        services.AddScoped<IProjectRepository, ProjectRepository>();
+        services.AddScoped<ProjectRepository>();
+        services.AddScoped<IProjectRepository, CachedProjectRepository>();
         services.AddScoped<IChatRepository, ChatRepository>();
         services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
         services.AddScoped<ITaskCommentRepository, TaskCommentRepository>();

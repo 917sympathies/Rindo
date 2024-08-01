@@ -1,16 +1,16 @@
 ﻿using Application.Interfaces.Services;
-using Application.Services.UserService;
 using Rindo.Domain.Entities;
 using Rindo.Domain.Repositories;
 using Rindo.Infrastructure.Models;
-using Task = System.Threading.Tasks.Task;
 
-namespace Application.Services.CommentsService;
+namespace Rindo.Infrastructure.Services;
 
 public class CommentService : ICommentService
 {
     private readonly ITaskCommentRepository _commentRepository;
+    
     private readonly IUserService _userService;
+    
     private readonly RindoDbContext _context;
     
     public CommentService(ITaskCommentRepository commentRepository, RindoDbContext context, IUserService userService)
@@ -19,6 +19,7 @@ public class CommentService : ICommentService
         _userService = userService;
         _context = context;
     }
+    
     public async Task<TaskComment> AddComment(Guid userId, Guid taskId, string content)
     {
         var user = (await _userService.GetUserById(userId)).Value;

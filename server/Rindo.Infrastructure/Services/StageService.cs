@@ -5,15 +5,17 @@ using Rindo.Domain.DTO;
 using Rindo.Domain.Entities;
 using Rindo.Domain.Repositories;
 using Rindo.Infrastructure.Models;
-using Task = System.Threading.Tasks.Task;
 
-namespace Application.Services.StageService;
+namespace Rindo.Infrastructure.Services;
 
 public class StageService : IStageService
 {
     private readonly IStageRepository _stageRepository;
+    
     private readonly ITaskRepository _taskRepository;
+    
     private readonly RindoDbContext _context;
+    
     private readonly IMapper _mapper;
     
     public StageService(IStageRepository stageRepository, IMapper mapper, ITaskRepository taskRepository, RindoDbContext context)

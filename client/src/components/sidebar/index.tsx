@@ -119,6 +119,7 @@ const Sidebar = ({}: ISidebarProps) => {
 
   const signOut = () => {
     removeCookie("_rindo", { path: "/" });
+    localStorage.removeItem("user");
     localStorage.removeItem("userId");
     localStorage.removeItem("token");
     router.push("/login");

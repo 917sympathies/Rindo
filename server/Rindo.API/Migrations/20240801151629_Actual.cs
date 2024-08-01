@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Rindo.API.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class Actual : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -80,12 +80,6 @@ namespace Rindo.API.Migrations
                         principalTable: "Chats",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Projects_Users_OwnerId",
-                        column: x => x.OwnerId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -119,15 +113,15 @@ namespace Rindo.API.Migrations
                 name: "ProjectUser",
                 columns: table => new
                 {
-                    ProjectId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProjectsId = table.Column<Guid>(type: "uuid", nullable: false),
                     UsersId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProjectUser", x => new { x.ProjectId, x.UsersId });
+                    table.PrimaryKey("PK_ProjectUser", x => new { x.ProjectsId, x.UsersId });
                     table.ForeignKey(
-                        name: "FK_ProjectUser_Projects_ProjectId",
-                        column: x => x.ProjectId,
+                        name: "FK_ProjectUser_Projects_ProjectsId",
+                        column: x => x.ProjectsId,
                         principalTable: "Projects",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -235,38 +229,6 @@ namespace Rindo.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserProjectRoles",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ProjectId = table.Column<Guid>(type: "uuid", nullable: false),
-                    RoleId = table.Column<Guid>(type: "uuid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserProjectRoles", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_UserProjectRoles_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserProjectRoles_Roles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "Roles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserProjectRoles_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Tasks",
                 columns: table => new
                 {
@@ -335,11 +297,6 @@ namespace Rindo.API.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Projects_OwnerId",
-                table: "Projects",
-                column: "OwnerId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ProjectUser_UsersId",
                 table: "ProjectUser",
                 column: "UsersId");
@@ -373,21 +330,6 @@ namespace Rindo.API.Migrations
                 name: "IX_Tasks_StageId",
                 table: "Tasks",
                 column: "StageId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserProjectRoles_ProjectId",
-                table: "UserProjectRoles",
-                column: "ProjectId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserProjectRoles_RoleId",
-                table: "UserProjectRoles",
-                column: "RoleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserProjectRoles_UserId",
-                table: "UserProjectRoles",
-                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -412,13 +354,13 @@ namespace Rindo.API.Migrations
                 name: "TaskComments");
 
             migrationBuilder.DropTable(
-                name: "UserProjectRoles");
+                name: "Roles");
+
+            migrationBuilder.DropTable(
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Tasks");
-
-            migrationBuilder.DropTable(
-                name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "Stages");
@@ -428,9 +370,6 @@ namespace Rindo.API.Migrations
 
             migrationBuilder.DropTable(
                 name: "Chats");
-
-            migrationBuilder.DropTable(
-                name: "Users");
         }
     }
 }

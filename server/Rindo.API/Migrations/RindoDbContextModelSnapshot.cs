@@ -24,13 +24,13 @@ namespace Rindo.API.Migrations
 
             modelBuilder.Entity("ProjectUser", b =>
                 {
-                    b.Property<Guid>("ProjectId")
+                    b.Property<Guid>("ProjectsId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("UsersId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("ProjectId", "UsersId");
+                    b.HasKey("ProjectsId", "UsersId");
 
                     b.HasIndex("UsersId");
 
@@ -132,8 +132,6 @@ namespace Rindo.API.Migrations
 
                     b.HasIndex("ChatId")
                         .IsUnique();
-
-                    b.HasIndex("OwnerId");
 
                     b.ToTable("Projects");
                 });
@@ -340,32 +338,6 @@ namespace Rindo.API.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Rindo.Domain.Entities.UserProjectRole", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ProjectId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjectId");
-
-                    b.HasIndex("RoleId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserProjectRoles");
-                });
-
             modelBuilder.Entity("RoleUser", b =>
                 {
                     b.Property<Guid>("RoleId")
@@ -385,7 +357,7 @@ namespace Rindo.API.Migrations
                 {
                     b.HasOne("Rindo.Domain.Entities.Project", null)
                         .WithMany()
-                        .HasForeignKey("ProjectId")
+                        .HasForeignKey("ProjectsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -424,21 +396,11 @@ namespace Rindo.API.Migrations
 
             modelBuilder.Entity("Rindo.Domain.Entities.Project", b =>
                 {
-                    b.HasOne("Rindo.Domain.Entities.Chat", "Chat")
+                    b.HasOne("Rindo.Domain.Entities.Chat", null)
                         .WithOne()
                         .HasForeignKey("Rindo.Domain.Entities.Project", "ChatId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Rindo.Domain.Entities.User", "Owner")
-                        .WithMany("Projects")
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Chat");
-
-                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("Rindo.Domain.Entities.Role", b =>
@@ -488,33 +450,6 @@ namespace Rindo.API.Migrations
                     b.Navigation("Task");
                 });
 
-            modelBuilder.Entity("Rindo.Domain.Entities.UserProjectRole", b =>
-                {
-                    b.HasOne("Rindo.Domain.Entities.Project", "Project")
-                        .WithMany("UserProjectRoles")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Rindo.Domain.Entities.Role", "Role")
-                        .WithMany("UserProjectRoles")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Rindo.Domain.Entities.User", "User")
-                        .WithMany("UserProjectRoles")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Project");
-
-                    b.Navigation("Role");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("RoleUser", b =>
                 {
                     b.HasOne("Rindo.Domain.Entities.Role", null)
@@ -544,13 +479,6 @@ namespace Rindo.API.Migrations
                     b.Navigation("Stages");
 
                     b.Navigation("Tags");
-
-                    b.Navigation("UserProjectRoles");
-                });
-
-            modelBuilder.Entity("Rindo.Domain.Entities.Role", b =>
-                {
-                    b.Navigation("UserProjectRoles");
                 });
 
             modelBuilder.Entity("Rindo.Domain.Entities.Stage", b =>
@@ -566,10 +494,6 @@ namespace Rindo.API.Migrations
             modelBuilder.Entity("Rindo.Domain.Entities.User", b =>
                 {
                     b.Navigation("Invitations");
-
-                    b.Navigation("Projects");
-
-                    b.Navigation("UserProjectRoles");
                 });
 #pragma warning restore 612, 618
         }
