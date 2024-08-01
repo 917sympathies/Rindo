@@ -18,25 +18,33 @@ export default function Login() {
   const [errorMessage, setErrorMessage] = useState("");
 
   const authUser = async () => {
-    if (usernameInput == "") setErrorMessage("Вы не ввели имя пользователя!");
-    else if (passwordInput == "") setErrorMessage("Вы не ввели пароль!");
-    else {
-      const response = await AuthUser(usernameInput, passwordInput);
-      const data = await response.json();
-      if (data.code !== undefined) {
-        setErrorMessage(data.description);
-        return;
-      }
-      setLocalStorage(data);
-      setUsername("");
-      setPassword("");
-      router.push("/main")
+    if (usernameInput == "")
+    {
+      setErrorMessage("Вы не ввели имя пользователя!");
+      return;
     }
+    if (passwordInput == "")
+    {
+      setErrorMessage("Вы не ввели пароль!");
+      return;
+    }
+    const response = await AuthUser(usernameInput, passwordInput);
+    const data = await response.json();
+    if (data.description !== undefined) 
+    {
+      setErrorMessage(data.description);
+      return;
+    }
+    setLocalStorage(data);
+    setUsername("");
+    setPassword("");
+    router.push("/main")
   };
 
   const setLocalStorage = (user: IUser) => {
     localStorage.setItem("user", JSON.stringify(user));
-    if (cookies["_rindo"]) {
+    if (cookies["_rindo"]) 
+    {
       const token = cookies["_rindo"];
       const decoded = jwtDecode(token) as ICookieInfo;
       localStorage.setItem("token", JSON.stringify(decoded));
@@ -44,21 +52,20 @@ export default function Login() {
   };
 
   useEffect(() => {
-    if (cookies["_rindo"]) {
+    if (cookies["_rindo"]) 
+    {
       const token = cookies["_rindo"];
       const decoded = jwtDecode(token) as ICookieInfo;
-      if (Date.now() >= decoded.exp * 1000) {
-        console.log("cookie expired")
+      if (Date.now() >= decoded.exp * 1000)
+      {
         removeCookie("_rindo", { path: "/" });
         localStorage.removeItem("userId");
         localStorage.removeItem("token");
-        console.log("cookie removed");
         setIsLoading(false);
         return;
       }
       localStorage.setItem("token", JSON.stringify(decoded));
       localStorage.setItem("userId", decoded.userId);
-      console.log("redirected");
       redirect("/main");
     }
     setIsLoading(false);

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Avatar } from "@/components/ui/avatar";
 import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { IProject, IRole, IRoleDto, IUser, IUserRights } from "@/types";
 import { X } from "lucide-react";
 import {
@@ -25,7 +25,6 @@ import { AddUserToRole, CreateRole, GetRolesByProjectId, GetSettingsInfo, Remove
 
 export default function Page() {
   const { id } = useParams<{ id: string }>();
-  const router = useRouter();
   const [projectSettings, setProjectSettings] = useState<IProject>(
     {} as IProject
   );
@@ -53,25 +52,28 @@ export default function Page() {
   useEffect(() => {
     async function fetchInfo() {
       const response = await GetSettingsInfo(id);
-      if (response.ok) {
+      if (response.ok) 
+      {
         const data = await response.json();
         setProjectSettings(data);
         setProjectSettings((prev) => ({
           ...prev,
-          users: [...data.users, data.owner],
+          users: [...data.users],
         }));
       }
     }
     async function fetchRoles() {
       const response = await GetRolesByProjectId(id);
-      if (response.ok) {
+      if (response.ok) 
+      {
         const data = await response.json();
         setRoles(data);
         setSelectedRole(data[0]);
       }
     }
     fetchInfo();
-    if (fetchRolesInfo) {
+    if (fetchRolesInfo) 
+    {
       fetchRoles();
       setFetch(false);
     }
@@ -83,9 +85,12 @@ export default function Page() {
         .withUrl(`http://localhost:5000/chat`)
         .build();
       setConnection(connection);
-      if (connection.state === HubConnectionState.Disconnected) {
+      if (connection.state === HubConnectionState.Disconnected) 
+      {
         await connection.start();
-      } else {
+      } 
+      else 
+      {
         console.log("Already connected");
       }
     }

@@ -116,7 +116,6 @@ export interface IProject{
     startDate: string,
     finishDate: string,
     ownerId: string,
-    owner: IUser,
     users: IUser[],
     stages: IStage[],
     roles: IRole[]

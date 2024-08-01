@@ -52,7 +52,7 @@ export default function Page() {
         setProjectSettings(data);
         setProjectSettings((prev) => ({
           ...prev,
-          users: [...data.users, data.owner],
+          users: [...data.users],
         }));
       }
     }
@@ -97,14 +97,14 @@ export default function Page() {
                 <CardHeader>
                   <CardTitle className="flex flex-row gap-2 justify-between">
                     <div className="flex flex-row items-center gap-2">
-                      {user.id === projectSettings.owner.id ? (
+                      {user.id === projectSettings.ownerId ? (
                         <Crown size={18} color="rgb(255, 255, 0)" />
                       ) : (
                         <></>
                       )}
                       {user.username}
                     </div>
-                    {user.id !== projectSettings.owner.id ? (
+                    {user.id !== projectSettings.ownerId ? (
                       <X
                         size={24}
                         className="p-[0.2rem] rounded-full hover:bg-[rgba(1,1,1,0.1)] ease-in-out duration-200"
