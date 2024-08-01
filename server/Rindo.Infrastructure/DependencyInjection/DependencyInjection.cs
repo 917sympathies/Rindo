@@ -22,15 +22,19 @@ public static class DependencyInjection
     public static void ApplyMigrations(this IApplicationBuilder app)
     {
         using var scope = app.ApplicationServices.CreateScope();
-        using var dbContext = scope.ServiceProvider.GetRequiredService<RindoDbContext>();
-        if(!(dbContext.Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator)!.Exists())
-            dbContext.Database.Migrate();
+        var services = scope.ServiceProvider;
+
+        var context = services.GetRequiredService<RindoDbContext>();
+        if (context.Database.GetPendingMigrations().Any())
+        {
+            context.Database.Migrate();
+        }
     }
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         var jwtOptions = configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>();
         services.AddDbContext<RindoDbContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("DbConnectionString"),
+            options.UseNpgsql(configuration.GetConnectionString("Database"),
                 b => b.MigrationsAssembly("Rindo.API")));
         services.AddHttpContextAccessor();
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
