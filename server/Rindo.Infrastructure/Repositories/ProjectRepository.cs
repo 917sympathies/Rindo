@@ -21,11 +21,8 @@ public class ProjectRepository : RepositoryBase<Project>, IProjectRepository
 
     public async Task<Project?> GetProjectById(Guid id) => 
         await FindByCondition(p => p.Id == id)
-            .Include(p => p.Owner)
             .Include(p => p.Users)
             .Include(p => p.Roles)
-            .Include(p => p.Chat)
-            .ThenInclude(c => c.Messages)
             .Include(p => p.Stages.OrderBy(s => s.Index))
             .ThenInclude(p => p.Tasks.OrderBy(t => t.Index))
             .ThenInclude(t => t.Comments)

@@ -5,14 +5,20 @@ namespace Rindo.Domain.DTO;
 
 public class ProjectOnReturnDto
 {
-    public Guid Id { get; set;}
-    public string Name { get; set; } = default!;
-    public string Description { get; set; } = default!;
+    public Guid Id { get; init;}
+    public string Name { get; init; } = default!;
+    
+    public string Description { get; init; } = default!;
+    
     public string InviteLink { get; init; } = default!;
-    public UserDto Owner { get; set; } 
-    public Chat Chat { get; set; } 
-    public IEnumerable<UserDto> Users { get; set; } 
-    public IEnumerable<RoleDto> Roles { get; set; } 
-    public DateOnly StartDate { get; set; } 
-    public DateOnly FinishDate { get; set; } 
+    
+    public Guid OwnerId { get; init; }
+    
+    public IEnumerable<UserDto> Users { get; init; } = default!;
+    
+    public IEnumerable<RoleDto> Roles { get; init; } = default!;
+    
+    public DateOnly StartDate { get; init; } 
+    
+    public DateOnly FinishDate { get; init; } 
 }

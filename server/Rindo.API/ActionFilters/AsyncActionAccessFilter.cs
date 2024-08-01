@@ -18,7 +18,7 @@ public class AsyncActionAccessFilter : IAsyncActionFilter
 
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        var token = context.HttpContext?.Request.Cookies["_rindo"];
+        var token = context.HttpContext.Request.Cookies["_rindo"];
         var handler = new JwtSecurityTokenHandler();
         var jwtSecurityToken = handler.ReadJwtToken(token);
         var userId = jwtSecurityToken.Claims.First(c => c.Type == "userId").Value;
@@ -26,19 +26,17 @@ public class AsyncActionAccessFilter : IAsyncActionFilter
         {
             var project = await _context.Projects
                 .Include(project => project.Users)
-                .Include(project => project.Owner)
                 .FirstOrDefaultAsync(p => p.Id == (Guid)id);
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == Guid.Parse(userId));
-            if (project.Users.Contains(user) || project.Owner.Id.Equals(user.Id)) await next();
+            if (project.Users.Contains(user) || project.OwnerId.Equals(user.Id)) await next();
         }
         if (context.ActionArguments.TryGetValue("projectId", out var projectId))
         {
             var project = await _context.Projects
                 .Include(project => project.Users)
-                .Include(project => project.Owner)
                 .FirstOrDefaultAsync(p => p.Id == (Guid)projectId);
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == Guid.Parse(userId));
-            if (project.Users.Contains(user) || project.Owner.Id.Equals(user.Id)) await next();
+            if (project.Users.Contains(user) || project.OwnerId.Equals(user.Id)) await next();
         }
         context.Result = new BadRequestResult();
     }

@@ -30,13 +30,13 @@ public static class DependencyInjection
     {
         var jwtOptions = configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>();
         services.AddDbContext<RindoDbContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("Database"),
+            options.UseNpgsql(configuration.GetConnectionString("DbConnectionString"),
                 b => b.MigrationsAssembly("Rindo.API")));
         services.AddHttpContextAccessor();
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
-                options.TokenValidationParameters = new TokenValidationParameters()
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = false,
                     ValidateAudience = false,
@@ -56,8 +56,8 @@ public static class DependencyInjection
                 };
             });
         services.AddAuthorization();
-        services.AddScoped<IUserProjectRoleRepository, UserProjectRoleRepository>();
-        services.AddScoped<IProjectRepository, ProjectRepository>();
+        services.AddScoped<ProjectRepository>();
+        services.AddScoped<IProjectRepository, CachedProjectRepository>();
         services.AddScoped<IChatRepository, ChatRepository>();
         services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
         services.AddScoped<ITaskCommentRepository, TaskCommentRepository>();

@@ -10,12 +10,9 @@ public class MappingProfile : Profile
     {
         CreateMap<Project, ProjectOnReturnDto>()
             .ReverseMap()
-            .ForMember(p => p.ChatId,
-                condition =>
-                    condition.MapFrom(p => p.Chat.Id))
             .ForMember(p => p.OwnerId,
                 condition =>
-                    condition.MapFrom(p => p.Owner.Id));
+                    condition.MapFrom(p => p.OwnerId));
         CreateMap<Project, ProjectOnCreateDto>()
             .ReverseMap();
         CreateMap<UserDtoSignUp, User>().ReverseMap();

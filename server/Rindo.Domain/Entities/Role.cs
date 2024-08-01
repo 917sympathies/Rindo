@@ -9,8 +9,8 @@ public class Role
     public string Name { get; set; } = default!;
     public string Color { get; set; } = default!;
     [IgnoreDataMember]
-    public IEnumerable<User> Users { get; set; } = new List<User>();
-    public ICollection<UserProjectRole> UserProjectRoles { get; set; } = default!;
+    public ICollection<User> Users { get; set; } = new List<User>();
+    //public ICollection<UserProjectRole> UserProjectRoles { get; set; } = default!;
     public Guid ProjectId { get; set; }
     public bool CanAddTask { get; set; }
     public bool CanModifyTask { get; set; }

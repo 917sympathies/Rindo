@@ -69,7 +69,9 @@ public class UserService : IUserService
         if (project is null) return Error.NotFound("Такого проекта не существует");
         
         var users = project.Users.ToList();
-        users.Add(project.Owner);
+        var owner = await _context.Users.FirstOrDefaultAsync(u => u.Id == project.OwnerId);
+        users.Add(owner);
+        //users.Add(project.Owner);
         return _mapper.Map<UserDto[]>(users);
     }
 

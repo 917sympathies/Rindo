@@ -13,21 +13,6 @@ public class RindoDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<UserProjectRole>()
-            .HasOne(e => e.User)
-            .WithMany(u => u.UserProjectRoles)
-            .HasForeignKey(e => e.UserId);
-        
-        modelBuilder.Entity<UserProjectRole>()
-            .HasOne(e => e.Project)
-            .WithMany(u => u.UserProjectRoles)
-            .HasForeignKey(e => e.ProjectId);
-        
-        modelBuilder.Entity<UserProjectRole>()
-            .HasOne(e => e.Role)
-            .WithMany(u => u.UserProjectRoles)
-            .HasForeignKey(e => e.RoleId);
-        
         modelBuilder.Entity<Chat>()
             .HasMany(c => c.Messages)
             .WithOne(c => c.Chat)
@@ -48,14 +33,9 @@ public class RindoDbContext : DbContext
             .WithOne()
             .HasForeignKey(p => p.ProjectId);
 
-        modelBuilder.Entity<Project>()
-            .HasOne(p => p.Chat)
-            .WithOne()
-            .HasForeignKey<Project>(p => p.ChatId);
-
-        modelBuilder.Entity<Project>()
-            .HasMany(p => p.Users)
-            .WithMany();
+        modelBuilder.Entity<Chat>()
+            .HasOne<Project>()
+            .WithOne();
 
         modelBuilder.Entity<Project>()
             .HasMany(p => p.Roles)
@@ -66,11 +46,6 @@ public class RindoDbContext : DbContext
             .HasMany(r => r.Users)
             .WithMany();
         
-        modelBuilder.Entity<User>()
-            .HasMany(u => u.Projects)
-            .WithOne(p => p.Owner)
-            .HasForeignKey(p => p.OwnerId);
-
         modelBuilder.Entity<User>()
             .HasMany(u => u.Invitations)
             .WithOne()
@@ -102,8 +77,6 @@ public class RindoDbContext : DbContext
     public DbSet<TaskComment> TaskComments { get; init; }
     
     public DbSet<Role> Roles { get; init; }
-    
-    public DbSet<UserProjectRole> UserProjectRoles { get; init; }
     
     public DbSet<Tag> Tags { get; init; }
     
