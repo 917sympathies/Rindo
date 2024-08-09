@@ -3,7 +3,7 @@ using Rindo.Domain.Common;
 using Rindo.Domain.Repositories;
 using Rindo.Infrastructure.Models;
 
-namespace Rindo.Infrastructure.Services;
+namespace Application.Services;
 
 public class ChatService : IChatService
 {

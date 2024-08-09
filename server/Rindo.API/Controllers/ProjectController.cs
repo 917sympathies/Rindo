@@ -2,7 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Rindo.API.Filters;
+using Rindo.API.ActionFilters;
 using Rindo.Domain.DTO;
 using Rindo.Domain.Entities;
 

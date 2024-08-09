@@ -3,7 +3,7 @@ using Rindo.Domain.Entities;
 using Rindo.Domain.Repositories;
 using Rindo.Infrastructure.Models;
 
-namespace Rindo.Infrastructure.Services;
+namespace Application.Services;
 
 public class CommentService : ICommentService
 {
@@ -22,8 +22,7 @@ public class CommentService : ICommentService
     
     public async Task<TaskComment> AddComment(Guid userId, Guid taskId, string content)
     {
-        var user = (await _userService.GetUserById(userId)).Value;
-        var comment = new TaskComment() { TaskId = taskId, UserId = userId, Content = content, Time = DateTime.UtcNow};
+        var comment = new TaskComment { TaskId = taskId, UserId = userId, Content = content, Time = DateTime.UtcNow};
         await _commentRepository.CreateComment(comment);
         await _context.SaveChangesAsync();
         return comment;

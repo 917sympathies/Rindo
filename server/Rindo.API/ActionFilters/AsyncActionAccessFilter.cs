@@ -1,11 +1,10 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Rindo.Infrastructure.Models;
 
-namespace Rindo.API.Filters;
+namespace Rindo.API.ActionFilters;
 
 public class AsyncActionAccessFilter : IAsyncActionFilter
 {

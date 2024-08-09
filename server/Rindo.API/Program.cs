@@ -1,9 +1,11 @@
+using Application;
 using AutoMapper;
-using Rindo.API.Filters;
+using Rindo.API.ActionFilters;
 using Rindo.Chat;
-using Rindo.Infrastructure.DependencyInjection;
+using Rindo.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
 
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
@@ -19,7 +21,10 @@ builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true
 builder.Services.AddCors(options =>
     options.AddPolicy("CorsPolicy", 
         conf => conf.AllowAnyMethod().AllowAnyHeader().AllowCredentials().SetIsOriginAllowed(_ => true)));
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services
+    .AddInfrastructure(configuration)
+    .AddApplication();
+builder.Services.AddJwt(configuration);
 builder.Services.AddScoped<AsyncActionAccessFilter>();
 builder.Services.AddSignalR();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);

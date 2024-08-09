@@ -6,7 +6,7 @@ using Rindo.Infrastructure.Models;
 using Task = System.Threading.Tasks.Task;
 using ProjectTask = Rindo.Domain.Entities.Task;
 
-namespace Rindo.Infrastructure.Services;
+namespace Application.Services;
 
 public class TaskService : ITaskService
 {

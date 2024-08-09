@@ -5,9 +5,10 @@ using Rindo.Domain.Common;
 using Rindo.Domain.DTO;
 using Rindo.Domain.Entities;
 using Rindo.Domain.Repositories;
+using Rindo.Infrastructure;
 using Rindo.Infrastructure.Models;
 
-namespace Rindo.Infrastructure.Services;
+namespace Application.Services;
 
 public class UserService : IUserService
 {
@@ -75,7 +76,7 @@ public class UserService : IUserService
         return _mapper.Map<UserDto[]>(users);
     }
 
-    public async Task<Result<Tuple<User, string>>> SignUpUser(UserDtoSignUp userDtoSignUp)
+    public async Task<Result> SignUpUser(UserDtoSignUp userDtoSignUp)
     {
         var isUserExist = await _userRepository.GetUserByUsername(userDtoSignUp.Username) is not null;
         if (isUserExist) return Error.Validation("Пользователь с таким именем уже существует");
@@ -86,11 +87,10 @@ public class UserService : IUserService
         await _userRepository.CreateUser(user);
         await _context.SaveChangesAsync();
         
-        var token = _jwtProvider.GenerateToken(user);
-        return Tuple.Create(user, token);
+        return Result.Success();
     }
 
-    public async Task<Result<Tuple<User, string>>> AuthUser(UserDtoAuth userDtoAuth)
+    public async Task<Result<Tuple<UserDto, string>>> AuthUser(UserDtoAuth userDtoAuth)
     {
         var user = await _userRepository.GetUserByUsername(userDtoAuth.Username);
         if (user is null) return Error.NotFound("Пользователя с таким именем пользователя не существует");
@@ -103,6 +103,7 @@ public class UserService : IUserService
         }
 
         var token = _jwtProvider.GenerateToken(user);
-        return Tuple.Create(user, token);
+        var userDto = _mapper.Map<UserDto>(user);
+        return Tuple.Create(userDto, token);
     }
 }

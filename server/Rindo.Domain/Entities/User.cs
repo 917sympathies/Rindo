@@ -17,6 +17,6 @@ public class User
     public ICollection<Invitation> Invitations { get; set; } = default!;
     public override bool Equals(object? obj)
     {
-        return obj is User user && user.Id.Equals(this.Id);
+        return obj is User user && user.Id.Equals(Id);
     }
 }
