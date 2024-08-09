@@ -5,7 +5,7 @@ using Rindo.Domain.Entities;
 using Rindo.Infrastructure.Models;
 using Task = System.Threading.Tasks.Task;
 
-namespace Rindo.Infrastructure.Services;
+namespace Application.Services;
 
 public class InvitationService : IInvitationService
 {

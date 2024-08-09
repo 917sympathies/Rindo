@@ -6,7 +6,7 @@ using Rindo.Domain.Entities;
 using Rindo.Domain.Repositories;
 using Rindo.Infrastructure.Models;
 
-namespace Rindo.Infrastructure.Services;
+namespace Application.Services;
 
 public class StageService : IStageService
 {

@@ -4,7 +4,7 @@ using Rindo.Domain.Common;
 using Rindo.Domain.Entities;
 using Rindo.Infrastructure.Models;
 
-namespace Rindo.Infrastructure.Services;
+namespace Application.Services;
 
 public class TagService : ITagService
 {
