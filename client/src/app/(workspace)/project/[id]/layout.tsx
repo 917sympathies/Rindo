@@ -28,7 +28,7 @@ export default function Layout({ children }: Props) {
   const selectorSelected =
     "bg-white text-black py-0 px-[0.4rem] my-0 mx-[0.2rem] justify-center flex flex-row items-center border-b-[0.1px] border-b-black/10";
   const selector =
-    "text-[rgb(102,102,102)] py-0 px-[0.4rem] my-0 mx-[0.1rem] rounded-[6px] border-[0.1px] border-black border-opacity-[0.03] justify-center flex flex-row items-center hover:bg-[rgb(1,1,1)] hover:bg-opacity-[0.03] ease-in-out duration-300";
+    "text-[rgb(102,102,102)] py-0 px-[0.4rem] my-0 mx-[0.1rem] rounded-t-[6px] border-b-[0.1px] border-black border-opacity-[0.03] justify-center flex flex-row items-center hover:bg-[rgb(1,1,1)] hover:bg-opacity-[0.03] ease-in-out duration-300";
   useEffect(() => {
     getRights();
   }, [id]);

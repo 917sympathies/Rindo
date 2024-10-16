@@ -6,7 +6,7 @@ export default function Layout({
 }: PropsWithChildren<unknown>) {
 
   return (
-    <div className="max-w-[100vw] max-h-[100vh] w-[100vw] h-[100vh] grid grid-cols-[2fr_10fr] flex-nowrap">
+    <div className="max-w-[100vw] max-h-[100vh] w-[100vw] h-[100vh] grid grid-cols-[2fr_12fr] flex-nowrap">
       <Sidebar
       />
       {children}
