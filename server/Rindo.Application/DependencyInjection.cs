@@ -2,16 +2,11 @@
 using Application.Interfaces.Services;
 using Application.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Rindo.Domain.Repositories;
+using Rindo.Domain.Services;
 using Rindo.Infrastructure;
-using Rindo.Infrastructure.Jwt;
-using Rindo.Infrastructure.Models;
-using Rindo.Infrastructure.Repositories;
 using Task = System.Threading.Tasks.Task;
 
 namespace Application;
@@ -30,6 +25,7 @@ public static class DependencyInjection
         services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<IInvitationService, InvitationService>();
         services.AddScoped<ITagService, TagService>();
+        services.AddScoped<IAuthorizationService, AuthorizationService>();
         return services;
     }
 
@@ -37,7 +33,7 @@ public static class DependencyInjection
     {
         var jwtOptions = configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>();
         if (jwtOptions is null)
-            throw new InvalidOperationException("Вы не установили настройки JWT в файле конфигурации");
+            throw new InvalidOperationException("You haven't set JWT settings in configuration file");
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
