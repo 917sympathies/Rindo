@@ -21,7 +21,7 @@ import {
 import { Avatar } from "../ui/avatar";
 import { X } from "lucide-react";
 import React from "react";
-import { IProject, ITask, IUser } from "@/types";
+import {IProject, ITask, ITaskDto, IUser} from "@/types";
 import dayjs from "dayjs";
 import { useParams } from "next/navigation";
 import { IUserInfo } from "@/types";
@@ -35,7 +35,7 @@ import {
 import { AddTask, GetUsersByProjectId } from "@/requests";
 
 interface IAddTaskModalProps {
-  stageId: string | undefined;
+  stageId: string;
   setFetch: Dispatch<SetStateAction<boolean>>;
   onClose: () => void;
 }
@@ -111,7 +111,7 @@ IAddTaskModalProps) => {
       setErrorMessage("Вы выбрали некорректные даты!");
       return;
     }
-    const taskDto = {
+    const taskDto: ITaskDto = {
       name: task.name,
       description: task.description,
       projectId: id,
@@ -120,9 +120,8 @@ IAddTaskModalProps) => {
       responsibleUserId: responsibleUser,
       startDate: startDate,
       finishDate: finishDate,
-    } as ITask;
-    const response = await AddTask(taskDto);
-    sendSignal();
+    };
+    const response = await AddTask(taskDto).then(() => sendSignal());
     setFetch(true);
     onClose();
   };

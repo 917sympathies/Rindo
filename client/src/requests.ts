@@ -1,13 +1,13 @@
 import {
-  IProjectDto,
-  IRoleDto,
-  IStage,
-  IStageDto,
-  ITask,
-  IUserRights,
+    IProjectDto,
+    IRoleDto,
+    IStage,
+    IStageDto,
+    ITaskDto,
+    IUserRights,
 } from "./types";
 
-const baseUrl = "";
+const baseUrl = "http://localhost:5000";
 
 export const GetProjectInfoHeader = async (id: string) => {
   const response = await fetch(`${baseUrl}/api/project/${id}/header`, {
@@ -56,7 +56,7 @@ export const GetTasksByUserId = async (userId: string) => {
 
 export const AuthUser = async (userName: string, password: string) => {
   const authInfo = { username: userName, password: password };
-  const response = await fetch(`${baseUrl}/api/user/auth`, {
+  const response = await fetch(`${baseUrl}/api/authorization/auth`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -72,7 +72,7 @@ export const SignUpUser = async (
   firstName: string,
   lastName: string
 ) => {
-  const response = await fetch(`${baseUrl}/api/user/signup`, {
+  const response = await fetch(`${baseUrl}/api/authorization/signup`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -294,7 +294,7 @@ export const GetUsersByProjectId = async (projectId: string) => {
   return response;
 };
 
-export const AddTask = async (task: ITask) => {
+export const AddTask = async (task: ITaskDto) => {
   const response = await fetch(`${baseUrl}/api/task`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

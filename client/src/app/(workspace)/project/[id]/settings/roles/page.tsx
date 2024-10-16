@@ -110,7 +110,7 @@ export default function Page() {
 
   const handleSaveRole = async () => {
     const responseNameChange = await SaveRoleName(selectedRole.id, selectedRole.name);
-    const rights = {
+    const rights: IUserRights = {
       canAddRoles: selectedRole.canAddRoles,
       canAddStage: selectedRole.canAddStage,
       canAddTask: selectedRole.canAddTask,
@@ -123,17 +123,17 @@ export default function Page() {
       canModifyStage: selectedRole.canModifyStage,
       canModifyTask: selectedRole.canModifyTask,
       canUseChat: selectedRole.canUseChat,
-    } as IUserRights;
+    };
     const response = await SaveRoleRights(selectedRole.id, rights);
     setFetch(true);
   };
 
   const handleCreateRole = async () => {
-    const role = {
+    const role: IRoleDto = {
       name: newRole === "" ? "Новая роль" : newRole,
       projectId: id,
       color: "#FFFF",
-    } as IRoleDto;
+    };
     const response = await CreateRole(role);
     setFetch(true);
     setNewRole("");

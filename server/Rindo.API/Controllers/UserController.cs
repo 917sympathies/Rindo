@@ -1,25 +1,21 @@
 using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Rindo.Domain.DTO;
 
 namespace Rindo.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly IUserService _service;
-        
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserController(IUserService service, IHttpContextAccessor httpContextAccessor)
+        public UserController(IUserService service)
         {
             _service = service;
-            _httpContextAccessor = httpContextAccessor;
         }
-
-        [Authorize]
+        
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetUserById(Guid id)
         {
@@ -28,7 +24,6 @@ namespace Rindo.API.Controllers
             return Ok(result.Value);
         }
         
-        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetUsersByProjectId(Guid projectId)
         {
@@ -37,24 +32,6 @@ namespace Rindo.API.Controllers
             return Ok(result.Value);
         }
         
-        [HttpPost("signup")]
-        public async Task<IActionResult> SignUpUser([FromBody]UserDtoSignUp userDtoSignUp)
-        {
-            var result = await _service.SignUpUser(userDtoSignUp);
-            if (!result.IsSuccess) return BadRequest(result.Error);
-            return Ok(result.IsSuccess);
-        }
-
-        [HttpPost("auth")]
-        public async Task<IActionResult> AuthUser([FromBody]UserDtoAuth userAuth)
-        {
-            var result = await _service.AuthUser(userAuth);
-            if (!result.IsSuccess) return BadRequest(result.Error);
-            _httpContextAccessor.HttpContext?.Response.Cookies.Append("_rindo", result.Value.Item2);
-            return Ok(result.Value.Item1);
-        }
-
-        [Authorize]
         [HttpPut("{id:guid}/firstName")]
         public async Task<IActionResult> ChangeUserFirstName(Guid id, string firstName)
         {
@@ -63,7 +40,6 @@ namespace Rindo.API.Controllers
             return Ok();
         }
         
-        [Authorize]
         [HttpPut("{id:guid}/lastName")]
         public async Task<IActionResult> ChangeUserLastName(Guid id, string lastName)
         {

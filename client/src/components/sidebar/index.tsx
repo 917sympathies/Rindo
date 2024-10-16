@@ -73,7 +73,7 @@ const Sidebar = ({}: ISidebarProps) => {
         setProjects(projects?.filter((p) => p.id !== projectId));
       });
       conn.on(`ReceiveAcceptInvite${user?.id}`, (projectId, name) => {
-        const project = { id: projectId, name: name } as IProjectInfo;
+        const project: IProjectInfo = { id: projectId, name: name };
         setProjects([...projects, project]);
       });
       conn.on(`ReceiveChangeProjectName`, (projectId, name) => {
@@ -101,7 +101,7 @@ const Sidebar = ({}: ISidebarProps) => {
         router.push("/login");
         redirect("/login");
       }
-      const decoded = jwtDecode(token) as ICookieInfo;
+      const decoded: ICookieInfo = jwtDecode(token);
       const response = await GetProjectsByUserId(decoded.userId);
       if (response.status === 401 || response.status === 404) {
         removeCookie("_rindo", { path: "/" });
@@ -162,11 +162,11 @@ const Sidebar = ({}: ISidebarProps) => {
         <li className="items-center justify-between grid grid-cols-[9fr_1fr]">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <div className="m-0 p-0 text-[#727376] font-inherit ml-2 flex flex-row items-center gap-2 p-1 rounded-lg hover:bg-gray-50 ease-in-out duration-300 dark:hover:bg-black/20">
-                <Avatar className="rounded-lg bg-blue-400 bg-[#4198FF] text-white w-[2.5vh] h-[2.5vh] text-[0.6rem] m-[0.1rem] ml-[0.4rem] flex justify-center items-center">
+              <div className="m-0 text-[#727376] font-inherit flex flex-row items-center gap-2 p-1 rounded-lg hover:bg-gray-50 ease-in-out duration-300 dark:hover:bg-black/20 cursor-pointer">
+                <Avatar className="rounded-lg bg-[#4198FF] text-white w-[2.5vh] h-[2.5vh] text-[0.6rem] m-[0.1rem] flex justify-center items-center">
                   {user?.username?.slice(0, 1)}
                 </Avatar>
-                <h1 className="m-0 p-0 text-[1.1rem]">{user?.username}</h1>
+                <h1 className="m-0 p-0 text-[1.1rem] flex-grow text-start">{user?.username}</h1>
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56 dark:bg-[#111] dark:border-black/20">
@@ -199,7 +199,7 @@ const Sidebar = ({}: ISidebarProps) => {
           </DropdownMenu>
           <ModeToggle />
         </li>
-        <li>
+        <li className="mt-6">
           <div className="flex items-center justify-between">
             <div className="text-[#727376] font-medium uppercase text-[1rem]">
               проекты
@@ -226,22 +226,18 @@ const Sidebar = ({}: ISidebarProps) => {
             </div>
           ))}
         <Button
-          className="w-full rounded-md text-white bg-[#3A86FF] hover:bg-blue-800 ease-in-out duration-300"
+          className="w-full rounded-md text-white bg-[#3A86FF] hover:bg-blue-800 ease-in-out duration-300 justify-start"
           onClick={() => setIsOpen(true)}
         >
-          <div className="flex flex-row items-center">
-            <Plus className="mr-[6px]" size={18} />
+          <div className="flex flex-row items-center gap-2">
             <span className="font-normal text-[1rem]">Новый проект</span>
+            <Plus className="mr-[6px]" size={18} />
           </div>
         </Button>
-        <div
-          className="flex flex-row items-center 
-        p-4 
-        text-[1rem] text-[#727376] justify-center w-full dark:text-white"
-        >
+        <div className="flex flex-row items-center justify-start p-4 text-[1rem] text-[#727376] w-full dark:text-white">
           <Link href="/tasks" className="flex flex-row items-center gap-2">
+            <span>Мои задачи</span>
             <ClipboardList size={18}></ClipboardList>
-            Мои задачи
           </Link>
         </div>
       </ul>

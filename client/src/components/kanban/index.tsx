@@ -53,7 +53,10 @@ export default function Kanban() {
 
   const handleAddStage = async () => {
     setCanAddStage(false);
-    var stage = {name: newStageName, projectId: id} as IStageDto;
+    const stage: IStageDto = {
+      name: newStageName,
+      projectId: id
+    };
     const response = await AddStage(stage)
     setFetch(true);
   }
@@ -72,12 +75,12 @@ export default function Kanban() {
   }
 
   async function onDragEnd({ source, destination }: DropResult) {
-    if (!source || !destination) return;
+    if (!source || !destination || !stages) return;
     if (source.droppableId === destination.droppableId) return;
-    const tasksSource = stages?.filter(
+    const tasksSource = stages.filter(
       (st) => st.id === source.droppableId
     )[0].tasks;
-    const item = tasksSource?.splice(source.index, 1)[0] as ITask;
+    const item: ITask = tasksSource.splice(source.index, 1)[0];
     const tasksDest = stages?.filter(
       (st) => st.id === destination?.droppableId
     )[0];
