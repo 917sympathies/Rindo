@@ -68,8 +68,8 @@ export default function Chat({
 
   try {
     if(conn){
-    conn.on(`ReceiveProjectChat${chatId}`, (id, username, message) => {
-      const str = {id: id, username: username, content: message} as IMessage;
+    conn.on(`ReceiveProjectChat${chatId}`, (id, username, message, chatId, time) => {
+      const str: IMessage = {id: id, username: username, content: message, chatId: chatId, time: time };
       setChatMessages([...chatMessages, str])
     });
     }
@@ -80,8 +80,7 @@ export default function Chat({
   const sendMessage = async () => {
     if(!conn) return;
     if (conn.state === HubConnectionState.Connected) {
-      conn.invoke("SendProjectChat", user?.id, message, chatId);
-      setMessage("");
+      conn.invoke("SendProjectChat", user?.id, message, chatId).then(() => setMessage(""));
     } else {
       console.log("sendMsg: " + conn.state);
     }

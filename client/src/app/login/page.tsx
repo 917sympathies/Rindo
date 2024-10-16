@@ -46,7 +46,7 @@ export default function Login() {
     if (cookies["_rindo"]) 
     {
       const token = cookies["_rindo"];
-      const decoded = jwtDecode(token) as ICookieInfo;
+      const decoded: ICookieInfo = jwtDecode(token);
       localStorage.setItem("token", JSON.stringify(decoded));
     }
   };
@@ -55,7 +55,7 @@ export default function Login() {
     if (cookies["_rindo"]) 
     {
       const token = cookies["_rindo"];
-      const decoded = jwtDecode(token) as ICookieInfo;
+      const decoded: ICookieInfo = jwtDecode(token);
       if (Date.now() >= decoded.exp * 1000)
       {
         removeCookie("_rindo", { path: "/" });

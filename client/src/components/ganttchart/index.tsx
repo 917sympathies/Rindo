@@ -65,7 +65,7 @@ const ToolTipContent: React.FC<IToolTipContent> = ({task}) => {
   )
 }
 
-const ExampleTask = [{
+const ExampleTask: Task[] = [{
     start: new Date(),
         end: new Date(),
         name: 'Пример',
@@ -74,7 +74,7 @@ const ExampleTask = [{
         progress: 50,
         isDisabled: true,
         styles: { progressColor: 'rgba(102, 153, 255, 01)', progressSelectedColor: '#ff9e0d' }
-}] as Task[];
+}];
 
 
 interface ITaskDto{

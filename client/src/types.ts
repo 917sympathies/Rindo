@@ -51,6 +51,17 @@ export interface ITask {
     finishDate: string | null
 }
 
+export interface ITaskDto {
+    name: string,
+    description: string,
+    projectId: string,
+    stageId: string,
+    responsibleUserId: string | null,
+    comments: ITaskComment[] | null,
+    startDate: string | null,
+    finishDate: string | null
+}
+
 export interface ITaskComment{
     id: string,
     content: string,

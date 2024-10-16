@@ -176,7 +176,7 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
     setTask(data.task);
     setTaskComments(data.comments);
 
-    const usersArr = (await getUsers(params.id)) as IUser[];
+    const usersArr: IUser[] = await getUsers(params.id);
     const usersWithoutResponsible = usersArr.filter(
       (us) => us.id !== data.task.responsibleUserId
     );
