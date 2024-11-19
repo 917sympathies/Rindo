@@ -1,6 +1,6 @@
 ﻿using Rindo.Domain.Common;
 using Rindo.Domain.DTO;
-using Rindo.Domain.Entities;
+using Rindo.Domain.Models;
 
 namespace Application.Interfaces.Services;
 

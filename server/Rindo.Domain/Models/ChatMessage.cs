@@ -1,7 +1,6 @@
 ﻿using System.Runtime.Serialization;
-using Rindo.Domain.DTO;
 
-namespace Rindo.Domain.Entities;
+namespace Rindo.Domain.Models;
 
 public class ChatMessage
 {

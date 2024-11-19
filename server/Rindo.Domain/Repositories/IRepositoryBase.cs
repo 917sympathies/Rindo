@@ -2,7 +2,7 @@
 
 namespace Rindo.Domain.Repositories;
 
-public interface  IRepositoryBase <T>
+public interface IRepositoryBase <T>
 {
     Task CreateAsync(IEnumerable<T> entities);
     

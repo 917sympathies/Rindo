@@ -1,9 +1,4 @@
-﻿using System.Collections;
-using System.ComponentModel.DataAnnotations;
-using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
-
-namespace Rindo.Domain.Entities;
+﻿namespace Rindo.Domain.Models;
 
 public class Project
 {

@@ -1,5 +1,4 @@
 using Application;
-using AutoMapper;
 using Rindo.API.ActionFilters;
 using Rindo.Chat;
 using Rindo.Infrastructure;
@@ -27,7 +26,6 @@ builder.Services
 builder.Services.AddJwt(configuration);
 builder.Services.AddScoped<AsyncActionAccessFilter>();
 builder.Services.AddSignalR();
-builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 var app = builder.Build();
 

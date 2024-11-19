@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using Rindo.Domain.Entities;
+using Rindo.Domain.Models;
 using Rindo.Domain.Repositories;
 using Rindo.Infrastructure.Models;
 using Task = System.Threading.Tasks.Task;

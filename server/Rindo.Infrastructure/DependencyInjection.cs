@@ -30,7 +30,7 @@ public static class DependencyInjection
     {
         
         services.AddDbContext<RindoDbContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("Database"),
+            options.UseNpgsql(configuration.GetConnectionString("DbConnectionString"),
                 b => b.MigrationsAssembly("Rindo.API")));
         services.AddHttpContextAccessor();
         

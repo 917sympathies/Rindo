@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces.Services;
 using Rindo.Domain.Common;
+using Rindo.Domain.DTO;
 using Rindo.Domain.Repositories;
 using Rindo.Infrastructure.Models;
 
@@ -17,15 +18,22 @@ public class ChatService : IChatService
         _context = context;
     }
     
-    public async Task<Result<object>> GetChatById(Guid id)
+    public async Task<Result<ChatDto>> GetChatById(Guid id)
     {
         var chat = await _chatRepository.GetChatById(id);
-        if (chat is null) return Error.NotFound("Такого чата не существует");
-        var messages = chat.Messages.Select(msg => new
+        if (chat is null) return Error.NotFound("Chat with this id doesn't exists");
+        
+        return new ChatDto
         {
-            msg.Id, msg.ChatId, msg.Content,
-            username = _context.Users.FirstOrDefault(user => user.Id == msg.SenderId)!.Username, msg.Time
-        });
-        return new {chat.Id,  messages};
+            Id = chat.Id,
+            Messages = chat.Messages.Select(x => new MessageDto
+            {
+                Id = x.Id,
+                ChatId = x.ChatId,
+                Content = x.Content,
+                Time = x.Time,
+                Username = _context.Users.FirstOrDefault(user => user.Id == x.SenderId)!.Username
+            }).ToArray()
+        };
     }
 }

@@ -1,9 +1,9 @@
 ﻿using Application.Interfaces.Services;
-using AutoMapper;
+using Application.Mapping;
 using Microsoft.EntityFrameworkCore;
 using Rindo.Domain.Common;
 using Rindo.Domain.DTO;
-using Rindo.Domain.Entities;
+using Rindo.Domain.Models;
 using Rindo.Domain.Repositories;
 using Rindo.Infrastructure.Models;
 
@@ -18,14 +18,11 @@ public class RoleService : IRoleService
     
     private readonly IProjectRepository _projectRepository;
     
-    private readonly IMapper _mapper;
-    
     private readonly RindoDbContext _context;
     
-    public RoleService(IRoleRepository roleRepository, IMapper mapper, IUserRepository userRepository, IProjectRepository projectRepository, RindoDbContext context)
+    public RoleService(IRoleRepository roleRepository, IUserRepository userRepository, IProjectRepository projectRepository, RindoDbContext context)
     {
         _roleRepository = roleRepository;
-        _mapper = mapper;
         _userRepository = userRepository;
         _projectRepository = projectRepository;
         _context = context;
@@ -33,7 +30,7 @@ public class RoleService : IRoleService
     
     public async Task<Result> CreateRole(RoleDtoOnCreate roleDto)
     {
-        var role = _mapper.Map<Role>(roleDto);
+        var role = roleDto.MapToModel();
         await _roleRepository.CreateRole(role);
         await _context.SaveChangesAsync();
         return Result.Success();
@@ -42,7 +39,7 @@ public class RoleService : IRoleService
     public async Task<Result> DeleteRole(Guid id)
     {
         var role = await _context.Roles.FirstOrDefaultAsync(r => r.Id == id);
-        if(role is null) return Result.Failure(Error.NotFound("Нет такой роли!"));
+        if(role is null) return Result.Failure(Error.NotFound("Role with this id doesn't exists"));
         await _roleRepository.DeleteRole(role);
         await _context.SaveChangesAsync();
         return Result.Success();
@@ -51,7 +48,7 @@ public class RoleService : IRoleService
     public async Task<Result> UpdateRoleName(Guid id, string name)
     {
         var role = await _context.Roles.FirstOrDefaultAsync(r => r.Id == id);
-        if(role is null) return Result.Failure(Error.NotFound("Нет такой роли!"));
+        if(role is null) return Result.Failure(Error.NotFound("User with this id doesn't exists"));
         role.Name = name;
         await _roleRepository.UpdateProperty(role, r => r.Name);
         await _context.SaveChangesAsync();
@@ -61,9 +58,9 @@ public class RoleService : IRoleService
     public async Task<Result> AddUserToRole(Guid id, Guid userId)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-        if(user is null) return Result.Failure(Error.NotFound("Нет такого пользователя!"));
+        if(user is null) return Result.Failure(Error.NotFound("User with this id doesn't exists"));
         var role = await _context.Roles.FirstOrDefaultAsync(r => r.Id == id);
-        if(role is null) return Result.Failure(Error.NotFound("Нет такой роли!"));
+        if(role is null) return Result.Failure(Error.NotFound("Role with this id doesn't exists"));
         role.Users.Add(user);
         await _context.SaveChangesAsync();
         return Result.Success();
@@ -72,9 +69,9 @@ public class RoleService : IRoleService
     public async Task<Result> RemoveUserFromRole(Guid id, Guid userId)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-        if(user is null) return Result.Failure(Error.NotFound("Нет такого пользователя!"));
+        if(user is null) return Result.Failure(Error.NotFound("User with this id doesn't exists"));
         var role = await _context.Roles.FirstOrDefaultAsync(r => r.Id == id);
-        if(role is null) return Result.Failure(Error.NotFound("Нет такой роли!"));
+        if(role is null) return Result.Failure(Error.NotFound("Role with this id doesn't exists"));
         
         await _context.Entry(role).Collection(p => p.Users).LoadAsync();
         role.Users.Remove(user);
@@ -86,7 +83,7 @@ public class RoleService : IRoleService
     public async Task<Result> UpdateRoleRights(Guid id, RolesRights rights)
     {
         var role = await _context.Roles.FirstOrDefaultAsync(r => r.Id == id);
-        if(role is null) return Result.Failure(Error.NotFound("Нет такой роли!"));
+        if(role is null) return Result.Failure(Error.NotFound("Role with this id doesn't exists"));
         role.CanAddRoles = rights.CanAddRoles;
         role.CanAddStage = rights.CanAddStage;
         role.CanDeleteStage = rights.CanDeleteStage;
@@ -136,7 +133,7 @@ public class RoleService : IRoleService
     public async Task<IEnumerable<RoleDto>> GetRolesByProjectId(Guid projectId)
     {
         var roles = (await _roleRepository.GetRolesByProjectId(projectId)).ToList();
-        return _mapper.Map<IEnumerable<RoleDto>>(roles);
+        return roles.Select(x => x.MapToDto());
     }
 
     private async Task<IEnumerable<Role>> GetRolesForUser(Guid projectId)

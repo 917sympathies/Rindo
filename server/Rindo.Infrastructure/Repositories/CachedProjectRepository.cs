@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
-using Rindo.Domain.Entities;
+using Rindo.Domain.Models;
 using Rindo.Domain.Repositories;
 using Rindo.Infrastructure.Models;
 using Task = System.Threading.Tasks.Task;
@@ -11,16 +11,13 @@ namespace Rindo.Infrastructure.Repositories;
 public class CachedProjectRepository : IProjectRepository
 {
     private readonly ProjectRepository _decorated;
-
-    private readonly RindoDbContext _context;
     
     private readonly IDistributedCache _distributedCache;
 
-    public CachedProjectRepository(ProjectRepository decorated, IDistributedCache distributedCache, RindoDbContext context)
+    public CachedProjectRepository(ProjectRepository decorated, IDistributedCache distributedCache)
     {
         _decorated = decorated;
         _distributedCache = distributedCache;
-        _context = context;
     }
 
     public async Task CreateProject(Project project) =>

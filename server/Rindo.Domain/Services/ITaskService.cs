@@ -1,12 +1,11 @@
 ﻿using Rindo.Domain.Common;
+using Rindo.Domain.Models;
 
 namespace Application.Interfaces.Services;
 
-using ProjectTask = Rindo.Domain.Entities.Task;
-
 public interface ITaskService
 {
-    Task<Result> CreateTask(ProjectTask task);
+    Task<Result> CreateTask(ProjectTask projectTask);
     Task<Result> UpdateName(Guid id, string name);
     Task<Result> UpdateDescription(Guid id,string description);
     Task<Result> UpdateResponsible(Guid id, Nullable<Guid> userId);

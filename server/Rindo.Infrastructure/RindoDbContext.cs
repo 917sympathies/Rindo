@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Rindo.Domain.Entities;
-using Task = Rindo.Domain.Entities.Task;
+using Rindo.Domain.Models;
 
 namespace Rindo.Infrastructure.Models;
 
@@ -18,9 +17,9 @@ public class RindoDbContext : DbContext
             .WithOne(c => c.Chat)
             .HasForeignKey(b => b.ChatId);
         
-        modelBuilder.Entity<Task>()
+        modelBuilder.Entity<ProjectTask>()
             .HasMany(c => c.Comments)
-            .WithOne(c => c.Task)
+            .WithOne(c => c.ProjectTask)
             .HasForeignKey(c => c.TaskId);
         
         modelBuilder.Entity<Stage>()
@@ -72,7 +71,7 @@ public class RindoDbContext : DbContext
     
     public DbSet<Project> Projects { get; init; }
     
-    public DbSet<Task> Tasks { get; init; }
+    public DbSet<ProjectTask> Tasks { get; init; }
     
     public DbSet<TaskComment> TaskComments { get; init; }
     

@@ -1,10 +1,10 @@
 ﻿using Application.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
 using Rindo.Domain.Common;
+using Rindo.Domain.Models;
 using Rindo.Domain.Repositories;
 using Rindo.Infrastructure.Models;
 using Task = System.Threading.Tasks.Task;
-using ProjectTask = Rindo.Domain.Entities.Task;
 
 namespace Application.Services;
 
@@ -20,13 +20,13 @@ public class TaskService : ITaskService
         _context = context;
     }
 
-    public async Task<Result> CreateTask(ProjectTask task)
+    public async Task<Result> CreateTask(ProjectTask projectTask)
     {
-        var projectTasks = await _taskRepository.GetTasksByProjectId(task.ProjectId);
-        task.Index = projectTasks.Count();
+        var projectTasks = await _taskRepository.GetTasksByProjectId(projectTask.ProjectId);
+        projectTask.Index = projectTasks.Count();
         try
         {
-            await _taskRepository.CreateTask(task);
+            await _taskRepository.CreateTask(projectTask);
             await _context.SaveChangesAsync();
         }
         catch (Exception e)
@@ -39,7 +39,7 @@ public class TaskService : ITaskService
     public async Task<Result> UpdateName(Guid id, string name)
     {
         var task = await _taskRepository.GetById(id);
-        if (task is null) return Result.Failure(Error.NotFound("Такой задачи не существует!"));
+        if (task is null) return Result.Failure(Error.NotFound("Task with this id doesn't exists"));
         task.Name = name;
         try
         {
@@ -56,7 +56,7 @@ public class TaskService : ITaskService
     public async Task<Result> UpdateDescription(Guid id, string description)
     {
         var task = await _taskRepository.GetById(id);
-        if (task is null) return Result.Failure(Error.NotFound("Такой задачи не существует!"));
+        if (task is null) return Result.Failure(Error.NotFound("Task with this id doesn't exists"));
         task.Description = description;
         try
         {
@@ -73,7 +73,7 @@ public class TaskService : ITaskService
     public async Task<Result> UpdateResponsible(Guid id, Guid? userId)
     {
         var task = await _taskRepository.GetById(id);
-        if (task is null) return Result.Failure(Error.NotFound("Такой задачи не существует!"));
+        if (task is null) return Result.Failure(Error.NotFound("Task with this id doesn't exists"));
         task.ResponsibleUserId = userId;
         try
         {
@@ -90,7 +90,7 @@ public class TaskService : ITaskService
     public async Task<Result> UpdateStartDate(Guid id, DateOnly date)
     {
         var task = await _taskRepository.GetById(id);
-        if (task is null) return Result.Failure(Error.NotFound("Такой задачи не существует!"));
+        if (task is null) return Result.Failure(Error.NotFound("Task with this id doesn't exists"));
         task.StartDate = date;
         try
         {
@@ -107,7 +107,7 @@ public class TaskService : ITaskService
     public async Task<Result> UpdateFinishDate(Guid id, DateOnly date)
     {
         var task = await _taskRepository.GetById(id);
-        if (task is null) return Result.Failure(Error.NotFound("Такой задачи не существует!"));
+        if (task is null) return Result.Failure(Error.NotFound("Task with this id doesn't exists"));
         task.FinishDate = date;
         try
         {
@@ -124,8 +124,8 @@ public class TaskService : ITaskService
     public async Task<Result> UpdateProgress(Guid id, string number)
     {
         var task = await _taskRepository.GetById(id);
-        if (task is null) return Result.Failure(Error.NotFound("Такой задачи не существует!"));
-        if (!int.TryParse(number, out var num)) return Result.Failure(Error.Failure("Это не число!"));
+        if (task is null) return Result.Failure(Error.NotFound("Task with this id doesn't exists"));
+        if (!int.TryParse(number, out var num)) return Result.Failure(Error.Failure("Invalid number"));
         task.Progress = num;
         try
         {
@@ -139,16 +139,16 @@ public class TaskService : ITaskService
         return Result.Success();
     }
 
-    public async Task UpdateTask(ProjectTask task)
+    public async Task UpdateTask(ProjectTask projectTask)
     {
-        await _taskRepository.UpdateTask(task);
+        await _taskRepository.UpdateTask(projectTask);
         await _context.SaveChangesAsync();
     }
 
     public async Task<Result> DeleteTask(Guid id)
     {
         var task = await _taskRepository.GetById(id);
-        if (task is null) return Result.Failure(Error.NotFound("Такой задачи не существует!"));
+        if (task is null) return Result.Failure(Error.NotFound("Task with this id doesn't exists"));
         try
         {
             await _taskRepository.DeleteTask(task);
@@ -183,7 +183,7 @@ public class TaskService : ITaskService
     public async Task<Result<object>> GetTaskById(Guid id)
     {
         var task = await _taskRepository.GetById(id);
-        if (task is null) return Error.NotFound("Такой задачи не существует!");
+        if (task is null) return Error.NotFound($"Task with this id doesn't exists {id}");
         var comments = _context.TaskComments.Where(cm => cm.TaskId == task.Id).Select(cm =>
             new
             {

@@ -1,4 +1,4 @@
-﻿using Rindo.Domain.Entities;
+﻿using Rindo.Domain.Models;
 
 namespace Rindo.Domain.DTO;
 

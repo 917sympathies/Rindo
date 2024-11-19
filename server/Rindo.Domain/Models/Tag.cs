@@ -1,4 +1,4 @@
-﻿namespace Rindo.Domain.Entities;
+﻿namespace Rindo.Domain.Models;
 
 public class Tag
 {

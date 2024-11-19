@@ -1,5 +1,5 @@
 ﻿using Rindo.Domain.Common;
-using Rindo.Domain.Entities;
+using Rindo.Domain.Models;
 using Task = System.Threading.Tasks.Task;
 namespace Application.Interfaces.Services;
 

@@ -22,7 +22,7 @@ public class RolesRights
             CanInviteUser = true;
             CanExcludeUser = true;
             CanUseChat = true;
-        };
+        }
     }
     public bool CanAddTask { get; set; }
     public bool CanModifyTask { get; set; }

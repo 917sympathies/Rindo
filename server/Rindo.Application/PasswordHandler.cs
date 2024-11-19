@@ -1,7 +1,8 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace Rindo.Infrastructure;
+//namespace Rindo.Infrastructure;
+namespace Application;
 
 public static class PasswordHandler
 {

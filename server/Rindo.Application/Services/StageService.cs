@@ -1,8 +1,8 @@
 ﻿using Application.Interfaces.Services;
-using AutoMapper;
+using Application.Mapping;
 using Rindo.Domain.Common;
 using Rindo.Domain.DTO;
-using Rindo.Domain.Entities;
+using Rindo.Domain.Models;
 using Rindo.Domain.Repositories;
 using Rindo.Infrastructure.Models;
 
@@ -16,19 +16,16 @@ public class StageService : IStageService
     
     private readonly RindoDbContext _context;
     
-    private readonly IMapper _mapper;
-    
-    public StageService(IStageRepository stageRepository, IMapper mapper, ITaskRepository taskRepository, RindoDbContext context)
+    public StageService(IStageRepository stageRepository, ITaskRepository taskRepository, RindoDbContext context)
     {
         _stageRepository = stageRepository;
         _taskRepository = taskRepository;
         _context = context;
-        _mapper = mapper;
     }
 
     public async Task<Result> AddStage(StageOnCreateDto stageDto)
     {
-        var stage = _mapper.Map<Stage>(stageDto);
+        var stage = stageDto.MapToDto();
         stage.Index = (await _stageRepository.GetStagesByProjectId(stageDto.ProjectId)).Max(s => s.Index) + 1;
         try
         {
@@ -45,7 +42,7 @@ public class StageService : IStageService
     public async Task<Result<string>> GetStageName(Guid stageId)
     {
         var stage = await _stageRepository.GetById(stageId);
-        if (stage is null) return Error.NotFound("Пользователя с таким именем не существует!");
+        if (stage is null) return Error.NotFound("Stage with this id doesn't exists");
         return stage.Name;
     }
 
@@ -58,9 +55,9 @@ public class StageService : IStageService
     public async Task<Result> ChangeStageTask(Guid id, Guid taskId)
     {
         var task = await _taskRepository.GetById(taskId);
-        if (task is null) return Error.NotFound("Такой задачи не существует!");
+        if (task is null) return Error.NotFound("Task with this id doesn't exists");
         var stage = await _stageRepository.GetById(id);
-        if(stage is null) return Error.NotFound("Такой стадии не существует!");
+        if(stage is null) return Error.NotFound("Stage with this id doesn't exists");
         task.StageId = stage.Id;
         var t = task.GetType().GetProperty(nameof(task.StageId));
         await _taskRepository.UpdateProperty(task, t => t.StageId);
@@ -71,7 +68,7 @@ public class StageService : IStageService
     public async Task<Result> DeleteStage(Guid id)
     {
         var stage = await _stageRepository.GetById(id);
-        if (stage is null) return Result.Failure(Error.NotFound("Такой стадии нет!"));
+        if (stage is null) return Result.Failure(Error.NotFound("Stage with this id doesn't exists"));
         try
         {
             
