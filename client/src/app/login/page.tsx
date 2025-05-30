@@ -20,12 +20,12 @@ export default function Login() {
   const authUser = async () => {
     if (usernameInput == "")
     {
-      setErrorMessage("Вы не ввели имя пользователя!");
+      setErrorMessage("Username is required");
       return;
     }
     if (passwordInput == "")
     {
-      setErrorMessage("Вы не ввели пароль!");
+      setErrorMessage("Password is required");
       return;
     }
     const response = await AuthUser(usernameInput, passwordInput);
@@ -50,6 +50,10 @@ export default function Login() {
       localStorage.setItem("token", JSON.stringify(decoded));
     }
   };
+
+  addEventListener("keydown", (event) => {
+    console.log(event)
+  })
 
   useEffect(() => {
     if (cookies["_rindo"]) 
@@ -88,7 +92,7 @@ export default function Login() {
           required
           id="username"
           name="username"
-          placeholder="Имя пользователя"
+          placeholder="Username"
         />
         <Input
           onChange={(e) => {
@@ -99,7 +103,7 @@ export default function Login() {
           id="password"
           name="password"
           type="password"
-          placeholder="Пароль"
+          placeholder="Password"
         />
         {errorMessage !== "" && (
           <Label className="text-red-600 cursor-pointer text-[0.875rem] overflow-hiden text-ellipsis">
@@ -110,13 +114,13 @@ export default function Login() {
           className="w-full text-white bg-blue-400 hover:bg-blue-600 ease-in-out transition-300"
           onClick={() => authUser()}
         >
-          Войти
+          Login
         </Button>
         <Button
           className="w-full text-white bg-blue-400 hover:bg-blue-600 ease-in-out transition-300"
           onClick={() => signUp()}
         >
-          Зарегистрироваться
+          Sign Up
         </Button>
       </div>
     </>

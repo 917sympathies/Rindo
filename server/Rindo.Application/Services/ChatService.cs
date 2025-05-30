@@ -2,7 +2,7 @@
 using Rindo.Domain.Common;
 using Rindo.Domain.DTO;
 using Rindo.Domain.Repositories;
-using Rindo.Infrastructure.Models;
+using Rindo.Infrastructure;
 
 namespace Application.Services;
 
@@ -10,7 +10,7 @@ public class ChatService : IChatService
 {
     private readonly IChatRepository _chatRepository;
     
-    private readonly RindoDbContext _context;
+    private readonly RindoDbContext _context; //TODO: remove DbContext
         
     public ChatService(IChatRepository chatRepository, RindoDbContext context)
     {

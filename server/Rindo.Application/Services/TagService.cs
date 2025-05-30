@@ -2,13 +2,13 @@
 using Microsoft.EntityFrameworkCore;
 using Rindo.Domain.Common;
 using Rindo.Domain.Models;
-using Rindo.Infrastructure.Models;
+using Rindo.Infrastructure;
 
 namespace Application.Services;
 
 public class TagService : ITagService
 {
-    private readonly RindoDbContext _context;
+    private readonly RindoDbContext _context; //TODO: remove DbContext
 
     public TagService(RindoDbContext context) => _context = context;
 

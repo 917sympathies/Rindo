@@ -117,7 +117,7 @@ const Sidebar = ({}: ISidebarProps) => {
     }
   }, [toFetch]);
 
-  const signOut = () => {
+  const logout = () => {
     removeCookie("_rindo", { path: "/" });
     localStorage.removeItem("user");
     localStorage.removeItem("userId");
@@ -175,7 +175,7 @@ const Sidebar = ({}: ISidebarProps) => {
               <DropdownMenuGroup>
                 <DropdownMenuItem>
                   <Link href="/profile" className="w-full" passHref={true}>
-                    Профиль
+                    Profile
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
@@ -190,10 +190,10 @@ const Sidebar = ({}: ISidebarProps) => {
                   GitHub
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>Поддержка</DropdownMenuItem>
+              <DropdownMenuItem>Support</DropdownMenuItem>
               <DropdownMenuSeparator className="dark:bg-black/20" />
-              <DropdownMenuItem onClick={() => signOut()}>
-                Выйти
+              <DropdownMenuItem onClick={() => logout()}>
+                Logout
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -201,8 +201,8 @@ const Sidebar = ({}: ISidebarProps) => {
         </li>
         <li className="mt-6">
           <div className="flex items-center justify-between">
-            <div className="text-[#727376] font-medium uppercase text-[1rem]">
-              проекты
+            <div className="text-[#727376] font-medium text-[1rem]">
+              All Projects
             </div>
           </div>
         </li>
@@ -229,15 +229,15 @@ const Sidebar = ({}: ISidebarProps) => {
           className="w-full rounded-md text-white bg-[#3A86FF] hover:bg-blue-800 ease-in-out duration-300 justify-start"
           onClick={() => setIsOpen(true)}
         >
-          <div className="flex flex-row items-center gap-2">
-            <span className="font-normal text-[1rem]">Новый проект</span>
-            <Plus className="mr-[6px]" size={18} />
+          <div className="flex flex-row items-center justify-between w-full">
+            <span className="font-normal text-[1rem]">New project</span>
+            <Plus size={18} />
           </div>
         </Button>
         <div className="flex flex-row items-center justify-start p-4 text-[1rem] text-[#727376] w-full dark:text-white">
-          <Link href="/tasks" className="flex flex-row items-center gap-2">
-            <span>Мои задачи</span>
-            <ClipboardList size={18}></ClipboardList>
+          <Link href="/tasks" className="flex flex-row items-center w-full justify-between">
+            <span>My tasks</span>
+            <ClipboardList size={18}/>
           </Link>
         </div>
       </ul>

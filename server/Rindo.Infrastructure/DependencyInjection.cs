@@ -1,15 +1,10 @@
-﻿using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 using Rindo.Domain.Repositories;
 using Rindo.Infrastructure.Jwt;
-using Rindo.Infrastructure.Models;
 using Rindo.Infrastructure.Repositories;
-using Task = System.Threading.Tasks.Task;
 
 namespace Rindo.Infrastructure;
 
@@ -28,9 +23,8 @@ public static class DependencyInjection
     }
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        
         services.AddDbContext<RindoDbContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("DbConnectionString"),
+            options.UseNpgsql(configuration["POSTGRESQL"],
                 b => b.MigrationsAssembly("Rindo.API")));
         services.AddHttpContextAccessor();
         

@@ -6,5 +6,5 @@ namespace Rindo.Domain.Services;
 public interface IAuthorizationService
 {
     Task<Result> SignUpUser(SignUpDto signUpDto);
-    Task<Result<Tuple<UserDto, string>>> AuthUser(LoginDto loginDto);
+    Task<Result<TokenDto>> AuthUser(LoginDto loginDto);
 }

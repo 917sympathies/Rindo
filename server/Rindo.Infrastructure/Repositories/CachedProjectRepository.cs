@@ -3,7 +3,6 @@ using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using Rindo.Domain.Models;
 using Rindo.Domain.Repositories;
-using Rindo.Infrastructure.Models;
 using Task = System.Threading.Tasks.Task;
 
 namespace Rindo.Infrastructure.Repositories;
@@ -11,7 +10,6 @@ namespace Rindo.Infrastructure.Repositories;
 public class CachedProjectRepository : IProjectRepository
 {
     private readonly ProjectRepository _decorated;
-    
     private readonly IDistributedCache _distributedCache;
 
     public CachedProjectRepository(ProjectRepository decorated, IDistributedCache distributedCache)

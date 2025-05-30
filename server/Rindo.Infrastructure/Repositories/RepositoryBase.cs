@@ -3,12 +3,11 @@ using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Rindo.Domain.Repositories;
-using Rindo.Infrastructure.Models;
 using Task = System.Threading.Tasks.Task;
 
 namespace Rindo.Infrastructure.Repositories;
 
-public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
+public abstract class RepositoryBase<T> where T : class
 {
     private readonly RindoDbContext _context;
     
@@ -17,17 +16,30 @@ public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
         _context = context;
     }
 
-    public Task CreateAsync(IEnumerable<T> entities) => Task.Run(() =>
-        _context.AttachRange(entities));
+    public async Task CreateAsync(IEnumerable<T> entities)
+    {
+        await _context.AddRangeAsync(entities);
+        await _context.SaveChangesAsync();
+    }
 
-    public Task CreateAsync(T entity) => Task.Run(() =>
-        _context.Attach(entity)); 
-    
-    public Task DeleteAsync(T entity) => Task.Run(() =>
-        _context.Set<T>().Remove(entity));
+    public async Task CreateAsync(T entity)
+    {
+        await _context.AddAsync(entity);
+        await _context.SaveChangesAsync();
+    }
 
-    public Task UpdateAsync(T entity) => Task.Run(() =>
-        _context.Set<T>().Update(entity));
+    public Task Delete(T entity)
+    {
+        _context.Remove(entity);
+        return Task.CompletedTask;
+    }
+
+    public Task Update(T entity)
+    {
+        _context.Update(entity);
+        return Task.CompletedTask;
+    } 
+        
 
     public Task UpdatePropertyAsync<TProperty>(T entity, Expression<Func<T, TProperty>> expression) => Task.Run(() =>
         _context.Entry(entity).Property(expression).IsModified = true);
@@ -48,6 +60,4 @@ public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
     public IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression, bool trackChanges) => !trackChanges
         ? _context.Set<T>().Where(expression).AsNoTracking()
         : _context.Set<T>().Where(expression);
-
-    public Task Save() => _context.SaveChangesAsync();
 }

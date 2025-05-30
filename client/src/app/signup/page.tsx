@@ -37,13 +37,13 @@ export default function SignUp() {
     <div className="flex flex-col justify-center gap-[0.5rem] items-center h-[100vh] w-[20%] m-auto">
       <Input
         required
-        placeholder="Имя пользователя"
+        placeholder="Username"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
       ></Input>
       <Input
         required
-        placeholder="Пароль"
+        placeholder="Password"
         value={password}
         type="password"
         onChange={(e) => setPassword(e.target.value)}
@@ -57,13 +57,13 @@ export default function SignUp() {
       ></Input>
       <Input
         required
-        placeholder="Имя"
+        placeholder="First Name"
         value={firstName}
         onChange={(e) => setFirstName(e.target.value)}
       ></Input>
       <Input
         required
-        placeholder="Фамилия"
+        placeholder="Last Name"
         value={lastName}
         onChange={(e) => setLastName(e.target.value)}
       ></Input>
@@ -72,7 +72,7 @@ export default function SignUp() {
           {errorMessage}
         </Label>
       )}
-      <Button className="w-full text-white bg-blue-400 hover:bg-blue-600 ease-in-out transition-300" onClick={() => signUp()}>Зарегистрироваться</Button>
+      <Button className="w-full text-white bg-blue-400 hover:bg-blue-600 ease-in-out transition-300" onClick={() => signUp()}>Sign Up</Button>
     </div>
   );
 }

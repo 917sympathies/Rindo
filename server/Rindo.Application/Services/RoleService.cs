@@ -1,11 +1,12 @@
-﻿using Application.Interfaces.Services;
-using Application.Mapping;
+﻿using Application.Common.Mapping;
+using Application.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
 using Rindo.Domain.Common;
 using Rindo.Domain.DTO;
+using Rindo.Domain.Enums;
 using Rindo.Domain.Models;
 using Rindo.Domain.Repositories;
-using Rindo.Infrastructure.Models;
+using Rindo.Infrastructure;
 
 namespace Application.Services;
 
@@ -18,7 +19,7 @@ public class RoleService : IRoleService
     
     private readonly IProjectRepository _projectRepository;
     
-    private readonly RindoDbContext _context;
+    private readonly RindoDbContext _context; //TODO: remove DbContext
     
     public RoleService(IRoleRepository roleRepository, IUserRepository userRepository, IProjectRepository projectRepository, RindoDbContext context)
     {
@@ -80,54 +81,36 @@ public class RoleService : IRoleService
         return Result.Success();
     }
 
-    public async Task<Result> UpdateRoleRights(Guid id, RolesRights rights)
+    public async Task<Result> UpdateRoleRights(Guid id, RoleRights rights)
     {
         var role = await _context.Roles.FirstOrDefaultAsync(r => r.Id == id);
         if(role is null) return Result.Failure(Error.NotFound("Role with this id doesn't exists"));
-        role.CanAddRoles = rights.CanAddRoles;
-        role.CanAddStage = rights.CanAddStage;
-        role.CanDeleteStage = rights.CanDeleteStage;
-        role.CanAddTask = rights.CanAddTask;
-        role.CanDeleteTask = rights.CanDeleteTask;
-        role.CanModifyRoles = rights.CanModifyRoles;
-        role.CanCompleteTask = rights.CanCompleteTask;
-        role.CanExcludeUser = rights.CanExcludeUser;
-        role.CanInviteUser = rights.CanInviteUser;
-        role.CanModifyStage = rights.CanModifyStage;
-        role.CanModifyTask = rights.CanModifyTask;
-        role.CanUseChat = rights.CanUseChat;
+        role.BitRoleRights = rights;
         await _roleRepository.UpdateRole(role);
         await _context.SaveChangesAsync();
         return Result.Success();
     }
 
-    public async Task<RolesRights> GetRightsByProjectId(Guid projectId, Guid userId)
+    public async Task<RoleRights> GetRightsByProjectId(Guid projectId, Guid userId)
     {
-        var user = await _userRepository.GetUserById(userId);
-        var project = await _projectRepository.GetProjectById(projectId);
-        if (user is null || project is null) return null;
+        var userTask = _userRepository.GetUserById(userId);
+        var projectTask = _projectRepository.GetProjectById(projectId);
+        await Task.WhenAll(userTask, projectTask);
+        var user = userTask.Result ?? throw new ArgumentException("User not found");
+        var project = projectTask.Result ?? throw new ArgumentException("Project not found");
         if (project.OwnerId == user.Id)
-            return new RolesRights(true);
+        {
+            return (RoleRights)Enum.GetValues<RoleRights>().Cast<int>().Sum();
+        }
         var roles =  _context.Roles.Where(r => r.Users.Contains(new User { Id = userId })).ToList();
-        if (roles.Count == 0) return new RolesRights(); 
-        var rights = new RolesRights();
+        if (roles.Count == 0) return 0; 
+        var rights = 0;
         foreach (var role in roles)
         {
-            rights.CanAddTask |= role.CanAddTask;
-            rights.CanModifyTask |= role.CanModifyTask;
-            rights.CanCompleteTask |= role.CanCompleteTask;
-            rights.CanDeleteTask |= role.CanDeleteTask;
-            rights.CanAddStage |= role.CanAddStage;
-            rights.CanModifyStage |= role.CanModifyStage;
-            rights.CanDeleteStage |= role.CanDeleteStage;
-            rights.CanAddRoles |= role.CanAddRoles;
-            rights.CanModifyRoles |= role.CanModifyRoles;
-            rights.CanInviteUser |= role.CanInviteUser;
-            rights.CanExcludeUser |= role.CanExcludeUser;
-            rights.CanUseChat |= role.CanUseChat;
+            rights |= (int)role.BitRoleRights;
         }
 
-        return rights;
+        return (RoleRights)rights;
     }
     
     public async Task<IEnumerable<RoleDto>> GetRolesByProjectId(Guid projectId)

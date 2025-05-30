@@ -2,6 +2,7 @@ using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Rindo.Domain.DTO;
+using Rindo.Domain.Enums;
 
 namespace Rindo.API.Controllers;
 
@@ -33,7 +34,7 @@ public class RoleController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> UpdateRole(Guid id, [FromBody]RolesRights rights)
+    public async Task<IActionResult> UpdateRole(Guid id, [FromBody]RoleRights rights)
     {
         await _service.UpdateRoleRights(id, rights);
         return Ok();

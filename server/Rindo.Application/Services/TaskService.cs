@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Rindo.Domain.Common;
 using Rindo.Domain.Models;
 using Rindo.Domain.Repositories;
-using Rindo.Infrastructure.Models;
+using Rindo.Infrastructure;
 using Task = System.Threading.Tasks.Task;
 
 namespace Application.Services;
@@ -12,7 +12,7 @@ public class TaskService : ITaskService
 {
     private readonly ITaskRepository _taskRepository;
     
-    private readonly RindoDbContext _context;
+    private readonly RindoDbContext _context; //TODO: remove DbContext
 
     public TaskService(ITaskRepository taskRepository, RindoDbContext context)
     {
@@ -74,7 +74,7 @@ public class TaskService : ITaskService
     {
         var task = await _taskRepository.GetById(id);
         if (task is null) return Result.Failure(Error.NotFound("Task with this id doesn't exists"));
-        task.ResponsibleUserId = userId;
+        task.AsigneeUserId = userId;
         try
         {
             await _taskRepository.UpdateTask(task);
@@ -91,10 +91,10 @@ public class TaskService : ITaskService
     {
         var task = await _taskRepository.GetById(id);
         if (task is null) return Result.Failure(Error.NotFound("Task with this id doesn't exists"));
-        task.StartDate = date;
+        task.CreatedDate = date;
         try
         {
-            await _taskRepository.UpdateProperty(task, t => t.StartDate);
+            await _taskRepository.UpdateProperty(task, t => t.CreatedDate);
             await _context.SaveChangesAsync();
         }
         catch (Exception e)
@@ -170,7 +170,7 @@ public class TaskService : ITaskService
     {
         var tasks = await _context.Tasks.Where(task => task.ProjectId == projectId).ToListAsync();
         var result = tasks.Select(t => new
-            { task = t, user = _context.Users.FirstOrDefault(u => u.Id == t.ResponsibleUserId) });
+            { task = t, user = _context.Users.FirstOrDefault(u => u.Id == t.AsigneeUserId) });
         return result;
     }
 

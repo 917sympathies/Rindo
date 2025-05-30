@@ -1,7 +1,7 @@
 using Rindo.Domain.DTO;
 using Rindo.Domain.Models;
 
-namespace Application.Mapping;
+namespace Application.Common.Mapping;
 
 public static class MapExtension
 {
@@ -33,18 +33,7 @@ public static class MapExtension
     {
         return new RoleDto
         {
-            CanAddRoles = role.CanAddRoles,
-            CanAddStage = role.CanAddStage,
-            CanAddTask = role.CanAddTask,
-            CanCompleteTask = role.CanCompleteTask,
-            CanDeleteStage = role.CanDeleteStage,
-            CanDeleteTask = role.CanDeleteTask,
-            CanExcludeUser = role.CanExcludeUser,
-            CanInviteUser = role.CanInviteUser,
-            CanModifyRoles = role.CanModifyRoles,
-            CanModifyStage = role.CanModifyStage,
-            CanModifyTask = role.CanModifyTask,
-            CanUseChat = role.CanUseChat,
+            BitRolesRights = role.BitRoleRights,
             Name = role.Name,
             Id = role.Id,
             //Users = role.Users,
@@ -59,7 +48,7 @@ public static class MapExtension
             Name = project.Name,
             Description = project.Description,
             OwnerId = project.OwnerId,
-            StartDate = project.StartDate,
+            StartDate = project.CreatedDate,
             FinishDate = project.FinishDate,
             
             // do we actually need these properties in this dto?

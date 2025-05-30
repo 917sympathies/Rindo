@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Rindo.Domain.Models;
 
-namespace Rindo.Infrastructure.Models;
+namespace Rindo.Infrastructure;
 
 public class RindoDbContext : DbContext
 {
@@ -14,12 +14,12 @@ public class RindoDbContext : DbContext
     {
         modelBuilder.Entity<Chat>()
             .HasMany(c => c.Messages)
-            .WithOne(c => c.Chat)
+            .WithOne()
             .HasForeignKey(b => b.ChatId);
         
         modelBuilder.Entity<ProjectTask>()
             .HasMany(c => c.Comments)
-            .WithOne(c => c.ProjectTask)
+            .WithOne()
             .HasForeignKey(c => c.TaskId);
         
         modelBuilder.Entity<Stage>()
@@ -48,7 +48,7 @@ public class RindoDbContext : DbContext
         modelBuilder.Entity<User>()
             .HasMany(u => u.Invitations)
             .WithOne()
-            .HasForeignKey(inv => inv.UserId);
+            .HasForeignKey(inv => inv.RecipientId);
 
         modelBuilder.Entity<Project>()
             .HasMany(p => p.Invitations)

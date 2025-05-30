@@ -1,12 +1,12 @@
-﻿using Application.Interfaces.Services;
-using Application.Mapping;
+﻿using Application.Common.Mapping;
+using Application.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Rindo.Domain.Common;
 using Rindo.Domain.DTO;
 using Rindo.Domain.Models;
 using Rindo.Domain.Repositories;
-using Rindo.Infrastructure.Models;
+using Rindo.Infrastructure;
 
 namespace Application.Services;
 
@@ -16,7 +16,7 @@ public class ProjectService : IProjectService
     
     private readonly IUserRepository _userRepository;
     
-    private readonly RindoDbContext _context;
+    private readonly RindoDbContext _context; //TODO: remove DbContext
 
     private readonly IDistributedCache _distributedCache;
 
@@ -36,7 +36,7 @@ public class ProjectService : IProjectService
             Name = projectOnCreateDto.Name,
             Description = projectOnCreateDto.Description,
             OwnerId = projectOnCreateDto.OwnerId,
-            StartDate = projectOnCreateDto.StartDate,
+            CreatedDate = projectOnCreateDto.StartDate,
             FinishDate = projectOnCreateDto.FinishDate,
             Tags = projectOnCreateDto.Tags,
             Stages = new List<Stage>
@@ -85,7 +85,7 @@ public class ProjectService : IProjectService
         if (user is null || project is null || sender is null)
             return Error.NotFound("Ошибка при приглашении пользователя в проект");
                     
-        var invitation = new Invitation { UserId = user.Id, ProjectId = projectId, ProjectName = project.Name, SenderUsername = sender.Username};
+        var invitation = new Invitation { RecipientId = user.Id, ProjectId = projectId, SenderId = sender.Id };
         _context.Invitations.Add(invitation);
         await _context.SaveChangesAsync();
         return user;
@@ -95,7 +95,7 @@ public class ProjectService : IProjectService
     {
         var invitation =
             await _context.Invitations.FirstOrDefaultAsync(inv =>
-                inv.ProjectId == id && userId == inv.UserId);
+                inv.ProjectId == id && userId == inv.RecipientId);
         var project = await _context.Projects.Include(p => p.Users).FirstOrDefaultAsync(p => p.Id == id);
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
         
@@ -119,8 +119,8 @@ public class ProjectService : IProjectService
         await _context.Entry(project).Collection(p => p.Users).LoadAsync();
         project.Users.Remove(user);
 
-        var tasks = await _context.Tasks.Where(t => t.ResponsibleUserId == user.Id && t.ProjectId == id).ToListAsync();
-        foreach (var task in tasks) task.ResponsibleUserId = null;
+        var tasks = await _context.Tasks.Where(t => t.AsigneeUserId == user.Id && t.ProjectId == id).ToListAsync();
+        foreach (var task in tasks) task.AsigneeUserId = null;
             
         await _context.SaveChangesAsync();
         await _distributedCache.RemoveAsync($"project-{project.Id}");
@@ -176,7 +176,7 @@ public class ProjectService : IProjectService
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
         if (user is null) return Error.NotFound("User with this id doesn't exists");
-        var tasks = await _context.Tasks.Where(t => t.ResponsibleUserId == userId).ToListAsync();
+        var tasks = await _context.Tasks.Where(t => t.AsigneeUserId == userId).ToListAsync();
         var projects = await _context.Projects.Where(p => p.Users.Contains(user) || p.OwnerId == user.Id).ToListAsync();
         var result = projects.Select(p => new {p.Name, p.Id, tasks = tasks.Where(t => t.ProjectId == p.Id) }).ToList();
         return result;

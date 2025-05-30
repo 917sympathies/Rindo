@@ -1,11 +1,10 @@
-﻿using Application.Interfaces.Services;
-using Application.Mapping;
+﻿using Application.Common.Mapping;
+using Application.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
 using Rindo.Domain.Common;
 using Rindo.Domain.DTO;
 using Rindo.Domain.Models;
 using Rindo.Domain.Repositories;
-using Rindo.Infrastructure.Models;
 
 namespace Application.Services;
 
@@ -15,13 +14,10 @@ public class UserService : IUserService
     
     private readonly IProjectRepository _projectRepository;
     
-    private readonly RindoDbContext _context;
-    
-    public UserService(IUserRepository userRepository, IProjectRepository projectRepository, RindoDbContext context)
+    public UserService(IUserRepository userRepository, IProjectRepository projectRepository)
     {
         _userRepository = userRepository;
         _projectRepository = projectRepository;
-        _context = context;
     }
 
     public async Task<Result<User?>> GetUserById(Guid id)
@@ -31,29 +27,30 @@ public class UserService : IUserService
         return user;
     }
 
+    //TODO: what's the point of this method? if it's necessary then remove nullable
     public async Task<UserDto?> GetUserInfo(Guid id)
     {
         var user = await _userRepository.GetUserById(id);
-        return user.MapToDto();
+        return user?.MapToDto();
     }
 
     public async Task<Result> ChangeUserLastName(Guid id, string lastName)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+        var user = await _userRepository.GetUserById(id);
         if (user is null) return Error.NotFound("User with this id doesn't exists");
-        
         user.LastName = lastName;
-        await _context.SaveChangesAsync();
+        _userRepository.UpdateUser(user);
+        
         return Result.Success();
     }
 
     public async Task<Result> ChangeUserFirstName(Guid id, string firstName)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+        var user = await _userRepository.GetUserById(id);
         if (user is null) return Error.NotFound("User with this id doesn't exists");
         
         user.FirstName = firstName;
-        await _context.SaveChangesAsync();
+        _userRepository.UpdateUser(user);
         return Result.Success();
     }
 
@@ -63,9 +60,8 @@ public class UserService : IUserService
         if (project is null) return Error.NotFound("Project with this id doesn't exists");
         
         var users = project.Users.ToList();
-        var owner = await _context.Users.FirstOrDefaultAsync(u => u.Id == project.OwnerId);
+        var owner = await _userRepository.GetUserById(project.OwnerId);
         users.Add(owner);
-        //users.Add(project.Owner);
         return users.Select(x => x.MapToDto()).ToArray();
     }
 }

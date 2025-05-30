@@ -14,8 +14,8 @@ namespace Rindo.API.Controllers;
 public class ProjectController : ControllerBase
 {
     private readonly IProjectService _service;
-    
     private readonly IHttpContextAccessor _httpContextAccessor;
+    
     public ProjectController(IProjectService service, IHttpContextAccessor httpContextAccessor)
     {
         _service = service;

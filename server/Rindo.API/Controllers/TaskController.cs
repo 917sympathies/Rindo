@@ -2,7 +2,6 @@ using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Rindo.Domain.Models;
-using Rindo.Infrastructure.Models;
 
 namespace Rindo.API.Controllers;
 

@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Rindo.Domain.Models;
 using Rindo.Domain.Repositories;
-using Rindo.Infrastructure.Models;
 using Task = System.Threading.Tasks.Task;
 
 namespace Rindo.Infrastructure.Repositories;
@@ -15,9 +14,9 @@ public class ProjectRepository : RepositoryBase<Project>, IProjectRepository
     
     public Task CreateProject(Project project) => CreateAsync(project);
 
-    public Task DeleteProject(Project project) => DeleteAsync(project);
+    public Task DeleteProject(Project project) => Delete(project);
 
-    public Task UpdateProject(Project project) => UpdateAsync(project);
+    public Task UpdateProject(Project project) => Update(project);
 
     public async Task<Project?> GetProjectById(Guid id) => 
         await FindByCondition(p => p.Id == id)

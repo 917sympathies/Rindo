@@ -1,10 +1,11 @@
-﻿using Application.Interfaces.Services;
-using Application.Mapping;
+﻿using Application.Common.Exceptions;
+using Application.Common.Mapping;
+using Application.Interfaces.Services;
 using Rindo.Domain.Common;
 using Rindo.Domain.DTO;
 using Rindo.Domain.Models;
 using Rindo.Domain.Repositories;
-using Rindo.Infrastructure.Models;
+using Rindo.Infrastructure;
 
 namespace Application.Services;
 
@@ -14,7 +15,7 @@ public class StageService : IStageService
     
     private readonly ITaskRepository _taskRepository;
     
-    private readonly RindoDbContext _context;
+    private readonly RindoDbContext _context; //TODO: remove DbContext
     
     public StageService(IStageRepository stageRepository, ITaskRepository taskRepository, RindoDbContext context)
     {
@@ -42,7 +43,7 @@ public class StageService : IStageService
     public async Task<Result<string>> GetStageName(Guid stageId)
     {
         var stage = await _stageRepository.GetById(stageId);
-        if (stage is null) return Error.NotFound("Stage with this id doesn't exists");
+        if (stage is null) throw new NotFoundException(nameof(Stage), stageId);
         return stage.Name;
     }
 
@@ -55,12 +56,12 @@ public class StageService : IStageService
     public async Task<Result> ChangeStageTask(Guid id, Guid taskId)
     {
         var task = await _taskRepository.GetById(taskId);
-        if (task is null) return Error.NotFound("Task with this id doesn't exists");
+        if (task is null) throw new NotFoundException(nameof(ProjectTask), taskId);
         var stage = await _stageRepository.GetById(id);
-        if(stage is null) return Error.NotFound("Stage with this id doesn't exists");
+        if(stage is null) throw new NotFoundException(nameof(Stage), id);
         task.StageId = stage.Id;
-        var t = task.GetType().GetProperty(nameof(task.StageId));
-        await _taskRepository.UpdateProperty(task, t => t.StageId);
+        // var t = task.GetType().GetProperty(nameof(task.StageId));
+        await _taskRepository.UpdateProperty(task, pt => pt.StageId);
         await _context.SaveChangesAsync();
         return Result.Success();
     }

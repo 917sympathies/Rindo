@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Rindo.Domain.Models;
 using Rindo.Domain.Repositories;
-using Rindo.Infrastructure.Models;
 using Task = System.Threading.Tasks.Task;
 
 namespace Rindo.Infrastructure.Repositories;
@@ -14,7 +13,7 @@ public class TaskCommentRepository : RepositoryBase<TaskComment>, ITaskCommentRe
 
     public Task CreateComment(TaskComment comment) => CreateAsync(comment);
 
-    public Task DeleteComment(TaskComment comment) => DeleteAsync(comment);
+    public Task DeleteComment(TaskComment comment) => Delete(comment);
 
     public Task<int> GetCommentsCountByTaskId(Guid taskId)
     {

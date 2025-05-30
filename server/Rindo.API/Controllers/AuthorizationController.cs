@@ -30,7 +30,7 @@ public class AuthorizationController : ControllerBase
     {
         var result = await _service.AuthUser(loginDto);
         if (!result.IsSuccess) return BadRequest(result.Error);
-        _httpContextAccessor.HttpContext?.Response.Cookies.Append("_rindo", result.Value.Item2);
-        return Ok(result.Value.Item1);
+        _httpContextAccessor.HttpContext?.Response.Cookies.Append("_rindo", result.Value.Token);
+        return Ok(result.Value.User);
     }
 }

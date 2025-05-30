@@ -1,7 +1,7 @@
 ﻿using Application.Interfaces.Services;
 using Rindo.Domain.Models;
 using Rindo.Domain.Repositories;
-using Rindo.Infrastructure.Models;
+using Rindo.Infrastructure;
 
 namespace Application.Services;
 
@@ -11,7 +11,7 @@ public class CommentService : ICommentService
     
     private readonly IUserService _userService;
     
-    private readonly RindoDbContext _context;
+    private readonly RindoDbContext _context; //TODO: remove DbContext
     
     public CommentService(ITaskCommentRepository commentRepository, RindoDbContext context, IUserService userService)
     {
