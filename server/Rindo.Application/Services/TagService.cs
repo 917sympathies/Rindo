@@ -8,9 +8,9 @@ namespace Application.Services;
 
 public class TagService : ITagService
 {
-    private readonly RindoDbContext _context; //TODO: remove DbContext
+    private readonly PostgresDbContext _context; //TODO: remove DbContext
 
-    public TagService(RindoDbContext context) => _context = context;
+    public TagService(PostgresDbContext context) => _context = context;
 
     public async Task<Tag> CreateTag(string name, Guid projectId)
     {

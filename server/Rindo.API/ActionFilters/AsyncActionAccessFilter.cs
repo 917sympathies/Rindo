@@ -8,9 +8,9 @@ namespace Rindo.API.ActionFilters;
 
 public class AsyncActionAccessFilter : IAsyncActionFilter
 {
-    private readonly RindoDbContext _context; //TODO: replace DbContext with Repositories
+    private readonly PostgresDbContext _context; //TODO: replace DbContext with Repositories
 
-    public AsyncActionAccessFilter(RindoDbContext context)
+    public AsyncActionAccessFilter(PostgresDbContext context)
     {
         _context = context;
     }

@@ -8,15 +8,15 @@ namespace Rindo.Infrastructure.Repositories;
 
 public class TaskRepository : RepositoryBase<ProjectTask>, ITaskRepository
 {
-    public TaskRepository(RindoDbContext context) : base(context)
+    public TaskRepository(PostgresDbContext context) : base(context)
     {
     }
 
     public Task CreateTask(ProjectTask projectTask) => CreateAsync(projectTask);
 
-    public Task DeleteTask(ProjectTask projectTask) => Delete(projectTask);
+    public void DeleteTask(ProjectTask projectTask) => Delete(projectTask);
 
-    public Task UpdateTask(ProjectTask projectTask) => Update(projectTask);
+    public void UpdateTask(ProjectTask projectTask) => Update(projectTask);
 
     public async Task<IEnumerable<ProjectTask>> GetTasksByProjectId(Guid projectId) =>
         await FindByCondition(t => t.ProjectId == projectId).AsNoTracking().OrderBy(t => t.CreatedDate).ToListAsync();

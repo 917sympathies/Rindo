@@ -12,9 +12,9 @@ public class TaskService : ITaskService
 {
     private readonly ITaskRepository _taskRepository;
     
-    private readonly RindoDbContext _context; //TODO: remove DbContext
+    private readonly PostgresDbContext _context; //TODO: remove DbContext
 
-    public TaskService(ITaskRepository taskRepository, RindoDbContext context)
+    public TaskService(ITaskRepository taskRepository, PostgresDbContext context)
     {
         _taskRepository = taskRepository;
         _context = context;
@@ -77,8 +77,7 @@ public class TaskService : ITaskService
         task.AsigneeUserId = userId;
         try
         {
-            await _taskRepository.UpdateTask(task);
-            await _context.SaveChangesAsync();
+            _taskRepository.UpdateTask(task);
         }
         catch (Exception e)
         {
@@ -139,10 +138,9 @@ public class TaskService : ITaskService
         return Result.Success();
     }
 
-    public async Task UpdateTask(ProjectTask projectTask)
+    public void UpdateTask(ProjectTask projectTask)
     {
-        await _taskRepository.UpdateTask(projectTask);
-        await _context.SaveChangesAsync();
+        _taskRepository.UpdateTask(projectTask);
     }
 
     public async Task<Result> DeleteTask(Guid id)
@@ -151,8 +149,7 @@ public class TaskService : ITaskService
         if (task is null) return Result.Failure(Error.NotFound("Task with this id doesn't exists"));
         try
         {
-            await _taskRepository.DeleteTask(task);
-            await _context.SaveChangesAsync();
+            _taskRepository.DeleteTask(task);
         }
         catch (Exception e)
         {

@@ -15,9 +15,9 @@ public class StageService : IStageService
     
     private readonly ITaskRepository _taskRepository;
     
-    private readonly RindoDbContext _context; //TODO: remove DbContext
+    private readonly PostgresDbContext _context; //TODO: remove DbContext
     
-    public StageService(IStageRepository stageRepository, ITaskRepository taskRepository, RindoDbContext context)
+    public StageService(IStageRepository stageRepository, ITaskRepository taskRepository, PostgresDbContext context)
     {
         _stageRepository = stageRepository;
         _taskRepository = taskRepository;
@@ -73,8 +73,7 @@ public class StageService : IStageService
         try
         {
             
-            await _stageRepository.DeleteStage(stage);
-            await _context.SaveChangesAsync();
+            _stageRepository.DeleteStage(stage);
             var stages = _context.Stages.Where(st => st.Index >= stage.Index).ToList();
             if (stages.Count > 0)
             {

@@ -6,6 +6,6 @@ namespace Rindo.Domain.Repositories;
 public interface ITaskCommentRepository
 {
     Task CreateComment(TaskComment comment);
-    Task DeleteComment(TaskComment comment);
+    void DeleteComment(TaskComment comment);
     Task<int> GetCommentsCountByTaskId(Guid taskId);
 }

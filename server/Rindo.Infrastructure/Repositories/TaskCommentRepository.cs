@@ -7,13 +7,13 @@ namespace Rindo.Infrastructure.Repositories;
 
 public class TaskCommentRepository : RepositoryBase<TaskComment>, ITaskCommentRepository
 {
-    public TaskCommentRepository(RindoDbContext context) : base(context)
+    public TaskCommentRepository(PostgresDbContext context) : base(context)
     {
     }
 
     public Task CreateComment(TaskComment comment) => CreateAsync(comment);
 
-    public Task DeleteComment(TaskComment comment) => Delete(comment);
+    public void DeleteComment(TaskComment comment) => Delete(comment);
 
     public Task<int> GetCommentsCountByTaskId(Guid taskId)
     {

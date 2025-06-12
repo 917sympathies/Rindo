@@ -9,11 +9,11 @@ namespace Application.Services;
 
 public class InvitationService : IInvitationService
 {
-    private readonly RindoDbContext _context; //TODO: remove DbContext
+    private readonly PostgresDbContext _context; //TODO: remove DbContext
     
     private readonly IProjectService _projectService;
 
-    public InvitationService(RindoDbContext context, IProjectService projectService)
+    public InvitationService(PostgresDbContext context, IProjectService projectService)
     {
         _context = context;
         _projectService = projectService;

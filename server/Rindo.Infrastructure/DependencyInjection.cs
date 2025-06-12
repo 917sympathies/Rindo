@@ -15,7 +15,7 @@ public static class DependencyInjection
         using var scope = app.ApplicationServices.CreateScope();
         var services = scope.ServiceProvider;
 
-        var context = services.GetRequiredService<RindoDbContext>();
+        var context = services.GetRequiredService<PostgresDbContext>();
         if (context.Database.GetPendingMigrations().Any())
         {
             context.Database.Migrate();
@@ -23,7 +23,7 @@ public static class DependencyInjection
     }
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<RindoDbContext>(options =>
+        services.AddDbContext<PostgresDbContext>(options =>
             options.UseNpgsql(configuration["POSTGRESQL"],
                 b => b.MigrationsAssembly("Rindo.API")));
         services.AddHttpContextAccessor();

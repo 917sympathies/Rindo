@@ -3,13 +3,8 @@ using Rindo.Domain.Models;
 
 namespace Rindo.Infrastructure;
 
-public class RindoDbContext : DbContext
+public class PostgresDbContext(DbContextOptions<PostgresDbContext> options) : DbContext(options)
 {
-    public RindoDbContext(DbContextOptions<RindoDbContext> options)
-        :base(options)
-    {
-    }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Chat>()

@@ -1,21 +1,14 @@
 using Application.Common.Exceptions;
 
-namespace Rindo.API.Middleware;
+namespace Rindo.API.Middleware.Exceptions;
 
-public class ExceptionHandlerMiddleware
+public class ExceptionHandlerMiddleware(RequestDelegate next)
 {
-    private readonly RequestDelegate _next;
-
-    public ExceptionHandlerMiddleware(RequestDelegate next)
-    {
-        _next = next;
-    }
-
     public async Task InvokeAsync(HttpContext context)
     {
         try
         {
-            await _next(context);
+            await next(context);
         }
         catch (NotFoundException ex)
         {

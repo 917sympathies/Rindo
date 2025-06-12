@@ -8,15 +8,15 @@ namespace Rindo.Infrastructure.Repositories;
 
 public class RoleRepository : RepositoryBase<Role>, IRoleRepository
 {
-    public RoleRepository(RindoDbContext context) : base(context)
+    public RoleRepository(PostgresDbContext context) : base(context)
     {
     }
     
     public Task CreateRole(Role role) => CreateAsync(role);
 
-    public Task DeleteRole(Role role) => Delete(role);
+    public void DeleteRole(Role role) => Delete(role);
 
-    public Task UpdateRole(Role role) => Update(role);
+    public void UpdateRole(Role role) => Update(role);
     
     public async Task UpdateProperty<TProperty>(Role role, Expression<Func<Role, TProperty>> expression) =>
         await UpdatePropertyAsync<TProperty>(role, expression);

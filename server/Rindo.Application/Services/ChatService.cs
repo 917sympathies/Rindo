@@ -10,9 +10,9 @@ public class ChatService : IChatService
 {
     private readonly IChatRepository _chatRepository;
     
-    private readonly RindoDbContext _context; //TODO: remove DbContext
+    private readonly PostgresDbContext _context; //TODO: remove DbContext
         
-    public ChatService(IChatRepository chatRepository, RindoDbContext context)
+    public ChatService(IChatRepository chatRepository, PostgresDbContext context)
     {
         _chatRepository = chatRepository;
         _context = context;

@@ -19,9 +19,9 @@ public class RoleService : IRoleService
     
     private readonly IProjectRepository _projectRepository;
     
-    private readonly RindoDbContext _context; //TODO: remove DbContext
+    private readonly PostgresDbContext _context; //TODO: remove DbContext
     
-    public RoleService(IRoleRepository roleRepository, IUserRepository userRepository, IProjectRepository projectRepository, RindoDbContext context)
+    public RoleService(IRoleRepository roleRepository, IUserRepository userRepository, IProjectRepository projectRepository, PostgresDbContext context)
     {
         _roleRepository = roleRepository;
         _userRepository = userRepository;
@@ -41,8 +41,7 @@ public class RoleService : IRoleService
     {
         var role = await _context.Roles.FirstOrDefaultAsync(r => r.Id == id);
         if(role is null) return Result.Failure(Error.NotFound("Role with this id doesn't exists"));
-        await _roleRepository.DeleteRole(role);
-        await _context.SaveChangesAsync();
+        _roleRepository.DeleteRole(role);
         return Result.Success();
     }
 
@@ -86,8 +85,7 @@ public class RoleService : IRoleService
         var role = await _context.Roles.FirstOrDefaultAsync(r => r.Id == id);
         if(role is null) return Result.Failure(Error.NotFound("Role with this id doesn't exists"));
         role.BitRoleRights = rights;
-        await _roleRepository.UpdateRole(role);
-        await _context.SaveChangesAsync();
+        _roleRepository.UpdateRole(role);
         return Result.Success();
     }
 

@@ -10,7 +10,7 @@ using Rindo.Infrastructure;
 
 namespace Rindo.API.Migrations
 {
-    [DbContext(typeof(RindoDbContext))]
+    [DbContext(typeof(PostgresDbContext))]
     partial class RindoDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

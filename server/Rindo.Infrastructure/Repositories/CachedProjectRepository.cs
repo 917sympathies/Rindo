@@ -21,18 +21,18 @@ public class CachedProjectRepository : IProjectRepository
     public async Task CreateProject(Project project) =>
         await _decorated.CreateProject(project);
 
-    public async Task DeleteProject(Project project)
+    public void DeleteProject(Project project)
     {
         var key = $"project-{project.Id}";
-        await _distributedCache.RemoveAsync(key);
-        await _decorated.DeleteProject(project);
+        _distributedCache.Remove(key);
+        _decorated.DeleteProject(project);
     }
 
-    public async Task UpdateProject(Project project)
+    public void UpdateProject(Project project)
     {
         var key = $"project-{project.Id}";
-        await _distributedCache.RemoveAsync(key);
-        await _decorated.UpdateProject(project);
+        _distributedCache.Remove(key);
+        _decorated.UpdateProject(project);
     }
 
     public async Task<Project?> GetProjectById(Guid id)

@@ -8,15 +8,15 @@ namespace Rindo.Infrastructure.Repositories;
 
 public class ProjectRepository : RepositoryBase<Project>, IProjectRepository
 {
-    public ProjectRepository(RindoDbContext context) : base(context)
+    public ProjectRepository(PostgresDbContext context) : base(context)
     {
     }
     
     public Task CreateProject(Project project) => CreateAsync(project);
 
-    public Task DeleteProject(Project project) => Delete(project);
+    public void DeleteProject(Project project) => Delete(project);
 
-    public Task UpdateProject(Project project) => Update(project);
+    public void UpdateProject(Project project) => Update(project);
 
     public async Task<Project?> GetProjectById(Guid id) => 
         await FindByCondition(p => p.Id == id)

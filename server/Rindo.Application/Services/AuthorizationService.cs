@@ -12,10 +12,10 @@ namespace Application.Services;
 public class AuthorizationService : IAuthorizationService
 {
     private readonly IUserRepository _userRepository;
-    private readonly RindoDbContext _context; //TODO: remove DbContext
+    private readonly PostgresDbContext _context; //TODO: remove DbContext
     private readonly IJwtProvider _jwtProvider;
     
-    public AuthorizationService(IUserRepository userRepository, RindoDbContext context, IJwtProvider jwtProvider)
+    public AuthorizationService(IUserRepository userRepository, PostgresDbContext context, IJwtProvider jwtProvider)
     {
         _userRepository = userRepository;
         _context = context;

@@ -7,13 +7,13 @@ namespace Rindo.Infrastructure.Repositories;
 
 public class ChatRepository : RepositoryBase<Chat>, IChatRepository
 {
-    public ChatRepository(RindoDbContext context) : base(context)
+    public ChatRepository(PostgresDbContext context) : base(context)
     {
     }
 
     public async Task Create(Chat chat) => await CreateAsync(chat);
 
-    public async Task Delete(Chat chat) => await base.Delete(chat);
+    public new void Delete(Chat chat) => base.Delete(chat);
 
     public async Task<Chat?> GetChatById(Guid id) =>
         await FindByCondition(c => c.Id == id)

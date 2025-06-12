@@ -7,15 +7,15 @@ namespace Rindo.Infrastructure.Repositories;
 
 public class UserRepository : RepositoryBase<User>, IUserRepository
 {
-    public UserRepository(RindoDbContext context) : base(context)
+    public UserRepository(PostgresDbContext context) : base(context)
     {
     }
 
     public Task CreateUser(User user) => CreateAsync(user);
 
-    public Task DeleteUser(User user) => Delete(user);
+    public void DeleteUser(User user) => Delete(user);
 
-    public Task UpdateUser(User user) => Update(user);
+    public void UpdateUser(User user) => Update(user);
 
     public async Task<User?> GetUserById(Guid id) =>
         await FindByCondition(u => u.Id == id).Include(u => u.Projects).FirstOrDefaultAsync();

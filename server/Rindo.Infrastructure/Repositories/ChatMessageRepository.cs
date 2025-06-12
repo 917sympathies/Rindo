@@ -7,7 +7,7 @@ namespace Rindo.Infrastructure.Repositories;
 
 public class ChatMessageRepository : RepositoryBase<ChatMessage>, IChatMessageRepository
 {
-    public ChatMessageRepository(RindoDbContext context) : base(context)
+    public ChatMessageRepository(PostgresDbContext context) : base(context)
     {
     }
 

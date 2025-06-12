@@ -8,9 +8,9 @@ public interface  IProjectRepository
 {
     Task CreateProject(Project project);
     
-    Task DeleteProject(Project project);
+    void DeleteProject(Project project);
     
-    Task UpdateProject(Project project);
+    void UpdateProject(Project project);
     
     Task<Project?> GetProjectById(Guid id);
     

@@ -7,8 +7,8 @@ namespace Rindo.Domain.Repositories;
 public interface ITaskRepository
 {
     Task CreateTask(ProjectTask projectTask);
-    Task DeleteTask(ProjectTask projectTask);
-    Task UpdateTask(ProjectTask projectTask);
+    void DeleteTask(ProjectTask projectTask);
+    void UpdateTask(ProjectTask projectTask);
     Task<IEnumerable<ProjectTask>> GetTasksByProjectId(Guid projectId);
     Task<IEnumerable<ProjectTask>> GetTasksByUserId(Guid userId);
     Task<IEnumerable<ProjectTask>> GetTasksByStageId(Guid processId);

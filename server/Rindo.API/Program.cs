@@ -1,6 +1,7 @@
 using Application;
 using Rindo.API.ActionFilters;
 using Rindo.API.Middleware;
+using Rindo.API.Middleware.Exceptions;
 using Rindo.Chat;
 using Rindo.Infrastructure;
 

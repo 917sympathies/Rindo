@@ -11,7 +11,7 @@ using Rindo.Infrastructure;
 
 namespace Rindo.API.Migrations
 {
-    [DbContext(typeof(RindoDbContext))]
+    [DbContext(typeof(PostgresDbContext))]
     [Migration("20240801151629_Actual")]
     partial class Actual
     {

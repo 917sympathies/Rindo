@@ -11,9 +11,9 @@ public class CommentService : ICommentService
     
     private readonly IUserService _userService;
     
-    private readonly RindoDbContext _context; //TODO: remove DbContext
+    private readonly PostgresDbContext _context; //TODO: remove DbContext
     
-    public CommentService(ITaskCommentRepository commentRepository, RindoDbContext context, IUserService userService)
+    public CommentService(ITaskCommentRepository commentRepository, PostgresDbContext context, IUserService userService)
     {
         _commentRepository = commentRepository;
         _userService = userService;

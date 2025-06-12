@@ -16,11 +16,11 @@ public class ProjectService : IProjectService
     
     private readonly IUserRepository _userRepository;
     
-    private readonly RindoDbContext _context; //TODO: remove DbContext
+    private readonly PostgresDbContext _context; //TODO: remove DbContext
 
     private readonly IDistributedCache _distributedCache;
 
-    public ProjectService(IProjectRepository projectRepository, IUserRepository userRepository, RindoDbContext context, IDistributedCache distributedCache)
+    public ProjectService(IProjectRepository projectRepository, IUserRepository userRepository, PostgresDbContext context, IDistributedCache distributedCache)
     {
         _projectRepository = projectRepository;
         _userRepository = userRepository;
@@ -157,8 +157,7 @@ public class ProjectService : IProjectService
         if (project is null) return Result.Failure(Error.Failure("Project with this id doesn't exists"));
         var tags = await _context.Tags.Where(t => t.ProjectId == id).ToListAsync();
         _context.RemoveRange(tags);
-        await _projectRepository.DeleteProject(project);
-        await _context.SaveChangesAsync();
+        _projectRepository.DeleteProject(project);
         return Result.Success();
     }
 
