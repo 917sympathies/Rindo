@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using Rindo.Infrastructure.Models;
+using Rindo.Infrastructure;
 
 #nullable disable
 
 namespace Rindo.API.Migrations
 {
-    [DbContext(typeof(RindoDbContext))]
+    [DbContext(typeof(PostgresDbContext))]
     [Migration("20240801151629_Actual")]
     partial class Actual
     {

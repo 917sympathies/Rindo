@@ -1,16 +1,16 @@
 ﻿using Application.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
 using Rindo.Domain.Common;
-using Rindo.Domain.Entities;
-using Rindo.Infrastructure.Models;
+using Rindo.Domain.Models;
+using Rindo.Infrastructure;
 
 namespace Application.Services;
 
 public class TagService : ITagService
 {
-    private readonly RindoDbContext _context;
+    private readonly PostgresDbContext _context; //TODO: remove DbContext
 
-    public TagService(RindoDbContext context) => _context = context;
+    public TagService(PostgresDbContext context) => _context = context;
 
     public async Task<Tag> CreateTag(string name, Guid projectId)
     {
@@ -23,7 +23,7 @@ public class TagService : ITagService
     public async Task<Result> DeleteTag(Guid id)
     {
         var tag = await _context.Tags.FirstOrDefaultAsync(t => t.Id == id);
-        if (tag is null) return Error.NotFound("Такого тэга не существует");
+        if (tag is null) return Error.NotFound("Tag with this id doesn't exists");
         _context.Tags.Remove(tag);
         await _context.SaveChangesAsync();
         return Result.Success();

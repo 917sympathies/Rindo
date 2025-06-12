@@ -105,7 +105,7 @@ export default function ProfileSettings() {
   };
 
   return (
-    <>
+    <div className="flex flex-col w-full h-full justify-between">
       <div className="flex flex-row w-full justify-between">
         <div className="flex flex-col gap-4">
           <div className="flex flex-row items-end justify-between gap-6 w-full border-b pb-2 pl-4 pr-4">
@@ -133,13 +133,6 @@ export default function ProfileSettings() {
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
-          <Button
-            className="w-2/5"
-            variant={"save2"}
-            onClick={() => updateUser()}
-          >
-            Сохранить
-          </Button>
         </div>
         <div className="w-90 mr-24 pt-6">
           <Label className="pb-4 text-[1.4rem]">Приглашения</Label>
@@ -167,6 +160,13 @@ export default function ProfileSettings() {
           ))}
         </div>
       </div>
-    </>
+      <Button
+          className="w-1/5"
+          variant={"save2"}
+          onClick={() => updateUser()}
+      >
+        Сохранить
+      </Button>
+    </div>
   );
 }

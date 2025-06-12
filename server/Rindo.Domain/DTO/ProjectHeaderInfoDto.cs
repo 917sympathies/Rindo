@@ -1,6 +1,6 @@
 ﻿namespace Rindo.Domain.DTO;
 
-public class ProjectInfoHeader
+public class ProjectHeaderInfoDto
 {
     public string Name { get; set; }
     public Guid OwnerId { get; set; }

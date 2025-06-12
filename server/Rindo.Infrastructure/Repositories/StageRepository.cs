@@ -1,15 +1,14 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using Rindo.Domain.Entities;
+using Rindo.Domain.Models;
 using Rindo.Domain.Repositories;
-using Rindo.Infrastructure.Models;
 using Task = System.Threading.Tasks.Task;
 
 namespace Rindo.Infrastructure.Repositories;
 
 public class StageRepository : RepositoryBase<Stage>, IStageRepository
 {
-    public StageRepository(RindoDbContext context) : base(context)
+    public StageRepository(PostgresDbContext context) : base(context)
     {
     }
 
@@ -17,9 +16,9 @@ public class StageRepository : RepositoryBase<Stage>, IStageRepository
 
     public Task CreateStage(Stage stages) => CreateAsync(stages);
 
-    public Task DeleteStage(Stage stages) => DeleteAsync(stages);
+    public void DeleteStage(Stage stages) => Delete(stages);
 
-    public Task UpdateStage(Stage stages) => UpdateAsync(stages);
+    public void UpdateStage(Stage stages) => Update(stages);
 
     public Task UpdateStageProperty<TProperty>(Stage stage, Expression<Func<Stage, TProperty>> expression) =>
         UpdateStageProperty<TProperty>(stage, expression);

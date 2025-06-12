@@ -1,4 +1,4 @@
-﻿using Rindo.Domain.Entities;
+﻿using Rindo.Domain.Models;
 using Task = System.Threading.Tasks.Task;
 
 namespace Rindo.Domain.Repositories;
@@ -6,6 +6,6 @@ namespace Rindo.Domain.Repositories;
 public interface ITaskCommentRepository
 {
     Task CreateComment(TaskComment comment);
-    Task DeleteComment(TaskComment comment);
+    void DeleteComment(TaskComment comment);
     Task<int> GetCommentsCountByTaskId(Guid taskId);
 }

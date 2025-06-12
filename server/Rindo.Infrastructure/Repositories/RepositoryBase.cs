@@ -2,53 +2,54 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Rindo.Domain.Entities;
 using Rindo.Domain.Repositories;
-using Rindo.Infrastructure.Models;
 using Task = System.Threading.Tasks.Task;
 
 namespace Rindo.Infrastructure.Repositories;
 
-public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
+public abstract class RepositoryBase<T>(PostgresDbContext context) where T : class
 {
-    private readonly RindoDbContext _context;
-    
-    protected RepositoryBase(RindoDbContext context)
+    protected async Task CreateAsync(IEnumerable<T> entities)
     {
-        _context = context;
+        await context.AddRangeAsync(entities);
+        await context.SaveChangesAsync();
     }
 
-    public Task CreateAsync(IEnumerable<T> entities) => Task.Run(() =>
-        _context.AttachRange(entities));
+    protected async Task CreateAsync(T entity)
+    {
+        await context.AddAsync(entity);
+        await context.SaveChangesAsync();
+    }
 
-    public Task CreateAsync(T entity) => Task.Run(() =>
-        _context.Attach(entity)); 
+    protected void Delete(T entity)
+    {
+        context.Remove(entity);
+        context.SaveChanges();
+    }
+
+    protected void Update(T entity)
+    {
+        context.Update(entity);
+        context.SaveChanges();
+    } 
     
-    public Task DeleteAsync(T entity) => Task.Run(() =>
-        _context.Set<T>().Remove(entity));
+    protected Task UpdatePropertyAsync<TProperty>(T entity, Expression<Func<T, TProperty>> expression) => Task.Run(() =>
+        context.Entry(entity).Property(expression).IsModified = true);
 
-    public Task UpdateAsync(T entity) => Task.Run(() =>
-        _context.Set<T>().Update(entity));
+    protected bool UpdateCollectionAsync<TProperty>(T entity, Expression<Func<T,IEnumerable<TProperty>>> expression) where TProperty : class
+     => context.Entry(entity).Collection(expression).IsModified = true;
 
-    public Task UpdatePropertyAsync<TProperty>(T entity, Expression<Func<T, TProperty>> expression) => Task.Run(() =>
-        _context.Entry(entity).Property(expression).IsModified = true);
+    protected IQueryable<T> FindAll() =>
+        context.Set<T>().AsNoTracking();
 
-    public bool UpdateCollectionAsync<TProperty>(T entity, Expression<Func<T,IEnumerable<TProperty>>> expression) where TProperty : class
-     => _context.Entry(entity).Collection(expression).IsModified = true;
+    protected IQueryable<T> FindByCondition(Expression<Func<T,bool>> expression) =>
+        context.Set<T>().Where(expression).AsNoTracking();
 
-    public IQueryable<T> FindAll() =>
-        _context.Set<T>().AsNoTracking();
+    protected IQueryable<T> FindAll(bool trackChanges) => !trackChanges
+        ? context.Set<T>().AsNoTracking()
+        : context.Set<T>();
 
-    public IQueryable<T> FindByCondition(Expression<Func<T,bool>> expression) =>
-        _context.Set<T>().Where(expression).AsNoTracking();
-
-    public IQueryable<T> FindAll(bool trackChanges) => !trackChanges
-        ? _context.Set<T>().AsNoTracking()
-        : _context.Set<T>();
-
-    public IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression, bool trackChanges) => !trackChanges
-        ? _context.Set<T>().Where(expression).AsNoTracking()
-        : _context.Set<T>().Where(expression);
-
-    public Task Save() => _context.SaveChangesAsync();
+    protected IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression, bool trackChanges) => !trackChanges
+        ? context.Set<T>().Where(expression).AsNoTracking()
+        : context.Set<T>().Where(expression);
 }

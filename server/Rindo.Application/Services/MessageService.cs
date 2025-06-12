@@ -1,8 +1,8 @@
 ﻿using Application.Interfaces.Services;
-using Rindo.Domain.Entities;
+using Rindo.Domain.Models;
 using Rindo.Domain.Repositories;
 using Rindo.Domain.Services;
-using Rindo.Infrastructure.Models;
+using Rindo.Infrastructure;
 
 namespace Application.Services;
 
@@ -12,9 +12,9 @@ public class MessageService : IMessageService
     
     private readonly IUserService _userService;
     
-    private readonly RindoDbContext _context;
+    private readonly PostgresDbContext _context; //TODO: remove DbContext
     
-    public MessageService(IChatMessageRepository messageRepository, IUserService userService, RindoDbContext context)
+    public MessageService(IChatMessageRepository messageRepository, IUserService userService, PostgresDbContext context)
     {
         _messageRepository = messageRepository;
         _userService = userService;

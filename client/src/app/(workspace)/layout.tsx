@@ -7,8 +7,7 @@ export default function Layout({
 
   return (
     <div className="max-w-[100vw] max-h-[100vh] w-[100vw] h-[100vh] grid grid-cols-[2fr_12fr] flex-nowrap">
-      <Sidebar
-      />
+      <Sidebar/>
       {children}
     </div>
   );

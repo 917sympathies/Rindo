@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Rindo.Domain.Entities;
+using Rindo.Domain.Models;
 using Task = System.Threading.Tasks.Task;
 
 namespace Rindo.Domain.DTO;

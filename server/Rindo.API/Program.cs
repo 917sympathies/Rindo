@@ -1,33 +1,39 @@
 using Application;
-using AutoMapper;
 using Rindo.API.ActionFilters;
+using Rindo.API.Middleware;
+using Rindo.API.Middleware.Exceptions;
 using Rindo.Chat;
 using Rindo.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
-builder.Services.AddControllers()
-    .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+builder.Services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Configuration
+    .AddJsonFile("appsettings.db.json", optional: false)
+    .AddJsonFile("appsettings.auth.json", optional: false);
 
+// load config files and use it instead of string literals
 builder.Services.AddStackExchangeRedisCache(redisOptions =>
 {
     var connection = builder.Configuration.GetConnectionString("Redis");
     redisOptions.Configuration = connection;
 });
+
 builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 builder.Services.AddCors(options =>
-    options.AddPolicy("CorsPolicy", 
+    options.AddPolicy("CorsPolicy",
         conf => conf.AllowAnyMethod().AllowAnyHeader().AllowCredentials().SetIsOriginAllowed(_ => true)));
+
 builder.Services
     .AddInfrastructure(configuration)
     .AddApplication();
+
 builder.Services.AddJwt(configuration);
 builder.Services.AddScoped<AsyncActionAccessFilter>();
 builder.Services.AddSignalR();
-builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 var app = builder.Build();
 
@@ -37,6 +43,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     app.ApplyMigrations();    
 }
+
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 app.UseCors("CorsPolicy"); 
 

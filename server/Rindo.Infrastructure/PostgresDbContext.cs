@@ -1,26 +1,20 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Rindo.Domain.Entities;
-using Task = Rindo.Domain.Entities.Task;
+using Rindo.Domain.Models;
 
-namespace Rindo.Infrastructure.Models;
+namespace Rindo.Infrastructure;
 
-public class RindoDbContext : DbContext
+public class PostgresDbContext(DbContextOptions<PostgresDbContext> options) : DbContext(options)
 {
-    public RindoDbContext(DbContextOptions<RindoDbContext> options)
-        :base(options)
-    {
-    }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Chat>()
             .HasMany(c => c.Messages)
-            .WithOne(c => c.Chat)
+            .WithOne()
             .HasForeignKey(b => b.ChatId);
         
-        modelBuilder.Entity<Task>()
+        modelBuilder.Entity<ProjectTask>()
             .HasMany(c => c.Comments)
-            .WithOne(c => c.Task)
+            .WithOne()
             .HasForeignKey(c => c.TaskId);
         
         modelBuilder.Entity<Stage>()
@@ -49,7 +43,7 @@ public class RindoDbContext : DbContext
         modelBuilder.Entity<User>()
             .HasMany(u => u.Invitations)
             .WithOne()
-            .HasForeignKey(inv => inv.UserId);
+            .HasForeignKey(inv => inv.RecipientId);
 
         modelBuilder.Entity<Project>()
             .HasMany(p => p.Invitations)
@@ -72,7 +66,7 @@ public class RindoDbContext : DbContext
     
     public DbSet<Project> Projects { get; init; }
     
-    public DbSet<Task> Tasks { get; init; }
+    public DbSet<ProjectTask> Tasks { get; init; }
     
     public DbSet<TaskComment> TaskComments { get; init; }
     

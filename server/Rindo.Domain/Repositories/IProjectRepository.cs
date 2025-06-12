@@ -1,5 +1,5 @@
 ﻿using System.Linq.Expressions;
-using Rindo.Domain.Entities;
+using Rindo.Domain.Models;
 using Task = System.Threading.Tasks.Task;
 
 namespace Rindo.Domain.Repositories;
@@ -8,9 +8,9 @@ public interface  IProjectRepository
 {
     Task CreateProject(Project project);
     
-    Task DeleteProject(Project project);
+    void DeleteProject(Project project);
     
-    Task UpdateProject(Project project);
+    void UpdateProject(Project project);
     
     Task<Project?> GetProjectById(Guid id);
     

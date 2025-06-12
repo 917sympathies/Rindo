@@ -51,7 +51,7 @@ public static class DependencyInjection
                 {
                     OnMessageReceived = context =>
                     {
-                        context.Token = context.Request.Cookies["_rindo"];
+                        context.Token = context.Request.Cookies[configuration["CookiesName"]];
                         return Task.CompletedTask;
                     }
                 };

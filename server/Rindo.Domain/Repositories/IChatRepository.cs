@@ -1,4 +1,4 @@
-﻿using Rindo.Domain.Entities;
+﻿using Rindo.Domain.Models;
 using Task = System.Threading.Tasks.Task;
 
 namespace Rindo.Domain.Repositories;
@@ -6,6 +6,6 @@ namespace Rindo.Domain.Repositories;
 public interface IChatRepository
 {
     Task Create(Chat chat);
-    Task Delete(Chat chat);
+    void Delete(Chat chat);
     Task<Chat?> GetChatById(Guid id);
 }

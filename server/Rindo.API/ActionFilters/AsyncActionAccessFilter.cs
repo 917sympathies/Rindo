@@ -2,21 +2,22 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
-using Rindo.Infrastructure.Models;
+using Rindo.Infrastructure;
 
 namespace Rindo.API.ActionFilters;
 
 public class AsyncActionAccessFilter : IAsyncActionFilter
 {
-    private readonly RindoDbContext _context;
+    private readonly PostgresDbContext _context; //TODO: replace DbContext with Repositories
 
-    public AsyncActionAccessFilter(RindoDbContext context)
+    public AsyncActionAccessFilter(PostgresDbContext context)
     {
         _context = context;
     }
 
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
+        // TODO: Get rid of this filter and transport it's implementation to TokenMiddleware
         var token = context.HttpContext.Request.Cookies["_rindo"];
         var handler = new JwtSecurityTokenHandler();
         var jwtSecurityToken = handler.ReadJwtToken(token);
@@ -37,6 +38,6 @@ public class AsyncActionAccessFilter : IAsyncActionFilter
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == Guid.Parse(userId));
             if (project.Users.Contains(user) || project.OwnerId.Equals(user.Id)) await next();
         }
-        context.Result = new BadRequestResult();
+        context.Result = new ForbidResult();
     }
 }
