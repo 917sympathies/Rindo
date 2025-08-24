@@ -8,7 +8,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { CirclePlus } from "lucide-react";
 import AddUserModal from "@/components/addUserModal";
-import { IUserRights } from "@/types";
+import { UserRights } from "@/types";
 import { GetRights } from "@/requests";
 
 interface Props {
@@ -18,7 +18,7 @@ interface Props {
 export default function Layout({ children }: Props) {
   const pathname = usePathname();
   const { id } = useParams<{ id: string }>();
-  const [rights, setRights] = useState<IUserRights>({} as IUserRights);
+  const [rights, setRights] = useState<UserRights>();
   const [isSelectorVisible, setIsSelectorVisible] = useState<boolean>(true);
   const [isChatActive, setIsChatActive] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -91,7 +91,7 @@ export default function Layout({ children }: Props) {
           </div>
           <div
             className={
-              rights.canInviteUser ? "mr-4 flex items-center" : "invisible"
+              (rights !== undefined) && (rights & UserRights.CanInviteUser) ? "mr-4 flex items-center" : "invisible"
             }
             onClick={() => setIsModalOpen(true)}
           >

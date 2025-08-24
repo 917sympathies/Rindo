@@ -7,6 +7,7 @@ public class PostgresDbContext(DbContextOptions<PostgresDbContext> options) : Db
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // TODO: split tables in schemes (dbo, enums and other) think about it
         modelBuilder.Entity<Chat>()
             .HasMany(c => c.Messages)
             .WithOne()

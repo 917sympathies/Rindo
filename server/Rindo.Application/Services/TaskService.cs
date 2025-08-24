@@ -5,6 +5,7 @@ using Rindo.Domain.Models;
 using Rindo.Domain.Repositories;
 using Rindo.Infrastructure;
 using Task = System.Threading.Tasks.Task;
+using TaskStatus = Rindo.Domain.Enums.TaskStatus;
 
 namespace Application.Services;
 
@@ -74,7 +75,7 @@ public class TaskService : ITaskService
     {
         var task = await _taskRepository.GetById(id);
         if (task is null) return Result.Failure(Error.NotFound("Task with this id doesn't exists"));
-        task.AsigneeUserId = userId;
+        task.AsigneeId = userId;
         try
         {
             _taskRepository.UpdateTask(task);
@@ -107,10 +108,10 @@ public class TaskService : ITaskService
     {
         var task = await _taskRepository.GetById(id);
         if (task is null) return Result.Failure(Error.NotFound("Task with this id doesn't exists"));
-        task.FinishDate = date;
+        task.UpdatedDate = date;
         try
         {
-            await _taskRepository.UpdateProperty(task, t => t.FinishDate);
+            await _taskRepository.UpdateProperty(task, t => t.UpdatedDate);
             await _context.SaveChangesAsync();
         }
         catch (Exception e)
@@ -125,10 +126,10 @@ public class TaskService : ITaskService
         var task = await _taskRepository.GetById(id);
         if (task is null) return Result.Failure(Error.NotFound("Task with this id doesn't exists"));
         if (!int.TryParse(number, out var num)) return Result.Failure(Error.Failure("Invalid number"));
-        task.Progress = num;
+        task.Status = (TaskStatus)num;
         try
         {
-            await _taskRepository.UpdateProperty(task, t => t.Progress);
+            await _taskRepository.UpdateProperty(task, t => t.Status);
             await _context.SaveChangesAsync();
         }
         catch (Exception e)
@@ -167,7 +168,7 @@ public class TaskService : ITaskService
     {
         var tasks = await _context.Tasks.Where(task => task.ProjectId == projectId).ToListAsync();
         var result = tasks.Select(t => new
-            { task = t, user = _context.Users.FirstOrDefault(u => u.Id == t.AsigneeUserId) });
+            { task = t, user = _context.Users.FirstOrDefault(u => u.Id == t.AsigneeId) });
         return result;
     }
 

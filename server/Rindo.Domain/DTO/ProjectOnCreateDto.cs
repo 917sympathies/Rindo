@@ -12,5 +12,5 @@ public class ProjectOnCreateDto
     public Guid OwnerId { get; set; }
     public DateOnly StartDate { get; set; } 
     public DateOnly FinishDate { get; set; }
-    public ICollection<Tag> Tags { get; set; } = new List<Tag>();
+    public Tag[] Tags { get; set; }
 }

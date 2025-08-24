@@ -1,26 +1,18 @@
-using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Rindo.Domain.Services;
 
 namespace Rindo.API.Controllers;
 
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
-public class ChatController : ControllerBase
+public class ChatController(IChatService service) : ControllerBase
 {
-    private readonly IChatService _service;
-    
-    public ChatController(IChatService service)
-    {
-        _service = service;
-    }
-
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetChatById(Guid id)
     {
-        var result = await _service.GetChatById(id);
-        if (!result.IsSuccess) return NotFound(result.Error.Description);
-        return Ok(result.Value);
+        await service.GetChatById(id);
+        return Ok();
     }
 }

@@ -9,7 +9,7 @@ import AddProjectModal from "../addProjectModal";
 import { useCookies } from "react-cookie";
 import { jwtDecode } from "jwt-decode";
 import { IUser } from "@/types";
-import { ICookieInfo } from "@/types";
+import { CookieInfo } from "@/types";
 import { ModeToggle } from "../modeToggle";
 import { Avatar } from "../ui/avatar";
 import {
@@ -101,7 +101,7 @@ const Sidebar = ({}: ISidebarProps) => {
         router.push("/login");
         redirect("/login");
       }
-      const decoded: ICookieInfo = jwtDecode(token);
+      const decoded: CookieInfo = jwtDecode(token);
       const response = await GetProjectsByUserId(decoded.userId);
       if (response.status === 401 || response.status === 404) {
         removeCookie("_rindo", { path: "/" });

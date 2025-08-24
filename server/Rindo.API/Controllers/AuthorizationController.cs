@@ -20,9 +20,8 @@ public class AuthorizationController : ControllerBase
     [HttpPost("signup")]
     public async Task<IActionResult> SignUpUser([FromBody]SignUpDto signUpDto)
     {
-        var result = await _service.SignUpUser(signUpDto);
-        if (!result.IsSuccess) return BadRequest(result.Error);
-        return Ok(result.IsSuccess);
+        await _service.SignUpUser(signUpDto);
+        return Ok();
     }
 
     [HttpPost("auth")]

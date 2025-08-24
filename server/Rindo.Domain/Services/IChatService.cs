@@ -1,9 +1,8 @@
-﻿using Rindo.Domain.Common;
-using Rindo.Domain.DTO;
+﻿using Rindo.Domain.DTO;
 
-namespace Application.Interfaces.Services;
+namespace Rindo.Domain.Services;
 
 public interface IChatService
 {
-    Task<Result<ChatDto>> GetChatById(Guid id);
+    Task<ChatDto> GetChatById(Guid id);
 }

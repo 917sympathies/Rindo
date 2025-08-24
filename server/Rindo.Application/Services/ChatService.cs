@@ -1,39 +1,39 @@
-﻿using Application.Interfaces.Services;
+﻿using Application.Common.Exceptions;
+using Application.Interfaces.Services;
 using Rindo.Domain.Common;
 using Rindo.Domain.DTO;
+using Rindo.Domain.Models;
 using Rindo.Domain.Repositories;
+using Rindo.Domain.Services;
 using Rindo.Infrastructure;
 
 namespace Application.Services;
 
-public class ChatService : IChatService
+public class ChatService(IChatRepository chatRepository, IUserRepository userRepository) : IChatService
 {
-    private readonly IChatRepository _chatRepository;
-    
-    private readonly PostgresDbContext _context; //TODO: remove DbContext
-        
-    public ChatService(IChatRepository chatRepository, PostgresDbContext context)
+    public async Task<ChatDto> GetChatById(Guid chatId)
     {
-        _chatRepository = chatRepository;
-        _context = context;
-    }
-    
-    public async Task<Result<ChatDto>> GetChatById(Guid id)
-    {
-        var chat = await _chatRepository.GetChatById(id);
-        if (chat is null) return Error.NotFound("Chat with this id doesn't exists");
+        var chat = await chatRepository.GetChatById(chatId);
+        if (chat is null) throw new NotFoundException(nameof(Chat), chatId);
+
+        var messages = new List<MessageDto>();
+        foreach (var message in chat.Messages)
+        {
+            var user = await userRepository.GetUserById(message.SenderId);
+            messages.Add(new MessageDto 
+            {
+                Id = message.Id,
+                ChatId = message.ChatId,
+                Content = message.Content,
+                Time = message.Time,
+                Username = user.Username,
+            });
+        }
         
         return new ChatDto
         {
             Id = chat.Id,
-            Messages = chat.Messages.Select(x => new MessageDto
-            {
-                Id = x.Id,
-                ChatId = x.ChatId,
-                Content = x.Content,
-                Time = x.Time,
-                Username = _context.Users.FirstOrDefault(user => user.Id == x.SenderId)!.Username
-            }).ToArray()
+            Messages = messages.ToArray()
         };
     }
 }

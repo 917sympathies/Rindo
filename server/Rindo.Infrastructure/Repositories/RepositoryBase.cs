@@ -15,15 +15,22 @@ public abstract class RepositoryBase<T>(PostgresDbContext context) where T : cla
         await context.SaveChangesAsync();
     }
 
-    protected async Task CreateAsync(T entity)
+    protected async Task<T> CreateAsync(T entity)
     {
-        await context.AddAsync(entity);
+        var createdEntity = await context.AddAsync(entity);
         await context.SaveChangesAsync();
+        return createdEntity.Entity;
     }
 
     protected void Delete(T entity)
     {
         context.Remove(entity);
+        context.SaveChanges();
+    }
+    
+    protected void DeleteMany(IEnumerable<T> entities)
+    {
+        context.RemoveRange(entities);
         context.SaveChanges();
     }
 

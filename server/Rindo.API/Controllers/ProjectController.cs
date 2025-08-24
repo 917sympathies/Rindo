@@ -60,8 +60,7 @@ public class ProjectController : ControllerBase
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteProject(Guid id)
     {
-        var result = await _service.DeleteProject(id);
-        if (!result.IsSuccess) return BadRequest(result.Error);
+        await _service.DeleteProject(id);
         return Ok();
     }
 
@@ -96,24 +95,21 @@ public class ProjectController : ControllerBase
     [HttpPut("{projectId:guid}/name")]
     public async Task<IActionResult> UpdateProjectName(Guid projectId, string name)
     {
-        var result = await _service.UpdateProjectName(projectId, name);
-        if (!result.IsSuccess) return BadRequest(result.Error);
+        await _service.UpdateProjectName(projectId, name);
         return Ok();
     }
     
     [HttpPut("{projectId:guid}/desc")]
     public async Task<IActionResult> UpdateProjectDescription(Guid projectId, string description)
     {
-        var result = await _service.UpdateProjectDescription(projectId, description);
-        if (!result.IsSuccess) return BadRequest(result.Error);
+        await _service.UpdateProjectDescription(projectId, description);
         return Ok();
     }
 
     [HttpPut("{projectId:guid}/stages")]
     public async Task<IActionResult> UpdateProjectStages(Guid projectId,[FromBody] Stage[] stages)
     {
-        var result = await _service.UpdateProjectStages(projectId, stages);
-        if (!result.IsSuccess) return NotFound(result.Error.Description);
+        await _service.UpdateProjectStages(projectId, stages);
         return Ok();
     }
 

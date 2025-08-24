@@ -14,7 +14,7 @@ import {
 } from "react-beautiful-dnd";
 import Stage from "./stage";
 import AddTaskModal from "../addTaskModal";
-import { IUserRights } from "@/types";
+import { UserRights } from "@/types";
 import { Label } from "../ui/label";
 import { CirclePlus } from "lucide-react";
 import { AddStage, DeleteStage, GetRights, GetStagesByProjectId, UpdateProjectStages } from "@/requests";
@@ -27,7 +27,7 @@ export default function Kanban() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [stageSelected, setStageSelected] = useState<string>("");
   const [newStageName, setNewStageName] = useState<string>("");
-  const [rights, setRights] = useState<IUserRights>({} as IUserRights);
+  const [rights, setRights] = useState<UserRights>();
   const [canAddStage, setCanAddStage] = useState<boolean>(
     stages?.length !== 3
   );
@@ -110,7 +110,7 @@ export default function Kanban() {
               />
             ))}
         </DragDropContext>
-        {stages && rights.canAddStage && stages.length !== 4 ? (
+        {stages && ((rights !== undefined) && (rights & UserRights.CanAddStage)) && stages.length !== 4 ? (
           <div className="min-w-72 h-fit flex flex-col justify-center items-center mt-2">
             <div className="flex flex-row items-center gap-1">
             <Input

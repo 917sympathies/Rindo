@@ -49,7 +49,6 @@ public static class MapExtension
             Description = project.Description,
             OwnerId = project.OwnerId,
             StartDate = project.CreatedDate,
-            FinishDate = project.FinishDate,
             
             // do we actually need these properties in this dto?
             Roles = project.Roles.Select(x => x.MapToDto()).ToArray(),

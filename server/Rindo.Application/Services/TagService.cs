@@ -1,37 +1,34 @@
-﻿using Application.Interfaces.Services;
-using Microsoft.EntityFrameworkCore;
-using Rindo.Domain.Common;
+﻿using Application.Common.Exceptions;
+using Application.Interfaces.Services;
 using Rindo.Domain.Models;
-using Rindo.Infrastructure;
+using Rindo.Domain.Repositories;
 
 namespace Application.Services;
 
-public class TagService : ITagService
+public class TagService(ITagRepository tagRepository) : ITagService
 {
-    private readonly PostgresDbContext _context; //TODO: remove DbContext
-
-    public TagService(PostgresDbContext context) => _context = context;
-
     public async Task<Tag> CreateTag(string name, Guid projectId)
     {
         var tag = new Tag { Name = name, ProjectId = projectId };
-        _context.Tags.Add(tag);
-        await _context.SaveChangesAsync();
+        await tagRepository.AddTagAsync(tag);
         return tag;
     }
 
-    public async Task<Result> DeleteTag(Guid id)
+    public async Task DeleteTag(Guid tagId)
     {
-        var tag = await _context.Tags.FirstOrDefaultAsync(t => t.Id == id);
-        if (tag is null) return Error.NotFound("Tag with this id doesn't exists");
-        _context.Tags.Remove(tag);
-        await _context.SaveChangesAsync();
-        return Result.Success();
+        var tag = await tagRepository.GetTagByIdAsync(tagId);
+        if (tag is null) throw new NotFoundException(nameof(Tag), tagId);
+        await tagRepository.DeleteTag(tag);
+    }
+
+    public async Task DeleteTagsByProjectId(Guid projectId)
+    {
+        var tags = await tagRepository.GetTagsByProjectIdAsync(projectId);
+        await tagRepository.DeleteManyTags(tags);
     }
 
     public async Task<IEnumerable<Tag>> GetTagsByProjectId(Guid projectId)
     {
-        var tags = await _context.Tags.Where(t => t.ProjectId == projectId).ToListAsync();
-        return tags;
+        return await tagRepository.GetTagsByProjectIdAsync(projectId);
     }
 }

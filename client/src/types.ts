@@ -24,19 +24,6 @@ export interface IUserInfo {
     email: string,
 }
 
-export interface IMessage {
-    id: string,
-    chatId: string,
-    content: string,
-    username: string
-    time: string
-}
-
-export interface IChat {
-    id: string,
-    messages: IMessage[]
-}
-
 export interface ITask {
     id: string,
     name: string,
@@ -108,7 +95,22 @@ export interface IUserRights{
     canModifyStage: boolean,
     canModifyTask: boolean,
     canUseChat: boolean,
-  }
+}
+
+export enum UserRights {
+    CanAddTask = 1 << 1,
+    CanModifyTask = 1 << 2,
+    CanCompleteTask = 1 << 3,
+    CanDeleteTask = 1 << 4,
+    CanAddStage = 1 << 5,
+    CanModifyStage = 1 << 6,
+    CanDeleteStage = 1 << 7,
+    CanAddRoles = 1 << 8,
+    CanModifyRoles = 1 << 9,
+    CanInviteUser = 1 << 10,
+    CanExcludeUser = 1 << 11,
+    CanUseChat = 1 << 12,
+}
 
 export interface IStage {
     id: string,
@@ -145,7 +147,7 @@ export interface IProjectTag {
     name: string;
 }
 
-export interface ICookieInfo {
+export interface CookieInfo {
     userId : string,
     exp: number
 }

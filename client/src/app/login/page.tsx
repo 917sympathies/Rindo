@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useCookies } from "react-cookie";
 import { jwtDecode } from "jwt-decode";
-import { ICookieInfo, IUser } from "@/types";
+import { CookieInfo, IUser } from "@/types";
 import { AuthUser } from "@/requests";
 
 export default function Login() {
@@ -46,20 +46,16 @@ export default function Login() {
     if (cookies["_rindo"]) 
     {
       const token = cookies["_rindo"];
-      const decoded: ICookieInfo = jwtDecode(token);
+      const decoded: CookieInfo = jwtDecode(token);
       localStorage.setItem("token", JSON.stringify(decoded));
     }
   };
-
-  addEventListener("keydown", (event) => {
-    console.log(event)
-  })
 
   useEffect(() => {
     if (cookies["_rindo"]) 
     {
       const token = cookies["_rindo"];
-      const decoded: ICookieInfo = jwtDecode(token);
+      const decoded: CookieInfo = jwtDecode(token);
       if (Date.now() >= decoded.exp * 1000)
       {
         removeCookie("_rindo", { path: "/" });

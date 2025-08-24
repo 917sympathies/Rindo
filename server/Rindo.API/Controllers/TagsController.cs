@@ -33,8 +33,7 @@ public class TagsController : ControllerBase
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteTag(Guid id)
     {
-        var result = await _service.DeleteTag(id);
-        if (!result.IsSuccess) return NotFound(result.Error.Description);
+        await _service.DeleteTag(id);
         return Ok();
     }
 }

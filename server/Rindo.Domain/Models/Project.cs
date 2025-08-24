@@ -13,5 +13,4 @@ public class Project
     public ICollection<Invitation> Invitations { get; set; } 
     public ICollection<Tag> Tags { get; set; } 
     public DateOnly CreatedDate { get; set; } 
-    public DateOnly FinishDate { get; set; } 
 }

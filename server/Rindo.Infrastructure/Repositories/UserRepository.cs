@@ -11,7 +11,7 @@ public class UserRepository : RepositoryBase<User>, IUserRepository
     {
     }
 
-    public Task CreateUser(User user) => CreateAsync(user);
+    public Task<User> CreateUser(User user) => CreateAsync(user);
 
     public void DeleteUser(User user) => Delete(user);
 

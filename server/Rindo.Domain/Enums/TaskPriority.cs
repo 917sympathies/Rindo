@@ -2,7 +2,7 @@ namespace Rindo.Domain.Enums;
 
 public enum TaskPriority
 {
-    Lowest = 0,
+    Low = 0,
     Medium = 1,
-    Hightest = 2
+    High = 2
 }

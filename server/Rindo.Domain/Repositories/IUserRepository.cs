@@ -6,7 +6,7 @@ namespace Rindo.Domain.Repositories;
 
 public interface IUserRepository
 {
-    Task CreateUser(User user);
+    Task<User> CreateUser(User user);
     void DeleteUser(User user);
     void UpdateUser(User user);
     Task<User?> GetUserById(Guid id);

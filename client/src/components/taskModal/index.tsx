@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, Dispatch, SetStateAction } from "react";
-import { ITask, ITaskComment, IUser, IUserRights } from "@/types";
+import { ITask, ITaskComment, IUser, UserRights } from "@/types";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -36,7 +36,7 @@ import { DeleteTask, GetStagesByProjectId, GetTask, GetUsersByProjectId, UpdateT
 interface ITaskModalProps {
   onClose: () => void;
   setFetch: Dispatch<SetStateAction<boolean>>;
-  rights: IUserRights;
+  rights: UserRights | undefined;
 }
 
 interface IStageDto {
@@ -258,7 +258,7 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
       className="bg-white dark:bg-[#111] w-[140vh] h-[80vh] grid grid-cols-[3fr_1fr] p-[0.4rem]">
       <div
         className="border-r dark:border-gray-100 h-full flex flex-col"
-        style={rights.canModifyTask ? {} : { pointerEvents: "none" }}
+        style={rights && (rights & UserRights.CanModifyTask) ? {} : { pointerEvents: "none" }}
       >
         <div className="flex flex-col justify-evenly">
           <div className="flex flex-row items-center w-[80%] mx-[3rem] my-[1rem]">
@@ -490,7 +490,7 @@ const TaskModal = ({ onClose, setFetch, rights }: ITaskModalProps) => {
             </Button>
             <Button
               variant={"destructive"}
-              className={rights.canDeleteTask ? "" : "invisible"}
+              className={rights && (rights & UserRights.CanDeleteTask) ? "" : "invisible"}
               onClick={() => setIsModalOpen(true)}
             >
               Удалить

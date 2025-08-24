@@ -399,7 +399,7 @@ export const GetChatInfo = async (chatId: string) => {
 };
 
 export const GetUserInfo = async (id: string) => {
-    await fetch(`${baseUrl}/api/user/${id}`, {
+    return await fetch(`${baseUrl}/api/user/${id}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

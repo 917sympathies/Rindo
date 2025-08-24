@@ -33,7 +33,9 @@ public static class DependencyInjection
     {
         var jwtOptions = configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>();
         if (jwtOptions is null)
+        {
             throw new InvalidOperationException("You haven't set JWT settings in configuration file");
+        }
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
@@ -51,7 +53,7 @@ public static class DependencyInjection
                 {
                     OnMessageReceived = context =>
                     {
-                        context.Token = context.Request.Cookies[configuration["CookiesName"]];
+                        context.Token = context.Request.Cookies[jwtOptions.CookiesName];
                         return Task.CompletedTask;
                     }
                 };

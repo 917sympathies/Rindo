@@ -15,7 +15,7 @@ import React from "react";
 import { useCookies } from "react-cookie";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
-import { ICookieInfo, IProjectDto } from "@/types";
+import { CookieInfo, IProjectDto } from "@/types";
 import { X } from "lucide-react";
 import dayjs from "dayjs";
 import Editor from "../editor";

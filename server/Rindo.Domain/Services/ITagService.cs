@@ -6,6 +6,7 @@ namespace Application.Interfaces.Services;
 public interface ITagService
 {
     Task<Tag> CreateTag(string name, Guid projectId);
-    Task<Result> DeleteTag(Guid id);
+    Task DeleteTag(Guid tagId);
+    Task DeleteTagsByProjectId(Guid projectId);
     Task<IEnumerable<Tag>> GetTagsByProjectId(Guid projectId);
 }

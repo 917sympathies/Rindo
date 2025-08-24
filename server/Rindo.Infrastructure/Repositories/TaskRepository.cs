@@ -22,7 +22,7 @@ public class TaskRepository : RepositoryBase<ProjectTask>, ITaskRepository
         await FindByCondition(t => t.ProjectId == projectId).AsNoTracking().OrderBy(t => t.CreatedDate).ToListAsync();
 
     public async Task<IEnumerable<ProjectTask>> GetTasksByUserId(Guid userId) =>
-        await FindByCondition(t => t.AsigneeUserId == userId).AsNoTracking().ToListAsync();
+        await FindByCondition(t => t.AsigneeId == userId).AsNoTracking().ToListAsync();
 
     public async Task<IEnumerable<ProjectTask>> GetTasksByStageId(Guid processId) =>
         await FindByCondition(t => t.StageId == processId).AsNoTracking().ToListAsync();

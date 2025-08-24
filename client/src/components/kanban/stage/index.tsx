@@ -1,5 +1,5 @@
 import {useState, useEffect, Dispatch, SetStateAction} from 'react'
-import { IStage, IUserRights } from "@/types";
+import { IStage, UserRights } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -16,41 +16,41 @@ import {
 } from "@microsoft/signalr";
 
 interface IStageProps {
-  stage: IStage;
-  handleDeleteStage: (id: string) => void;
-  onClick: () => void;
-  setFetch: Dispatch<SetStateAction<boolean>>;
-  rights: IUserRights
+    stage: IStage;
+    handleDeleteStage: (id: string) => void;
+    onClick: () => void;
+    setFetch: Dispatch<SetStateAction<boolean>>;
+    rights: UserRights | undefined
 }
 
 export default function Stage({ stage, onClick, handleDeleteStage, setFetch, rights }: IStageProps) {
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [conn, setConnection] = useState<HubConnection | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [conn, setConnection] = useState<HubConnection | null>(null);
 
-  useEffect(() => {
-    async function start() {
-      let connection = new HubConnectionBuilder()
-        .withUrl(`http://localhost:5000/chat`)
-        .build();
-      setConnection(connection);
-      if (connection.state === HubConnectionState.Disconnected) {
-        await connection.start();
-      } else {
-        console.log("Already connected");
+    useEffect(() => {
+      async function start() {
+        let connection = new HubConnectionBuilder()
+          .withUrl(`http://localhost:5000/chat`)
+          .build();
+        setConnection(connection);
+        if (connection.state === HubConnectionState.Disconnected) {
+          await connection.start();
+        } else {
+          console.log("Already connected");
+        }
       }
-    }
-    start();
-  }, []);
+      start();
+    }, []);
 
-  try {
-    if(conn){
-    conn.on(`ReceiveTaskAdd${stage.projectId}`, (needToFetch) => {
-      setFetch(needToFetch);
-    });
+    try {
+      if(conn){
+      conn.on(`ReceiveTaskAdd${stage.projectId}`, (needToFetch) => {
+        setFetch(needToFetch);
+      });
+      }
+    } catch (exception) {
+      console.log(exception);
     }
-  } catch (exception) {
-    console.log(exception);
-  }
 
 
   return (
@@ -60,11 +60,11 @@ export default function Stage({ stage, onClick, handleDeleteStage, setFetch, rig
         <p className="m-0 flex justify-center grow">
           {stage.name}
         </p>
-        {rights.canDeleteStage ? 
+        {rights && (rights & UserRights.CanDeleteStage) ? 
         <X className="text-[1.2rem] p-[0.3rem] mr-[0.4rem] text-[rgb(114,115,118)] self-center hover: rounded-[12px] hover:bg-[rgba(1,1,1,0.03)] ease-in-out duration-200" size={24} onClick={() => setIsModalOpen(true)}/> : <></> }
       </div>
       <div className="w-full max-h-[80vh] my-[8px] grow-[20] flex flex-col">
-        {rights.canAddTask ? 
+        {rights && (rights & UserRights.CanAddTask) ? 
         <Button className="text-black bg-[rgba(102,153,255,0.6)] w-[90%] hover:bg-[rgba(102,153,255,0.3)] self-center" onClick={onClick}>
           <Plus style={{ color: "inherit" }} size={16}/>
         </Button>

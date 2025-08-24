@@ -6,7 +6,7 @@ import {
   SetStateAction,
   useCallback,
 } from "react";
-import { ITask, IUser, IUserRights } from "@/types";
+import { ITask, IUser, UserRights } from "@/types";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Avatar } from "@/components/ui/avatar";
 import { MessageCircle } from "lucide-react";
@@ -20,7 +20,7 @@ import { GetTasksCommentsAmount, GetUserInfo } from "@/requests";
 interface ITaskProps {
   task: ITask;
   setFetch: Dispatch<SetStateAction<boolean>>;
-  rights: IUserRights;
+  rights: UserRights | undefined;
 }
 
 function Task({ task, setFetch, rights }: ITaskProps) {

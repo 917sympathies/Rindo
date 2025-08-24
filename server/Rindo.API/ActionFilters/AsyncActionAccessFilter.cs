@@ -6,14 +6,9 @@ using Rindo.Infrastructure;
 
 namespace Rindo.API.ActionFilters;
 
-public class AsyncActionAccessFilter : IAsyncActionFilter
+public class AsyncActionAccessFilter(PostgresDbContext context) : IAsyncActionFilter
 {
-    private readonly PostgresDbContext _context; //TODO: replace DbContext with Repositories
-
-    public AsyncActionAccessFilter(PostgresDbContext context)
-    {
-        _context = context;
-    }
+    private readonly PostgresDbContext _context = context; //TODO: replace DbContext with Repositories
 
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {

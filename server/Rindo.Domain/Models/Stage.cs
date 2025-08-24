@@ -1,4 +1,6 @@
-﻿namespace Rindo.Domain.Models;
+﻿using Rindo.Domain.Enums;
+
+namespace Rindo.Domain.Models;
 
 public class Stage
 {
@@ -7,4 +9,5 @@ public class Stage
     public Guid ProjectId { get; set; }
     public IEnumerable<ProjectTask> Tasks { get; set; }
     public int Index { get; set; }
+    public StageType Type { get; set; }
 }

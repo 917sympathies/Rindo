@@ -8,6 +8,8 @@ using Rindo.Infrastructure.Repositories;
 
 namespace Rindo.Infrastructure;
 
+public record ConnectionStrings(string POSTGRESQL, string REDIS, string RABBITMQ);
+
 public static class DependencyInjection
 {
     public static void ApplyMigrations(this IApplicationBuilder app)
@@ -23,9 +25,16 @@ public static class DependencyInjection
     }
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<PostgresDbContext>(options =>
-            options.UseNpgsql(configuration["POSTGRESQL"],
-                b => b.MigrationsAssembly("Rindo.API")));
+        var dbOptions = configuration.GetSection(nameof(ConnectionStrings)).Get<ConnectionStrings>();
+        if (dbOptions is null)
+        {
+            throw new InvalidOperationException("You must provide a connection string in configuration");
+        }
+        services.AddDbContext<PostgresDbContext>(options => options.UseNpgsql(dbOptions.POSTGRESQL, b => b.MigrationsAssembly("Rindo.API")));
+        services.AddStackExchangeRedisCache(redisOptions =>
+        {
+            redisOptions.Configuration = dbOptions.REDIS;
+        });
         services.AddHttpContextAccessor();
         
         services.AddScoped<ProjectRepository>();
@@ -37,6 +46,7 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ITaskRepository, TaskRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
+        services.AddScoped<ITagRepository, TagRepository>();
         services.AddScoped<IJwtProvider, JwtProvider>();
         return services;
     }

@@ -16,11 +16,11 @@ builder.Configuration
     .AddJsonFile("appsettings.auth.json", optional: false);
 
 // load config files and use it instead of string literals
-builder.Services.AddStackExchangeRedisCache(redisOptions =>
-{
-    var connection = builder.Configuration.GetConnectionString("Redis");
-    redisOptions.Configuration = connection;
-});
+// builder.Services.AddStackExchangeRedisCache(redisOptions =>
+// {
+//     var connection = builder.Configuration.GetConnectionString("REDIS");
+//     redisOptions.Configuration = connection;
+// });
 
 builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 builder.Services.AddCors(options =>
@@ -41,7 +41,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.ApplyMigrations();    
+    // app.ApplyMigrations();    
 }
 
 app.UseMiddleware<ExceptionHandlerMiddleware>();

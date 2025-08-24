@@ -11,7 +11,7 @@ public class ChatRepository : RepositoryBase<Chat>, IChatRepository
     {
     }
 
-    public async Task Create(Chat chat) => await CreateAsync(chat);
+    public async Task<Chat> Create(Chat chat) => await CreateAsync(chat);
 
     public new void Delete(Chat chat) => base.Delete(chat);
 

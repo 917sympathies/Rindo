@@ -14,9 +14,11 @@ public interface  IProjectRepository
     
     Task<Project?> GetProjectById(Guid id);
     
-    Task<IEnumerable<Project>> GetProjectsByUserId(Guid userId);
+    Task<IEnumerable<Project>> GetProjectsOwnedByUser(Guid userId);
+
+    Task<Project?> GetProjectByIdWithUsers(Guid projectId);
     
-    Task<IEnumerable<Project>> GetProjectsWhereUserAttends(User user);
+    Task<IEnumerable<Project>> GetProjectsWhereUserAttends(Guid userId);
     
     Task UpdateProperty<TProperty>(Project project,
         Expression<Func<Project, TProperty>> expression);

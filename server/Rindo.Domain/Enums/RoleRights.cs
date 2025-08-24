@@ -3,7 +3,6 @@ namespace Rindo.Domain.Enums;
 [Flags]
 public enum RoleRights
 {
-    // make it flags enum
     CanAddTask = 1 << 1,
     CanModifyTask = 1 << 2,
     CanCompleteTask = 1 << 3,
