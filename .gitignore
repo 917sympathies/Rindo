@@ -1,0 +1,3 @@
+﻿/server/*/obj
+/server/*/bin
+/server/.vs/*
