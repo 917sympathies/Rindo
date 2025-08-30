@@ -1,7 +1,9 @@
-﻿using Rindo.Domain.Enums;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Rindo.Domain.Enums;
 
 namespace Rindo.Domain.Models;
 
+[Table("Stages", Schema = "dbo")]
 public class Stage
 {
     public Guid Id { get; set; }

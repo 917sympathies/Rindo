@@ -1,5 +1,8 @@
-﻿namespace Rindo.Domain.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
+namespace Rindo.Domain.Models;
+
+[Table("TaskComments", Schema = "dbo")]
 public class TaskComment
 {
     public Guid Id { get; set; }

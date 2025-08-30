@@ -1,7 +1,8 @@
-﻿using System.Runtime.Serialization;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Rindo.Domain.Models;
 
+[Table("ChatMessages", Schema = "dbo")]
 public class ChatMessage
 {
     public Guid Id { get; set;}

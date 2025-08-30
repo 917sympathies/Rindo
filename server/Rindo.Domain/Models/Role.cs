@@ -1,9 +1,9 @@
-﻿using System.Runtime.Serialization;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using Rindo.Domain.Enums;
-
 
 namespace Rindo.Domain.Models;
 
+[Table("Roles", Schema = "dbo")]
 public class Role
 {
     public Guid Id { get; set; }

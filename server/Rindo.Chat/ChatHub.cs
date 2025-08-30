@@ -54,8 +54,8 @@ public class ChatHub : Hub
         var projectId = Guid.Parse(_projectId);
         var userId = Guid.Parse(_userId);
         var project = await _projectService.GetProjectById(projectId);
-        var result = await _projectService.AddUserToProject(projectId, userId);
-        if (project is null || !result.IsSuccess) return; 
+        if (project is null) return; 
+        await _projectService.AddUserToProject(projectId, userId);
         await _invitationService.DeleteInvitation(inviteId); 
         await Clients.All.SendAsync($"ReceiveAcceptInvite{_userId}", project.Id, project.Name);
     }

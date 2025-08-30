@@ -6,7 +6,7 @@ namespace Application.Interfaces.Repositories;
 
 public interface  IProjectRepository
 {
-    Task CreateProject(Project project);
+    Task<Project> CreateProject(Project project);
     
     void DeleteProject(Project project);
     

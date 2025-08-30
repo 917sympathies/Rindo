@@ -9,7 +9,8 @@ namespace Rindo.Infrastructure.Repositories;
 
 public class ProjectRepository(PostgresDbContext context) : RepositoryBase<Project>(context), IProjectRepository
 {
-    public Task CreateProject(Project project) => CreateAsync(project);
+    private readonly PostgresDbContext _context = context;
+    public Task<Project> CreateProject(Project project) => CreateAsync(project);
 
     public void DeleteProject(Project project) => Delete(project);
 
@@ -25,7 +26,7 @@ public class ProjectRepository(PostgresDbContext context) : RepositoryBase<Proje
             .FirstOrDefaultAsync();
     
     public async Task<ProjectHeaderInfoDto?> GetProjectHeaderInfo(Guid projectId) =>
-        await context.Projects
+        await _context.Projects
             .Where(x => x.Id == projectId)
             .Select(x => new ProjectHeaderInfoDto
             {

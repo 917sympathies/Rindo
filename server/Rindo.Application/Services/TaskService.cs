@@ -39,7 +39,7 @@ public class TaskService(ITaskRepository taskRepository) : ITaskService
     {
         var task = await taskRepository.GetById(taskId);
         if (task is null) throw new NotFoundException(nameof(Task), taskId);
-        task.AsigneeId = userId;
+        task.AssigneeId = userId;
         taskRepository.UpdateTask(task);
     }
 
@@ -96,7 +96,7 @@ public class TaskService(ITaskRepository taskRepository) : ITaskService
 
     public async Task<IEnumerable<ProjectTask>> GetTasksByUserId(Guid userId)
     {
-        var tasks = await taskRepository.GetTasksByUserId(userId);
+        var tasks = await taskRepository.GetTasksAssignedToUser(userId);
         return tasks;
     }
 

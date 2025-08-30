@@ -2,8 +2,6 @@
 using Application.Common.Mapping;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
-using Microsoft.Extensions.Caching.Distributed;
-using Rindo.Domain.Common;
 using Rindo.Domain.DTO;
 using Rindo.Domain.Enums;
 using Rindo.Domain.Models;
@@ -13,13 +11,13 @@ namespace Application.Services;
 public class ProjectService(
     IProjectRepository projectRepository,
     IUserRepository userRepository,
-    IDistributedCache distributedCache, // TODO: get rid of this
+    // IDistributedCache distributedCache, // TODO: get rid of this
     IChatRepository chatRepository,
-    IInvitationService invitationService,
+    IInvitationRepository invitationRepository,
     ITaskRepository taskRepository,
     ITagService tagService) : IProjectService
 {
-    public async Task<Result> CreateProject(ProjectOnCreateDto projectOnCreateDto)
+    public async Task<Project> CreateProject(ProjectOnCreateDto projectOnCreateDto)
     {
         var chat = await chatRepository.Create(new Chat());
         var project = new Project
@@ -36,8 +34,7 @@ public class ProjectService(
             ],
             ChatId = chat.Id
         };
-        await projectRepository.CreateProject(project);
-        return Result.Success();
+        return await projectRepository.CreateProject(project);
     }
 
     public async Task<ProjectOnReturnDto?> GetProjectById(Guid projectId)
@@ -72,57 +69,47 @@ public class ProjectService(
         return ret.Select(x => x.MapToSidebarDto());
     }
 
-    public async Task<Result<User>> InviteUserToProject(Guid projectId, string username, Guid senderId)
+    public async Task<User> InviteUserToProject(Guid projectId, string username, Guid senderId)
     {
         var user = await userRepository.GetUserByUsername(username);
+        if(user is null) throw new NotFoundException<User>($"User with username = {username} was not found");
         var project = await projectRepository.GetProjectById(projectId);
+        if(project is null) throw new NotFoundException(nameof(Project), projectId);
         var sender = await userRepository.GetUserById(senderId);
-        
-        if (user is null || project is null || sender is null)
-            return Error.NotFound("Ошибка при приглашении пользователя в проект");
+        if(sender is null) throw new NotFoundException(nameof(User), senderId);
                     
         var invitation = new Invitation { RecipientId = user.Id, ProjectId = projectId, SenderId = sender.Id };
-        await invitationService.CreateInvitation(invitation);
+        await invitationRepository.CreateInvitation(invitation);
         return user;
     }
 
-    public async Task<Result> AddUserToProject(Guid projectId, Guid userId)
+    public async Task AddUserToProject(Guid projectId, Guid userId)
     {
-        var invitation = (await invitationService.GetInvitationsByUserId(userId)).FirstOrDefault(x => x.ProjectId == projectId);
-        // var invitation = await _context.Invitations.FirstOrDefaultAsync(inv => inv.ProjectId == projectId && userId == inv.RecipientId);
+        var invitation = (await invitationRepository.GetInvitationsByUserId(userId)).FirstOrDefault(x => x.ProjectId == projectId);
+        if(invitation is null) throw new NotFoundException<Invitation>($"Invitation from project with id = {projectId} to user with id = ${userId} could not be found");
         var project = await projectRepository.GetProjectByIdWithUsers(projectId);
-        // var project = await _context.Projects.Include(p => p.Users).FirstOrDefaultAsync(p => p.Id == projectId);
-        // var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if(project is null) throw new NotFoundException(nameof(Project), projectId);
         var user = await userRepository.GetUserById(userId);
+        if(user is null) throw new NotFoundException(nameof(User), userId);
         
-        if (user is null || project is null || invitation is null)
-            return Error.NotFound(""); // adding user to project error
-        
-        await invitationService.DeleteInvitation(invitation.Id);
-        // _context.Invitations.Remove(invitation);
+        await invitationRepository.DeleteInvitation(invitation);
         project.Users.Add(user);
-//        // await _context.SaveChangesAsync();
-        await distributedCache.RemoveAsync($"project-{project.Id}");
-        return Result.Success();
+        // TODO: add method to save users in project
     }
 
-    public async Task<Result> RemoveUserFromProject(Guid projectId, string username)
+    public async Task RemoveUserFromProject(Guid projectId, string username)
     {
         var user = await userRepository.GetUserByUsername(username);
-        if (user is null) return Error.NotFound("User with this id doesn't exists");
+        if (user is null) throw new NotFoundException<User>($"User with username = {username} was not found");
         var project = await projectRepository.GetProjectById(projectId);
-        if (project is null) return Error.NotFound("Project with this id doesn't exists");
+        if (project is null) throw new NotFoundException(nameof(Project), projectId);
         
-        // await _context.Entry(project).Collection(p => p.Users).LoadAsync();
-        project.Users.Remove(user);
+        await taskRepository.UnassignTasksFromUser(projectId, user.Id);
+        
+        project.Users.Remove(user); //TODO: add method to remove users from project
 
-        var tasks = await taskRepository.GetTasksByUserId(user.Id);
-        // var tasks = await _context.Tasks.Where(t => t.AsigneeId == user.Id && t.ProjectId == projectId).ToListAsync();
-        foreach (var task in tasks) task.AsigneeId = null;
-            
-        //await _context.SaveChangesAsync();
-        await distributedCache.RemoveAsync($"project-{project.Id}");
-        return Result.Success();
+
+        // await distributedCache.RemoveAsync($"project-{project.Id}");
     }
 
     public async Task<ProjectHeaderInfoDto> GetProjectsInfoForHeader(Guid projectId)
@@ -167,16 +154,15 @@ public class ProjectService(
         if (project is null) throw new NotFoundException(nameof(Project), projectId);
         project.Stages = stages;
         //await _context.SaveChangesAsync();
-        await distributedCache.RemoveAsync($"project-{project.Id}");
+        // await distributedCache.RemoveAsync($"project-{project.Id}");
     }
 
-    public async Task<Result<object>> GetProjectsWithUserTasks(Guid userId)
+    public async Task<object> GetProjectsWithUserTasks(Guid userId)
     {
         var user = await userRepository.GetUserById(userId);
         if (user is null) throw new NotFoundException(nameof(User), userId);
-        var tasks = await taskRepository.GetTasksByUserId(userId);
-        // var tasks = await _context.Tasks.Where(t => t.AsigneeId == userId).ToListAsync();
-        // var projects = await _context.Projects.Where(p => p.Users.Contains(user) || p.OwnerId == user.Id).ToListAsync();
+        // TODO: easy refactor - just sort included in project tasks by userId
+        var tasks = await taskRepository.GetTasksAssignedToUser(userId);
         var projects = await projectRepository.GetProjectsWhereUserAttends(userId);
         var result = projects.Select(p => new {p.Name, p.Id, tasks = tasks.Where(t => t.ProjectId == p.Id) }).ToList();
         return result;

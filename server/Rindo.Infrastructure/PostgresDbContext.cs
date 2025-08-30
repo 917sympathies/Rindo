@@ -39,7 +39,8 @@ public class PostgresDbContext(DbContextOptions<PostgresDbContext> options) : Db
 
         modelBuilder.Entity<Role>()
             .HasMany(r => r.Users)
-            .WithMany();
+            .WithMany()
+            .UsingEntity("Roles2Users");
         
         modelBuilder.Entity<User>()
             .HasMany(u => u.Invitations)
@@ -50,6 +51,11 @@ public class PostgresDbContext(DbContextOptions<PostgresDbContext> options) : Db
             .HasMany(p => p.Invitations)
             .WithOne()
             .HasForeignKey(inv => inv.ProjectId);
+        
+        modelBuilder.Entity<Project>()
+            .HasMany(p => p.Users)
+            .WithMany(p => p.Projects)
+            .UsingEntity("Projects2Users");
 
         modelBuilder.Entity<Project>()
             .HasMany(p => p.Tags)
@@ -58,22 +64,13 @@ public class PostgresDbContext(DbContextOptions<PostgresDbContext> options) : Db
     }
     
     public DbSet<Chat> Chats { get; init; }
-    
     public DbSet<ChatMessage> ChatMessages { get; init; }
-    
     public DbSet<User> Users { get; init; }
-    
     public DbSet<Stage> Stages { get; init; }
-    
     public DbSet<Project> Projects { get; init; }
-    
     public DbSet<ProjectTask> Tasks { get; init; }
-    
     public DbSet<TaskComment> TaskComments { get; init; }
-    
     public DbSet<Role> Roles { get; init; }
-    
     public DbSet<Tag> Tags { get; init; }
-    
     public DbSet<Invitation> Invitations { get; init; }
 }

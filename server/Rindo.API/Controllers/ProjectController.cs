@@ -2,7 +2,6 @@ using System.IdentityModel.Tokens.Jwt;
 using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-// using Rindo.API.ActionFilters;
 using Rindo.Domain.DTO;
 using Rindo.Domain.Models;
 
@@ -11,28 +10,19 @@ namespace Rindo.API.Controllers;
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
-public class ProjectController : ControllerBase
+public class ProjectController(IProjectService service, IHttpContextAccessor httpContextAccessor) : ControllerBase
 {
-    private readonly IProjectService _service;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    
-    public ProjectController(IProjectService service, IHttpContextAccessor httpContextAccessor)
-    {
-        _service = service;
-        _httpContextAccessor = httpContextAccessor;
-    }
-
     [HttpPost]
     public async Task<IActionResult> CreateProject([FromBody] ProjectOnCreateDto projectOnCreateDto)
     {
-        var project = await _service.CreateProject(projectOnCreateDto);
+        var project = await service.CreateProject(projectOnCreateDto);
         return Ok(project);
     }
     
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetProjectById(Guid id)
     {
-        var project = await _service.GetProjectById(id);
+        var project = await service.GetProjectById(id);
         return Ok(project);
     }
 
@@ -40,84 +30,79 @@ public class ProjectController : ControllerBase
     [HttpGet("{id:guid}/settings")]
     public async Task<IActionResult> GetProjectSettings(Guid id)
     {
-        var project = await _service.GetProjectSettings(id);
+        var project = await service.GetProjectSettings(id);
         return Ok(project);
     }
 
     [HttpGet]
     public async Task<IActionResult> GetProjectsWhereUserAttends(Guid userId)
     {
-        return Ok(await _service.GetProjectsWhereUserAttends(userId));
+        return Ok(await service.GetProjectsWhereUserAttends(userId));
     }
 
     // [ServiceFilter(typeof(AsyncActionAccessFilter))]
     [HttpGet("{id:guid}/header")]
     public async Task<IActionResult> GetProjectsInfoForHeader(Guid id)
     {
-        return Ok(await _service.GetProjectsInfoForHeader(id));
+        return Ok(await service.GetProjectsInfoForHeader(id));
     }
 
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteProject(Guid id)
     {
-        await _service.DeleteProject(id);
+        await service.DeleteProject(id);
         return Ok();
     }
 
     [HttpPost("{id:guid}/invite")]
     public async Task<IActionResult> InviteUserToProject(Guid id, string username)
     {
-        var token = _httpContextAccessor.HttpContext?.Request.Cookies["_rindo"];
+        var token = httpContextAccessor.HttpContext?.Request.Cookies["_rindo"];
         var handler = new JwtSecurityTokenHandler();
         var jwtSecurityToken = handler.ReadJwtToken(token);
         var userId = jwtSecurityToken.Claims.First(c => c.Type == "userId").Value;
-        var result = await _service.InviteUserToProject(id, username, Guid.Parse(userId));
-        if (!result.IsSuccess) return BadRequest(result.Error);
+        await service.InviteUserToProject(id, username, Guid.Parse(userId));
         return Ok();
     }
     
     [HttpPost("{id:guid}")]
     public async Task<IActionResult> AddUserToProject(Guid id, Guid userId)
     {
-        var result = await _service.AddUserToProject(id, userId);
-        if (!result.IsSuccess) return NotFound(result.Error.Description);
+        await service.AddUserToProject(id, userId);
         return Ok();
     }
 
     [HttpPost("{id:guid}/remove")]
     public async Task<IActionResult> RemoveUserFromProject(Guid id, string username)
     {
-        var result = await _service.RemoveUserFromProject(id, username);
-        if (!result.IsSuccess) return NotFound(result.Error.Description);
+        await service.RemoveUserFromProject(id, username);
         return Ok();
     }
     
     [HttpPut("{projectId:guid}/name")]
     public async Task<IActionResult> UpdateProjectName(Guid projectId, string name)
     {
-        await _service.UpdateProjectName(projectId, name);
+        await service.UpdateProjectName(projectId, name);
         return Ok();
     }
     
     [HttpPut("{projectId:guid}/desc")]
     public async Task<IActionResult> UpdateProjectDescription(Guid projectId, string description)
     {
-        await _service.UpdateProjectDescription(projectId, description);
+        await service.UpdateProjectDescription(projectId, description);
         return Ok();
     }
 
     [HttpPut("{projectId:guid}/stages")]
     public async Task<IActionResult> UpdateProjectStages(Guid projectId,[FromBody] Stage[] stages)
     {
-        await _service.UpdateProjectStages(projectId, stages);
+        await service.UpdateProjectStages(projectId, stages);
         return Ok();
     }
 
     [HttpGet("{userId:guid}/userTasks")]
     public async Task<IActionResult> GetProjectsWithUserTasks(Guid userId)
     {
-        var result = await _service.GetProjectsWithUserTasks(userId);
-        if (!result.IsSuccess) return NotFound(result.Error.Description);
-        return Ok(result.Value);
+        return Ok(await service.GetProjectsWithUserTasks(userId));
     }
 }

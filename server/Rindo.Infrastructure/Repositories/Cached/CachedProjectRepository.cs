@@ -8,7 +8,10 @@ namespace Rindo.Infrastructure.Repositories.Cached;
 
 public class CachedProjectRepository(ProjectRepository decorated, IRedisCacheService redisCacheService) : IProjectRepository
 {
-    public async Task CreateProject(Project project) => await decorated.CreateProject(project);
+    public async Task<Project> CreateProject(Project project)
+    {
+        return await decorated.CreateProject(project);
+    }
 
     public void DeleteProject(Project project)
     {

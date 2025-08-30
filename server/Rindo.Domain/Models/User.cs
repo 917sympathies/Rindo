@@ -1,5 +1,8 @@
-﻿namespace Rindo.Domain.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
+namespace Rindo.Domain.Models;
+
+[Table("Users", Schema = "dbo")]
 public class User
 {
     public Guid Id { get; set; }
