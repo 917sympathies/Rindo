@@ -1,8 +1,8 @@
 ﻿using System.Linq.Expressions;
+using Application.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Rindo.Domain.DTO;
 using Rindo.Domain.Models;
-using Rindo.Domain.Repositories;
 using Task = System.Threading.Tasks.Task;
 
 namespace Rindo.Infrastructure.Repositories;

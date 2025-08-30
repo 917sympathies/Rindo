@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Rindo.Domain.DTO;
-using Rindo.Domain.Services;
+using Application.Interfaces.Services;
 
 namespace Rindo.API.Controllers;
 

@@ -1,7 +1,6 @@
 using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Rindo.API.ActionFilters;
 using Rindo.Domain.DTO;
 
 namespace Rindo.API.Controllers;
@@ -9,51 +8,40 @@ namespace Rindo.API.Controllers;
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
-public class StageController : ControllerBase
+public class StageController(IStageService service) : ControllerBase
 {
-    private readonly IStageService _service;
-    
-    public StageController(IStageService service)
+    [HttpGet("{stageId:guid}/name")]
+    public async Task<IActionResult> GetStageName(Guid stageId)
     {
-        _service = service;
+        return Ok(await service.GetStageName(stageId));
     }
 
-    [HttpGet("{id:guid}/name")]
-    public async Task<IActionResult> GetStageName(Guid id)
-    {
-        var result = await _service.GetStageName(id);
-        if (!result.IsSuccess) return NotFound(result.Error.Description);
-        return Ok(result.Value);
-    }
-
-    [ServiceFilter(typeof(AsyncActionAccessFilter))]
+    // [ServiceFilter(typeof(AsyncActionAccessFilter))]
     [HttpGet]
     public async Task<IActionResult> GetStagesByProject(Guid projectId)
     {
-        var result = await _service.GetStagesByProjectId(projectId);
+        var result = await service.GetStagesByProjectId(projectId);
         return Ok(result);
     }
 
-    [HttpPut("{id:guid}")]
-    public async Task<IActionResult> ChangeStageTask(Guid id, Guid taskId)
+    [HttpPut("{stageId:guid}")]
+    public async Task<IActionResult> ChangeStageTask(Guid stageId, Guid taskId)
     {
-        var result = await _service.ChangeStageTask(id, taskId);
-        if (!result.IsSuccess) return NotFound(result.Error.Description);
+        await service.ChangeStageTask(stageId, taskId);
         return Ok();
     }
     
     [HttpPost]
     public async Task<IActionResult> AddStage([FromBody]StageOnCreateDto stageDto)
     {
-        await _service.AddStage(stageDto);
+        await service.AddStage(stageDto);
         return Ok();
     }
 
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> DeleteStage(Guid id)
+    [HttpDelete("{stageId:guid}")]
+    public async Task<IActionResult> DeleteStage(Guid stageId, Guid projectId)
     {
-        var result = await _service.DeleteStage(id);
-        if (!result.IsSuccess) return NotFound(result.Error.Description);
+        await service.DeleteStage(stageId, projectId);
         return Ok();
     }
 }

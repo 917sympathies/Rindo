@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Application.Interfaces.Repositories;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Rindo.Domain.Repositories;
 using Rindo.Infrastructure.Jwt;
 using Rindo.Infrastructure.Repositories;
+using Rindo.Infrastructure.Repositories.Cached;
 
 namespace Rindo.Infrastructure;
 
@@ -35,8 +36,12 @@ public static class DependencyInjection
         {
             redisOptions.Configuration = dbOptions.REDIS;
         });
-        services.AddHttpContextAccessor();
         
+        return services;
+    }
+
+    public static IServiceCollection AddRepositories(this IServiceCollection services)
+    {
         services.AddScoped<ProjectRepository>();
         services.AddScoped<IProjectRepository, CachedProjectRepository>();
         services.AddScoped<IChatRepository, ChatRepository>();
@@ -48,6 +53,7 @@ public static class DependencyInjection
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<ITagRepository, TagRepository>();
         services.AddScoped<IJwtProvider, JwtProvider>();
+        
         return services;
     }
 }

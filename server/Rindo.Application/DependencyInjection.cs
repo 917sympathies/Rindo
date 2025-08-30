@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Rindo.Domain.Services;
+using Application.Interfaces.Services;
 using Rindo.Infrastructure;
 using Task = System.Threading.Tasks.Task;
 

@@ -1,8 +1,6 @@
-﻿using Rindo.Domain.DTO;
-using Rindo.Domain.Models;
-using Task = System.Threading.Tasks.Task;
+﻿using Rindo.Domain.Models;
 
-namespace Rindo.Domain.Repositories;
+namespace Application.Interfaces.Repositories;
 
 public interface IUserRepository
 {
@@ -12,4 +10,5 @@ public interface IUserRepository
     Task<User?> GetUserById(Guid id);
     Task<User?> GetUserByUsername(string username);
     //Task<IEnumerable<UserDto>> GetUsersByProjectId(Guid projectId);
+    Task<User[]> GetUsersByIds(Guid[] ids);
 }

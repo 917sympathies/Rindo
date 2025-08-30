@@ -1,19 +1,19 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Mapping;
+using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
 using Microsoft.Extensions.Caching.Distributed;
 using Rindo.Domain.Common;
 using Rindo.Domain.DTO;
 using Rindo.Domain.Enums;
 using Rindo.Domain.Models;
-using Rindo.Domain.Repositories;
 
 namespace Application.Services;
 
 public class ProjectService(
     IProjectRepository projectRepository,
     IUserRepository userRepository,
-    IDistributedCache distributedCache,
+    IDistributedCache distributedCache, // TODO: get rid of this
     IChatRepository chatRepository,
     IInvitationService invitationService,
     ITaskRepository taskRepository,
@@ -43,7 +43,11 @@ public class ProjectService(
     public async Task<ProjectOnReturnDto?> GetProjectById(Guid projectId)
     {
         var project = await projectRepository.GetProjectById(projectId);
-        return project?.MapToDto();
+        if (project is null)
+        {
+            throw new NotFoundException(nameof(Project), projectId);
+        }
+        return project.MapToDto();
     }
 
     public async Task<ProjectOnReturnDto> GetProjectSettings(Guid projectId)
@@ -124,6 +128,10 @@ public class ProjectService(
     public async Task<ProjectHeaderInfoDto> GetProjectsInfoForHeader(Guid projectId)
     {
         var project = await projectRepository.GetProjectById(projectId);
+        if (project is null)
+        {
+            throw new NotFoundException(nameof(Project), projectId);
+        }
         return project.MapToHeaderDto();
     }
 

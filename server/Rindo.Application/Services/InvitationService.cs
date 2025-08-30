@@ -1,4 +1,6 @@
-﻿using Application.Interfaces.Services;
+﻿using Application.Common.Exceptions;
+using Application.Interfaces.Repositories;
+using Application.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
 using Rindo.Domain.Common;
 using Rindo.Domain.DTO;
@@ -7,52 +9,44 @@ using Rindo.Infrastructure;
 
 namespace Application.Services;
 
-public class InvitationService : IInvitationService
+public class InvitationService(
+    IProjectService projectService,
+    IInvitationRepository invitationRepository,
+    IUserRepository userRepository) : IInvitationService
 {
-    private readonly PostgresDbContext _context; //TODO: remove DbContext
-    
-    private readonly IProjectService _projectService;
-
-    public InvitationService(PostgresDbContext context, IProjectService projectService)
-    {
-        _context = context;
-        _projectService = projectService;
-    }
-
     public async Task CreateInvitation(Guid projectId, Guid userId)
     {
         var inv = new Invitation { ProjectId = projectId, RecipientId = userId };
-        _context.Invitations.Add(inv);
-        await _context.SaveChangesAsync();
+        await invitationRepository.CreateInvitation(inv);
     }
 
-    public async Task<Result> DeleteInvitation(Guid id)
+    public async Task CreateInvitation(Invitation invitation)
     {
-        var invite = await _context.Invitations.FirstOrDefaultAsync(inv => inv.Id == id);
-        if (invite == null) return Error.NotFound("Invitation with this id doesn't exists");
-        _context.Invitations.Remove(invite);
-        await _context.SaveChangesAsync();
-        return Result.Success();
+        await invitationRepository.CreateInvitation(invitation);
     }
 
-    public async Task<Result> AcceptInvitation(Guid id)
+    public async Task DeleteInvitation(Guid invitationId)
     {
-        var invitation = await _context.Invitations.FirstOrDefaultAsync(inv => inv.Id == id);
-        if (invitation is null) return Error.NotFound("Invitation with this id doesn't exists");
-        var result = await _projectService.AddUserToProject(invitation.ProjectId, invitation.RecipientId);
-        return !result.IsSuccess ? result.Error : result;
+        var invitation = await invitationRepository.GetInvitationById(invitationId);
+        if (invitation == null) throw new NotFoundException(nameof(Invitation), invitationId);
+        await invitationRepository.DeleteInvitation(invitation);
+    }
+
+    public async Task AcceptInvitation(Guid invitationId)
+    {
+        var invitation = await invitationRepository.GetInvitationById(invitationId);
+        if (invitation is null) throw new NotFoundException(nameof(Invitation), invitationId);
+        await projectService.AddUserToProject(invitation.ProjectId, invitation.RecipientId);
     }
 
     public async Task<IEnumerable<InviteDto>> GetInvitationsByProjectId(Guid projectId)
     {
-        var invites = await _context.Invitations.Where(inv => inv.ProjectId == projectId).ToListAsync();
+        var invites = await invitationRepository.GetInvitationsByProjectId(projectId);
         var sendersIds = invites.Select(x => x.SenderId);
         var recipientsIds = invites.Select(x => x.RecipientId);
-        var sendersTask = _context.Users.Where(x => sendersIds.Contains(x.Id)).ToListAsync();
-        var recipientsTask = _context.Users.Where(x => recipientsIds.Contains(x.Id)).ToListAsync();
-        await Task.WhenAll(sendersTask, recipientsTask);
-        var senders = sendersTask.Result;
-        var recipients = recipientsTask.Result;
+        var senders = await userRepository.GetUsersByIds(sendersIds.ToArray());
+        var recipients = await userRepository.GetUsersByIds(recipientsIds.ToArray());
+        
         var result = invites.Select(inv => new InviteDto
         { 
             Id = inv.Id, 
@@ -64,7 +58,6 @@ public class InvitationService : IInvitationService
 
     public async Task<IEnumerable<Invitation>> GetInvitationsByUserId(Guid userId)
     {
-        var invites = await _context.Invitations.Where(inv => inv.RecipientId == userId).ToListAsync();
-        return invites;
+        return await invitationRepository.GetInvitationsByUserId(userId);
     }
 }

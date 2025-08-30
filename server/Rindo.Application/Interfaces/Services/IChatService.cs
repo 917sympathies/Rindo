@@ -1,6 +1,6 @@
 ﻿using Rindo.Domain.DTO;
 
-namespace Rindo.Domain.Services;
+namespace Application.Interfaces.Services;
 
 public interface IChatService
 {

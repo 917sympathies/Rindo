@@ -1,17 +1,14 @@
 ﻿using Application.Interfaces.Services;
 using Microsoft.AspNetCore.SignalR;
-using Rindo.Domain.Services;
+using Application.Interfaces.Services;
 
 namespace Rindo.Chat;
 
 public class ChatHub : Hub
 {
     private readonly IMessageService _messageService;
-    
     private readonly ICommentService _commentService;
-    
     private readonly IProjectService _projectService;
-    
     private readonly IInvitationService _invitationService;
 
     public ChatHub(IMessageService messageService, ICommentService commentService, IProjectService projectService, IInvitationService invitationService)

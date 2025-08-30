@@ -1,11 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using Application.Common.Mapping;
+using Application.Interfaces.Repositories;
+using Application.Interfaces.Services;
 using Rindo.Domain.Common;
 using Rindo.Domain.DTO;
 using Rindo.Domain.Models;
-using Rindo.Domain.Repositories;
-using Rindo.Domain.Services;
-using Rindo.Infrastructure;
 using Rindo.Infrastructure.Jwt;
 
 namespace Application.Services;

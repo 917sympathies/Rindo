@@ -2,7 +2,7 @@ using Rindo.Domain.Common;
 using Rindo.Domain.DTO;
 using Rindo.Domain.Models;
 
-namespace Rindo.Domain.Services;
+namespace Application.Interfaces.Services;
 
 public interface IAuthorizationService
 {

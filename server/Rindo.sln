@@ -7,6 +7,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rindo.Domain", "Rindo.Domain\Rindo.Domain.csproj", "{6F86DA0D-B2C8-4313-84C2-5A87FC2636A7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rindo.Infrastructure", "Rindo.Infrastructure\Rindo.Infrastructure.csproj", "{1F03FB80-9F46-42F0-976E-263679DE9707}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B0E2B0BD-69E1-4144-BB67-6E757AFC956A} = {B0E2B0BD-69E1-4144-BB67-6E757AFC956A}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rindo.Chat", "Rindo.Chat\Rindo.Chat.csproj", "{172D3292-634C-44CF-B578-8C1830350A55}"
 EndProject

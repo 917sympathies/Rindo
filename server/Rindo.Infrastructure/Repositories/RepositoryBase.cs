@@ -2,7 +2,7 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Rindo.Domain.Repositories;
+
 using Task = System.Threading.Tasks.Task;
 
 namespace Rindo.Infrastructure.Repositories;
@@ -38,10 +38,13 @@ public abstract class RepositoryBase<T>(PostgresDbContext context) where T : cla
     {
         context.Update(entity);
         context.SaveChanges();
-    } 
-    
-    protected Task UpdatePropertyAsync<TProperty>(T entity, Expression<Func<T, TProperty>> expression) => Task.Run(() =>
-        context.Entry(entity).Property(expression).IsModified = true);
+    }
+
+    protected async Task UpdatePropertyAsync<TProperty>(T entity, Expression<Func<T, TProperty>> expression)
+    {
+        context.Entry(entity).Property(expression).IsModified = true;
+        await context.SaveChangesAsync();
+    }
 
     protected bool UpdateCollectionAsync<TProperty>(T entity, Expression<Func<T,IEnumerable<TProperty>>> expression) where TProperty : class
      => context.Entry(entity).Collection(expression).IsModified = true;

@@ -1,6 +1,6 @@
 ﻿using Rindo.Domain.Models;
 
-namespace Rindo.Domain.Services;
+namespace Application.Interfaces.Services;
 
 public interface IMessageService
 {

@@ -2,7 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Rindo.API.ActionFilters;
+// using Rindo.API.ActionFilters;
 using Rindo.Domain.DTO;
 using Rindo.Domain.Models;
 
@@ -36,7 +36,7 @@ public class ProjectController : ControllerBase
         return Ok(project);
     }
 
-    [ServiceFilter(typeof(AsyncActionAccessFilter))]
+    // [ServiceFilter(typeof(AsyncActionAccessFilter))]
     [HttpGet("{id:guid}/settings")]
     public async Task<IActionResult> GetProjectSettings(Guid id)
     {
@@ -50,7 +50,7 @@ public class ProjectController : ControllerBase
         return Ok(await _service.GetProjectsWhereUserAttends(userId));
     }
 
-    [ServiceFilter(typeof(AsyncActionAccessFilter))]
+    // [ServiceFilter(typeof(AsyncActionAccessFilter))]
     [HttpGet("{id:guid}/header")]
     public async Task<IActionResult> GetProjectsInfoForHeader(Guid id)
     {

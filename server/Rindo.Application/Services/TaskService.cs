@@ -1,192 +1,114 @@
-﻿using Application.Interfaces.Services;
+﻿using Application.Common.Exceptions;
+using Application.Interfaces.Repositories;
+using Application.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
 using Rindo.Domain.Common;
 using Rindo.Domain.Models;
-using Rindo.Domain.Repositories;
 using Rindo.Infrastructure;
 using Task = System.Threading.Tasks.Task;
 using TaskStatus = Rindo.Domain.Enums.TaskStatus;
 
 namespace Application.Services;
 
-public class TaskService : ITaskService
+public class TaskService(ITaskRepository taskRepository) : ITaskService
 {
-    private readonly ITaskRepository _taskRepository;
-    
-    private readonly PostgresDbContext _context; //TODO: remove DbContext
-
-    public TaskService(ITaskRepository taskRepository, PostgresDbContext context)
+    public async Task<ProjectTask> CreateTask(ProjectTask projectTask)
     {
-        _taskRepository = taskRepository;
-        _context = context;
-    }
-
-    public async Task<Result> CreateTask(ProjectTask projectTask)
-    {
-        var projectTasks = await _taskRepository.GetTasksByProjectId(projectTask.ProjectId);
+        var projectTasks = await taskRepository.GetTasksByProjectId(projectTask.ProjectId);
         projectTask.Index = projectTasks.Count();
-        try
-        {
-            await _taskRepository.CreateTask(projectTask);
-            await _context.SaveChangesAsync();
-        }
-        catch (Exception e)
-        {
-            return Result.Failure(Error.Failure(e.Message));
-        }
-        return Result.Success();
+        return await taskRepository.CreateTask(projectTask);
     }
 
-    public async Task<Result> UpdateName(Guid id, string name)
+    public async Task UpdateName(Guid taskId, string name)
     {
-        var task = await _taskRepository.GetById(id);
-        if (task is null) return Result.Failure(Error.NotFound("Task with this id doesn't exists"));
+        var task = await taskRepository.GetById(taskId);
+        if (task is null) throw new NotFoundException(nameof(Task), taskId);
         task.Name = name;
-        try
-        {
-            await _taskRepository.UpdateProperty(task, t => t.Name);
-            await _context.SaveChangesAsync();
-        }
-        catch (Exception e)
-        {
-            return Result.Failure(Error.Failure(e.Message));
-        }
-        return Result.Success();
+        await taskRepository.UpdateProperty(task, t => t.Name);
     }
 
-    public async Task<Result> UpdateDescription(Guid id, string description)
+    public async Task UpdateDescription(Guid taskId, string description)
     {
-        var task = await _taskRepository.GetById(id);
-        if (task is null) return Result.Failure(Error.NotFound("Task with this id doesn't exists"));
+        var task = await taskRepository.GetById(taskId);
+        if (task is null) throw new NotFoundException(nameof(Task), taskId);
         task.Description = description;
-        try
-        {
-            await _taskRepository.UpdateProperty(task, t => t.Description);
-            await _context.SaveChangesAsync();
-        }
-        catch (Exception e)
-        {
-            return Result.Failure(Error.Failure(e.Message));
-        }
-        return Result.Success();
+        await taskRepository.UpdateProperty(task, t => t.Description);
     }
 
-    public async Task<Result> UpdateResponsible(Guid id, Guid? userId)
+    public async Task UpdateResponsible(Guid taskId, Guid? userId)
     {
-        var task = await _taskRepository.GetById(id);
-        if (task is null) return Result.Failure(Error.NotFound("Task with this id doesn't exists"));
+        var task = await taskRepository.GetById(taskId);
+        if (task is null) throw new NotFoundException(nameof(Task), taskId);
         task.AsigneeId = userId;
-        try
-        {
-            _taskRepository.UpdateTask(task);
-        }
-        catch (Exception e)
-        {
-            return Result.Failure(Error.Failure(e.Message));
-        }
-        return Result.Success();
+        taskRepository.UpdateTask(task);
     }
 
-    public async Task<Result> UpdateStartDate(Guid id, DateOnly date)
+    public async Task UpdateStartDate(Guid taskId, DateOnly date)
     {
-        var task = await _taskRepository.GetById(id);
-        if (task is null) return Result.Failure(Error.NotFound("Task with this id doesn't exists"));
+        var task = await taskRepository.GetById(taskId);
+        if (task is null) throw new NotFoundException(nameof(Task), taskId);
         task.CreatedDate = date;
-        try
-        {
-            await _taskRepository.UpdateProperty(task, t => t.CreatedDate);
-            await _context.SaveChangesAsync();
-        }
-        catch (Exception e)
-        {
-            return Result.Failure(Error.Failure(e.Message));
-        }
-        return Result.Success();
+        await taskRepository.UpdateProperty(task, t => t.CreatedDate);
     }
 
-    public async Task<Result> UpdateFinishDate(Guid id, DateOnly date)
+    public async Task UpdateFinishDate(Guid taskId, DateOnly date)
     {
-        var task = await _taskRepository.GetById(id);
-        if (task is null) return Result.Failure(Error.NotFound("Task with this id doesn't exists"));
+        var task = await taskRepository.GetById(taskId);
+        if (task is null) throw new NotFoundException(nameof(Task), taskId);
         task.UpdatedDate = date;
-        try
-        {
-            await _taskRepository.UpdateProperty(task, t => t.UpdatedDate);
-            await _context.SaveChangesAsync();
-        }
-        catch (Exception e)
-        {
-            return Result.Failure(Error.Failure(e.Message));
-        }
-        return Result.Success();
+        await taskRepository.UpdateProperty(task, t => t.UpdatedDate);
     }
 
-    public async Task<Result> UpdateProgress(Guid id, string number)
+    public async Task UpdateProgress(Guid taskId, string number)
     {
-        var task = await _taskRepository.GetById(id);
-        if (task is null) return Result.Failure(Error.NotFound("Task with this id doesn't exists"));
-        if (!int.TryParse(number, out var num)) return Result.Failure(Error.Failure("Invalid number"));
+        var task = await taskRepository.GetById(taskId);
+        if (task is null) throw new NotFoundException(nameof(Task), taskId);
+        if (!int.TryParse(number, out var num)) throw new ArgumentException(nameof(number), number);
         task.Status = (TaskStatus)num;
-        try
-        {
-            await _taskRepository.UpdateProperty(task, t => t.Status);
-            await _context.SaveChangesAsync();
-        }
-        catch (Exception e)
-        {
-            return Result.Failure(Error.Failure(e.Message));
-        }
-        return Result.Success();
+        await taskRepository.UpdateProperty(task, t => t.Status);
     }
 
     public void UpdateTask(ProjectTask projectTask)
     {
-        _taskRepository.UpdateTask(projectTask);
+        taskRepository.UpdateTask(projectTask);
     }
 
-    public async Task<Result> DeleteTask(Guid id)
+    public async Task DeleteTask(Guid taskId)
     {
-        var task = await _taskRepository.GetById(id);
-        if (task is null) return Result.Failure(Error.NotFound("Task with this id doesn't exists"));
-        try
-        {
-            _taskRepository.DeleteTask(task);
-        }
-        catch (Exception e)
-        {
-            return Result.Failure(Error.Failure(e.Message));
-        }
-        return Result.Success();
+        var task = await taskRepository.GetById(taskId);
+        if (task is null) throw new NotFoundException(nameof(Task), taskId);
+        taskRepository.DeleteTask(task);
     }
 
     public async Task<IEnumerable<ProjectTask>> GetTasksByStageId(Guid stageId)
     {
-        return await _taskRepository.GetTasksByStageId(stageId);
+        return await taskRepository.GetTasksByStageId(stageId);
     }
 
     public async Task<IEnumerable<object>> GetTasksByProjectId(Guid projectId)
     {
-        var tasks = await _context.Tasks.Where(task => task.ProjectId == projectId).ToListAsync();
-        var result = tasks.Select(t => new
-            { task = t, user = _context.Users.FirstOrDefault(u => u.Id == t.AsigneeId) });
-        return result;
+        var tasks = await taskRepository.GetTasksByProjectId(projectId);
+        // var result = tasks.Select(t => new
+        //     { task = t, user = _context.Users.FirstOrDefault(u => u.Id == t.AsigneeId) });
+        // return result;
+        return Array.Empty<object>();
     }
 
     public async Task<IEnumerable<ProjectTask>> GetTasksByUserId(Guid userId)
     {
-        var tasks = await _taskRepository.GetTasksByUserId(userId);
+        var tasks = await taskRepository.GetTasksByUserId(userId);
         return tasks;
     }
 
-    public async Task<Result<object>> GetTaskById(Guid id)
+    public async Task<object> GetTaskById(Guid id)
     {
-        var task = await _taskRepository.GetById(id);
+        var task = await taskRepository.GetById(id);
         if (task is null) return Error.NotFound($"Task with this id doesn't exists {id}");
-        var comments = _context.TaskComments.Where(cm => cm.TaskId == task.Id).Select(cm =>
-            new
-            {
-                cm.Id, cm.Content, cm.TaskId, cm.UserId, cm.Time, username = _context.Users.FirstOrDefault(user => user.Id == cm.UserId)!.Username
-            }).ToList();
-        return new { task, comments };
+        // var comments = _context.TaskComments.Where(cm => cm.TaskId == task.Id).Select(cm =>
+        //     new
+        //     {
+        //         cm.Id, cm.Content, cm.TaskId, cm.UserId, cm.Time, username = _context.Users.FirstOrDefault(user => user.Id == cm.UserId)!.Username
+        //     }).ToList();
+        return new { };
     }
 }

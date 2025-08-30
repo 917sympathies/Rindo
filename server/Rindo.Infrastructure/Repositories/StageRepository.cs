@@ -1,7 +1,8 @@
 ﻿using System.Linq.Expressions;
+using Application.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Rindo.Domain.Models;
-using Rindo.Domain.Repositories;
+
 using Task = System.Threading.Tasks.Task;
 
 namespace Rindo.Infrastructure.Repositories;
@@ -14,7 +15,7 @@ public class StageRepository : RepositoryBase<Stage>, IStageRepository
 
     public Task CreateStages(IEnumerable<Stage> stages) => CreateAsync(stages);
 
-    public Task CreateStage(Stage stages) => CreateAsync(stages);
+    public Task<Stage> CreateStage(Stage stages) => CreateAsync(stages);
 
     public void DeleteStage(Stage stages) => Delete(stages);
 

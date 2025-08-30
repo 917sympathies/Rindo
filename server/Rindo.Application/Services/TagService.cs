@@ -1,7 +1,7 @@
 ﻿using Application.Common.Exceptions;
+using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
 using Rindo.Domain.Models;
-using Rindo.Domain.Repositories;
 
 namespace Application.Services;
 

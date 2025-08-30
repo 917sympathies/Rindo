@@ -2,7 +2,7 @@
 using Rindo.Domain.Models;
 using Task = System.Threading.Tasks.Task;
 
-namespace Rindo.Domain.Repositories;
+namespace Application.Interfaces.Repositories;
 
 public interface  IProjectRepository
 {

@@ -1,7 +1,8 @@
 ﻿using System.Linq.Expressions;
+using Application.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Rindo.Domain.Models;
-using Rindo.Domain.Repositories;
+
 using Task = System.Threading.Tasks.Task;
 
 namespace Rindo.Infrastructure.Repositories;
@@ -12,7 +13,7 @@ public class TaskRepository : RepositoryBase<ProjectTask>, ITaskRepository
     {
     }
 
-    public Task CreateTask(ProjectTask projectTask) => CreateAsync(projectTask);
+    public Task<ProjectTask> CreateTask(ProjectTask projectTask) => CreateAsync(projectTask);
 
     public void DeleteTask(ProjectTask projectTask) => Delete(projectTask);
 

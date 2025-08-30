@@ -6,9 +6,9 @@ namespace Application.Interfaces.Services;
 
 public interface IStageService
 {
-    Task<Result> AddStage(StageOnCreateDto stageDto);
-    Task<Result> DeleteStage(Guid id);
-    Task<Result<string>> GetStageName(Guid stageId);
+    Task<Stage> AddStage(StageOnCreateDto stageDto);
+    Task DeleteStage(Guid stageId, Guid projectId);
+    Task<string> GetStageName(Guid stageId);
     Task<IEnumerable<Stage>> GetStagesByProjectId(Guid projectId);
-    Task<Result> ChangeStageTask(Guid id, Guid taskId);
+    Task ChangeStageTask(Guid stageId, Guid taskId);
 }

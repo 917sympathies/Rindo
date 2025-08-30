@@ -2,6 +2,6 @@
 
 public class StageOnCreateDto
 {
-    public string Name { get; set; } = default!;
+    public string Name { get; set; }
     public Guid ProjectId { get; set; }
 }

@@ -1,14 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Application.Interfaces.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Rindo.Domain.Models;
-using Rindo.Domain.Repositories;
+
 using Task = System.Threading.Tasks.Task;
 
 namespace Rindo.Infrastructure.Repositories;
 
 public class UserRepository : RepositoryBase<User>, IUserRepository
 {
+    private readonly PostgresDbContext _context;
     public UserRepository(PostgresDbContext context) : base(context)
     {
+        _context = context;
     }
 
     public Task<User> CreateUser(User user) => CreateAsync(user);
@@ -24,5 +27,10 @@ public class UserRepository : RepositoryBase<User>, IUserRepository
         await FindByCondition(u => u.Username == username)
             .Include(u => u.Projects)
             .FirstOrDefaultAsync();
+
+    public async Task<User[]> GetUsersByIds(Guid[] ids)
+    {
+        return await _context.Users.Where(x => ids.Contains(x.Id)).ToArrayAsync();
+    }
         
 }

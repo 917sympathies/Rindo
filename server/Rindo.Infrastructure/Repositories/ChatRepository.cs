@@ -1,7 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Application.Interfaces.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Rindo.Domain.Models;
-using Rindo.Domain.Repositories;
-using Task = System.Threading.Tasks.Task;
 
 namespace Rindo.Infrastructure.Repositories;
 

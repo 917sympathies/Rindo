@@ -6,8 +6,9 @@ namespace Application.Interfaces.Services;
 public interface IInvitationService
 {
     Task CreateInvitation(Guid projectId, Guid userId);
-    Task<Result> DeleteInvitation(Guid id);
-    Task<Result> AcceptInvitation(Guid id);
+    Task CreateInvitation(Invitation invitation);
+    Task DeleteInvitation(Guid invitationId);
+    Task AcceptInvitation(Guid invitationId);
     Task<IEnumerable<InviteDto>> GetInvitationsByProjectId(Guid projectId);
     Task<IEnumerable<Invitation>> GetInvitationsByUserId(Guid userId);
 }

@@ -7,19 +7,12 @@ namespace Rindo.API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class UserController : ControllerBase
+public class UserController(IUserService service) : ControllerBase
 {
-    private readonly IUserService _service;
-
-    public UserController(IUserService service)
-    {
-        _service = service;
-    }
-    
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetUserById(Guid id)
     {
-        var result = await _service.GetUserById(id);
+        var result = await service.GetUserById(id);
         if (!result.IsSuccess) return NotFound(result.Error.Description);
         return Ok(result.Value);
     }
@@ -27,7 +20,7 @@ public class UserController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetUsersByProjectId(Guid projectId)
     {
-        var result = await _service.GetUsersByProjectId(projectId);
+        var result = await service.GetUsersByProjectId(projectId);
         if (!result.IsSuccess) return NotFound(result.Error.Description);
         return Ok(result.Value);
     }
@@ -35,7 +28,7 @@ public class UserController : ControllerBase
     [HttpPut("{id:guid}/firstName")]
     public async Task<IActionResult> ChangeUserFirstName(Guid id, string firstName)
     {
-        var result = await _service.ChangeUserFirstName(id, firstName);
+        var result = await service.ChangeUserFirstName(id, firstName);
         if (!result.IsSuccess) return NotFound(result.Error.Description); 
         return Ok();
     }
@@ -43,7 +36,7 @@ public class UserController : ControllerBase
     [HttpPut("{id:guid}/lastName")]
     public async Task<IActionResult> ChangeUserLastName(Guid id, string lastName)
     {
-        var result = await _service.ChangeUserLastName(id, lastName);
+        var result = await service.ChangeUserLastName(id, lastName);
         if (!result.IsSuccess) return NotFound(result.Error.Description);
         return Ok();
     }

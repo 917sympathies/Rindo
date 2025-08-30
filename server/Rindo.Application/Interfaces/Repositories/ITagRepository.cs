@@ -1,6 +1,6 @@
 ﻿using Rindo.Domain.Models;
 
-namespace Rindo.Domain.Repositories;
+namespace Application.Interfaces.Repositories;
 
 public interface ITagRepository
 {

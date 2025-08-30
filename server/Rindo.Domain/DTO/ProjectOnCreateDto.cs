@@ -6,11 +6,10 @@ namespace Rindo.Domain.DTO;
 
 public class ProjectOnCreateDto
 {
-    [Required(ErrorMessage = "Необходимо указать название проекта!")]
+    [Required]
     public string Name { get; set; } = default!;
     public string Description { get; set; } = default!;
     public Guid OwnerId { get; set; }
     public DateOnly StartDate { get; set; } 
-    public DateOnly FinishDate { get; set; }
     public Tag[] Tags { get; set; }
 }
