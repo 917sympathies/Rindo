@@ -1,4 +1,6 @@
-## todo
-- [ ] divide this repo (server/client) on 2 repos
-- [ ] add readme file
-- [ ] delete AsyncActionAccessFilter (stuff inside it should be implemented in service)
+## To-Do
+- [ ] Divide this repo (server/client) on 2 repos
+- [ ] Add proper README
+- [ ] Add Background Service for clearing expired RefreshTokens from Redis
+- [ ] Add mapper (Mapperly, Mappster)
+- [ ] Add ELK maybe?
