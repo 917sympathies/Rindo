@@ -1,4 +1,4 @@
-﻿using Rindo.Domain.Models;
+﻿using Rindo.Domain.DataObjects;
 using Task = System.Threading.Tasks.Task;
 
 namespace Application.Interfaces.Repositories;

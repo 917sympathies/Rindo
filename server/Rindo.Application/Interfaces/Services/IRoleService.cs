@@ -1,5 +1,5 @@
-﻿using Rindo.Domain.Common;
-using Rindo.Domain.DTO;
+﻿using Rindo.Domain.DTO;
+using Rindo.Domain.DTO.Roles;
 using Rindo.Domain.Enums;
 
 namespace Application.Interfaces.Services;
@@ -11,7 +11,8 @@ public interface IRoleService
     Task UpdateRoleName(Guid roleId, string name);
     Task AddUserToRole(Guid roleId, Guid userId);
     Task RemoveUserFromRole(Guid roleId, Guid userId);
-    Task UpdateRoleRights(Guid roleId, RoleRights rights);
-    Task<RoleRights> GetRightsByProjectId(Guid projectId, Guid userID);
+    Task RemoveRolesByProjectId(Guid projectId);
+    Task UpdateRoleRights(Guid roleId, Permissions rights);
+    Task<Permissions> GetRightsByProjectId(Guid projectId, Guid userId);
     Task<IEnumerable<RoleDto>> GetRolesByProjectId(Guid projectId);
 }

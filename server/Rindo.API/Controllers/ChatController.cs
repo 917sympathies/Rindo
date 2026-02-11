@@ -12,7 +12,6 @@ public class ChatController(IChatService service) : ControllerBase
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetChatById(Guid id)
     {
-        await service.GetChatById(id);
-        return Ok();
+        return Ok(await service.GetChatById(id));
     }
 }

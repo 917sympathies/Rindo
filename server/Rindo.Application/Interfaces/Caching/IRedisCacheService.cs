@@ -1,4 +1,4 @@
-﻿namespace Rindo.Infrastructure.Interfaces.Caching;
+﻿namespace Application.Interfaces.Caching;
 
 public interface IRedisCacheService
 {

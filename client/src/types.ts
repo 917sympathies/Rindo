@@ -1,4 +1,4 @@
-export interface IInvitation{
+export interface Invitation {
     id: string,
     userId: string,
     projectId: string,
@@ -16,7 +16,13 @@ export interface IUser {
     projects: IProject[]
 }
 
-export interface IUserInfo {
+export interface CreateProjectDto {
+    name: string;
+    description: string;
+    deadlineDate: Date;
+}
+
+export interface UserDto {
     id: string,
     username: string,
     firstName: string,
@@ -24,32 +30,76 @@ export interface IUserInfo {
     email: string,
 }
 
-export interface ITask {
-    id: string,
-    name: string,
-    description: string,
-    progress: number,
-    projectId: string,
-    stageId: string,
-    index: number,
-    responsibleUserId: string | null,
-    comments: ITaskComment[] | null,
-    startDate: string | null,
-    finishDate: string | null
+
+export interface TokenDto {
+    user: UserDto;
+    token: string;
+}
+
+
+export interface TaskDto {
+    taskId: string;
+    name: string;
+    taskNumber: string;
+    description: string;
+    projectId: string;
+    stageId: string;
+    index: number;
+    assignee?: UserShortInfoDto;
+    reporter: UserShortInfoDto;
+    comments?: ITaskComment[] | null;
+    priority: TaskPriority;
+    deadlineDate: Date | undefined;
+    created: string;
+}
+
+export interface UpdateTaskDto {
+    taskId: string;
+    name: string;
+    description: string;
+    stageId: string;
+    index: number;
+    assigneeId?: string | undefined;
+    priority: TaskPriority;
+    deadlineDate: Date | undefined;
+}
+
+export interface UserShortInfoDto {
+    id: string;
+    firstName: string;
+    lastName: string;
 }
 
 export interface ITaskDto {
-    name: string,
-    description: string,
-    projectId: string,
-    stageId: string,
-    responsibleUserId: string | null,
-    comments: ITaskComment[] | null,
-    startDate: string | null,
-    finishDate: string | null
+    name: string;
+    description: string;
+    projectId: string;
+    stageId: string;
+    assigneeId: string | null;
+    comments: ITaskComment[] | null;
+    startDate: string | null;
+    finishDate: string | null;
 }
 
-export interface ITaskComment{
+export interface AddTaskDto {
+    id: string;
+    name: string;
+    description: string | undefined;
+    priority: TaskPriority;
+    projectId: string;
+    stageId: string;
+    assigneeId: string | undefined;
+    reporterId: string | undefined;
+    deadlineDate: Date | undefined;
+}
+
+export enum TaskPriority {
+    Low,
+    Medium,
+    High
+}
+
+export interface ITaskComment {
     id: string,
     content: string,
     username: string,
@@ -61,19 +111,19 @@ export interface ITaskComment{
 export interface IRole {
     id: string,
     name: string,
-    canAddRoles: boolean,
-    canAddStage: boolean,
-    canAddTask: boolean,
-    canCompleteTask: boolean,
-    canDeleteStage: boolean,
-    canDeleteTask: boolean,
-    canExcludeUser: boolean,
-    canInviteUser: boolean,
-    canModifyRoles: boolean,
-    canModifyStage: boolean,
-    canModifyTask: boolean,
-    canUseChat: boolean,
-    users: IUserInfo[]
+    // canAddRoles: boolean,
+    // canAddStage: boolean,
+    // canAddTask: boolean,
+    // canCompleteTask: boolean,
+    // canDeleteStage: boolean,
+    // canDeleteTask: boolean,
+    // canExcludeUser: boolean,
+    // canInviteUser: boolean,
+    // canModifyRoles: boolean,
+    // canModifyStage: boolean,
+    // canModifyTask: boolean,
+    // canUseChat: boolean,
+    users: UserDto[]
 }
 
 export interface IRoleDto {
@@ -82,7 +132,7 @@ export interface IRoleDto {
     color: string;
 }
 
-export interface IUserRights{
+export interface IUserRights {
     canAddRoles: boolean,
     canAddStage: boolean,
     canAddTask: boolean,
@@ -112,56 +162,79 @@ export enum UserRights {
     CanUseChat = 1 << 12,
 }
 
-export interface IStage {
+export interface Stage {
     id: string,
-    name: string,
+    customName: string,
     projectId: string,
-    tasks: ITask[]
+    index: number;
+    type: StageType;
+    tasks: TaskDto[]
 }
 
-export interface IProject{
+export interface IProject {
     id: string,
     name: string,
     description: string,
-    chat: IChat,
+    // chat: IChat,
     chatId: string,
     inviteLink: string,
     startDate: string,
     finishDate: string,
     ownerId: string,
     users: IUser[],
-    stages: IStage[],
+    stages: Stage[],
     roles: IRole[]
 }
 
-export interface IProjectDto {
+export interface ProjectInfo {
+    id: string;
     name: string;
     description: string;
     ownerId: string;
-    startDate: string;
-    finishDate: string;
-    tags: IProjectTag[];
-}
-  
-export interface IProjectTag {
-    name: string;
+    users: UserDto[];
+    roles: any[]; // check type on server
+    created: string;
+    deadlineDate: string;
 }
 
+// deprecated
 export interface CookieInfo {
-    userId : string,
+    userId: string,
     exp: number
 }
 
-export interface IStageDto{
-    name: string,
-    projectId: string
+export interface StageDto {
+    id: string;
+    customName: string;
+    projectId: string;
+    type: StageType;
+    tasks?: TaskDto[];
 }
 
-export interface IProjectSettings{
+export interface StageShortInfo {
+    stageId: string;
+    customName: string;
+}
+
+export interface AddStageDto {
+    customName: string;
+    projectId: string;
+}
+
+export enum StageType {
+    ToDo = 1,
+    InProgress = 2,
+    ReadyToTest = 3,
+    Testing = 4,
+    Closed = 5,
+    Custom = 6,
+}
+
+export interface IProjectSettings {
     name: string,
     description: string,
     inviteLink: string,
-    users: IUserInfo[],
+    users: UserDto[],
     roles: IRole[] | null,
     startDate: string,
     finishDate: string

@@ -18,6 +18,8 @@
         </PackageReference>
         <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.7" />
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.0" />
+        <PackageReference Include="NLog" Version="6.0.7" />
+        <PackageReference Include="NLog.Web.AspNetCore" Version="6.1.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
     </ItemGroup>
 
@@ -29,6 +31,7 @@
 
     <ItemGroup>
       <Folder Include="Controllers\" />
+      <Folder Include="Migrations\" />
     </ItemGroup>
 
     <ItemGroup>
@@ -40,6 +43,10 @@
       </Content>
       <Content Update="appsettings.auth.json">
         <DependentUpon>appsettings.json</DependentUpon>
+      </Content>
+      <Content Update="nlog.config">
+        <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
 

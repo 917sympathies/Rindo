@@ -1,6 +1,6 @@
-﻿using Rindo.Domain.Common;
-using Rindo.Domain.DTO;
-using Rindo.Domain.Models;
+﻿using Rindo.Domain.DTO;
+using Rindo.Domain.DTO.Projects;
+using Rindo.Domain.DataObjects;
 namespace Application.Interfaces.Services;
 
 public interface IInvitationService
@@ -9,6 +9,6 @@ public interface IInvitationService
     Task CreateInvitation(Invitation invitation);
     Task DeleteInvitation(Guid invitationId);
     Task AcceptInvitation(Guid invitationId);
-    Task<IEnumerable<InviteDto>> GetInvitationsByProjectId(Guid projectId);
-    Task<IEnumerable<Invitation>> GetInvitationsByUserId(Guid userId);
+    Task<IEnumerable<InvitationProjectInfoDto>> GetInvitationsByProjectId(Guid projectId);
+    Task<IEnumerable<InvitationDto>> GetInvitationsByUserId(Guid userId);
 }

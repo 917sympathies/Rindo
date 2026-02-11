@@ -2,12 +2,24 @@
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
 using Rindo.Domain.DTO;
-using Rindo.Domain.Models;
+using Rindo.Domain.DTO.Projects;
+using Rindo.Domain.DataObjects;
 
 namespace Application.Services;
 
 public class ChatService(IChatRepository chatRepository, IUserRepository userRepository) : IChatService
 {
+    public async Task<Guid> Create(Chat chat)
+    {
+        var createdChat = await chatRepository.Create(chat);
+        return createdChat.ChatId;
+    }
+
+    public async Task DeleteById(Guid chatId)
+    {
+        await chatRepository.DeleteById(chatId);
+    }
+    
     public async Task<ChatDto> GetChatById(Guid chatId)
     {
         var chat = await chatRepository.GetChatById(chatId);
@@ -19,7 +31,7 @@ public class ChatService(IChatRepository chatRepository, IUserRepository userRep
             var user = await userRepository.GetUserById(message.SenderId);
             messages.Add(new MessageDto 
             {
-                Id = message.Id,
+                Id = message.MessageId,
                 ChatId = message.ChatId,
                 Content = message.Content,
                 Time = message.Time,
@@ -29,8 +41,9 @@ public class ChatService(IChatRepository chatRepository, IUserRepository userRep
         
         return new ChatDto
         {
-            Id = chat.Id,
+            Id = chat.ChatId,
             Messages = messages.ToArray()
         };
     }
+    
 }

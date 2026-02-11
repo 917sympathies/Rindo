@@ -1,12 +1,12 @@
 ﻿using System.Text;
+using Application.Auth;
+using Application.Auth.Jwt;
 using Application.Interfaces.Services;
 using Application.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Application.Interfaces.Services;
-using Rindo.Infrastructure;
 using Task = System.Threading.Tasks.Task;
 
 namespace Application;
@@ -24,8 +24,8 @@ public static class DependencyInjection
         services.AddScoped<ICommentService, CommentService>();
         services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<IInvitationService, InvitationService>();
-        services.AddScoped<ITagService, TagService>();
         services.AddScoped<IAuthorizationService, AuthorizationService>();
+        services.AddScoped<IAuthCacheService, AuthCacheService>();
         return services;
     }
 

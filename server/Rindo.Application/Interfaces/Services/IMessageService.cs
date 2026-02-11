@@ -1,4 +1,4 @@
-﻿using Rindo.Domain.Models;
+﻿using Rindo.Domain.DataObjects;
 
 namespace Application.Interfaces.Services;
 

@@ -4,7 +4,7 @@ import Link from "next/link";
 import Chat from "../chat";
 import { Sheet, SheetContent } from "../ui/sheet";
 import { useParams } from "next/navigation";
-import { GetProjectInfoHeader } from "@/requests";
+import { getProjectInfoHeader } from "@/requests";
 
 interface HeaderProps {
   setIsSelectorVisible: Dispatch<SetStateAction<boolean>>;
@@ -35,20 +35,23 @@ export default function Header({
 
   useEffect(() => {
     const getProjectInfo = async (id: string) => {
-      const response = await GetProjectInfoHeader(id);
-      const data = await response.json();
+      const response = await getProjectInfoHeader(id);
+      const data = response.data;
       setProject(data);
     };
     getProjectInfo(id);
   }, [id]);
 
   return (
-    <div className={isChatActive ? "w-[calc(100%-18vw)] m-0 py-[20px] px-[10px] flex flex-row justify-evenly items-center ease-out duration-300 font-medium border-b border-b-black/10"
-      : "w-full m-0 py-[20px] px-[10px] flex flex-row justify-evenly items-center ease-out duration-300 font-medium border-b border-b-black/10"
+    <div className={
+      "w-full flex flex-row justify-start gap-8 p-4 items-center ease-out duration-300 font-medium border-b border-b-black/10"
+      // isChatActive ?
+      //     "w-[calc(100%-18vw)] m-0 py-[20px] px-[10px] flex flex-row justify-evenly items-center ease-out duration-300 font-medium border-b border-b-black/10"
+      // : "w-full m-0 py-[20px] px-[10px] flex flex-row justify-evenly items-center ease-out duration-300 font-medium border-b border-b-black/10"
     }
     >
       <Link
-        className="m-[10px] text-[1.4rem]"
+        className="text-[1rem]"
         href={`/project/${id}/board`}
         onClick={() => setIsSelectorVisible(true)}
       >
@@ -58,10 +61,10 @@ export default function Header({
         className="cursor-pointer"
         onClick={() => setIsChatActive(!isChatActive)}
       >
-        <h3 className="text-[1.2rem]">Чат проекта</h3>
+        <h3 className="text-[1rem]">Чат проекта</h3>
       </div>
       <Link
-        className="text-[1.2rem]"
+        className="text-[1rem]"
         href={`/project/${id}/board`}
         onClick={() => setIsSelectorVisible(true)}
       >
@@ -69,7 +72,7 @@ export default function Header({
       </Link>
       {isOwner ? (
         <Link
-          className="text-[1.2rem]"
+          className="text-[1rem]"
           href={`/project/${id}/settings/general`}
           onClick={() => setIsSelectorVisible(false)}
         >

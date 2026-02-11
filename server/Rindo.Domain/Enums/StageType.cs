@@ -2,6 +2,10 @@
 
 public enum StageType
 {
-    Base = 1,
-    Custom = 2,
+    ToDo = 1,
+    InProgress = 2,
+    ReadyToTest = 3,
+    Testing = 4,
+    Closed = 5,
+    Custom = 6,
 }

@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Rindo.Domain.Models;
+using Rindo.Domain.DataObjects;
 
 namespace Rindo.Infrastructure;
 
@@ -7,7 +7,6 @@ public class PostgresDbContext(DbContextOptions<PostgresDbContext> options) : Db
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // TODO: split tables in schemes (dbo, enums and other) think about it
         modelBuilder.Entity<Chat>()
             .HasMany(c => c.Messages)
             .WithOne()
@@ -26,7 +25,14 @@ public class PostgresDbContext(DbContextOptions<PostgresDbContext> options) : Db
         modelBuilder.Entity<Project>()
             .HasMany(p => p.Stages)
             .WithOne()
-            .HasForeignKey(p => p.ProjectId);
+            .HasForeignKey(p => p.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<Project>()
+            .HasMany<ProjectTask>()
+            .WithOne()
+            .HasForeignKey(p => p.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Chat>()
             .HasOne<Project>()
@@ -35,12 +41,13 @@ public class PostgresDbContext(DbContextOptions<PostgresDbContext> options) : Db
         modelBuilder.Entity<Project>()
             .HasMany(p => p.Roles)
             .WithOne()
-            .HasForeignKey(r => r.ProjectId);
+            .HasForeignKey(r => r.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Role>()
             .HasMany(r => r.Users)
             .WithMany()
-            .UsingEntity("Roles2Users");
+            .UsingEntity("roles_to_users");
         
         modelBuilder.Entity<User>()
             .HasMany(u => u.Invitations)
@@ -50,17 +57,13 @@ public class PostgresDbContext(DbContextOptions<PostgresDbContext> options) : Db
         modelBuilder.Entity<Project>()
             .HasMany(p => p.Invitations)
             .WithOne()
-            .HasForeignKey(inv => inv.ProjectId);
+            .HasForeignKey(inv => inv.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);;
         
         modelBuilder.Entity<Project>()
             .HasMany(p => p.Users)
             .WithMany(p => p.Projects)
-            .UsingEntity("Projects2Users");
-
-        modelBuilder.Entity<Project>()
-            .HasMany(p => p.Tags)
-            .WithOne()
-            .HasForeignKey(t => t.ProjectId);
+            .UsingEntity("projects_to_users");
     }
     
     public DbSet<Chat> Chats { get; init; }
@@ -71,6 +74,5 @@ public class PostgresDbContext(DbContextOptions<PostgresDbContext> options) : Db
     public DbSet<ProjectTask> Tasks { get; init; }
     public DbSet<TaskComment> TaskComments { get; init; }
     public DbSet<Role> Roles { get; init; }
-    public DbSet<Tag> Tags { get; init; }
     public DbSet<Invitation> Invitations { get; init; }
 }

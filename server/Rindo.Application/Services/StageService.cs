@@ -3,11 +3,14 @@ using Application.Common.Mapping;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
 using Rindo.Domain.DTO;
-using Rindo.Domain.Models;
+using Rindo.Domain.DTO.Roles;
+using Rindo.Domain.DTO.Tasks;
+using Rindo.Domain.Enums;
+using Rindo.Domain.DataObjects;
 
 namespace Application.Services;
 
-public class StageService(IStageRepository stageRepository, ITaskRepository taskRepository) : IStageService
+public class StageService(IStageRepository stageRepository, IUserRepository userRepository) : IStageService
 {
     public async Task<Stage> AddStage(StageOnCreateDto stageDto)
     {
@@ -16,42 +19,30 @@ public class StageService(IStageRepository stageRepository, ITaskRepository task
         return await stageRepository.CreateStage(stage);
     }
 
-    public async Task<string> GetStageName(Guid stageId)
+    public async Task<IEnumerable<StageDto>> GetStagesByProjectId(Guid projectId)
+    {
+        var stages = (await stageRepository.GetStagesByProjectId(projectId)).ToArray();
+        var assigneeUsersIds = stages.Where(x => x.Tasks.Any()).SelectMany(x => x.Tasks)
+            .Where(x => x.AssigneeId.HasValue).Select(x => x.AssigneeId!.Value).ToArray();
+        var users = await userRepository.GetUsersByIds(assigneeUsersIds);
+        
+        return stages.Select(s => s.MapToDto()).Select(s =>
+        {
+            foreach(var t in s.Tasks.Where(x => x.Assignee is not null))
+            {
+                var assignee = users.First(x => x.UserId == t.Assignee!.Id);
+                t.Assignee.FirstName = assignee.FirstName;
+                t.Assignee.LastName = assignee.LastName;
+            }
+            return s;
+        }).ToArray();
+    }
+
+    public async Task DeleteStage(Guid stageId)
     {
         var stage = await stageRepository.GetById(stageId);
         if (stage is null) throw new NotFoundException(nameof(Stage), stageId);
-        return stage.Name;
-    }
-
-    public async Task<IEnumerable<Stage>> GetStagesByProjectId(Guid projectId)
-    {
-        var stages = await stageRepository.GetStagesByProjectId(projectId);
-        return stages;
-    }
-
-    public async Task ChangeStageTask(Guid stageId, Guid taskId)
-    {
-        var task = await taskRepository.GetById(taskId);
-        if (task is null) throw new NotFoundException(nameof(ProjectTask), taskId);
-        var stage = await stageRepository.GetById(stageId);
-        if(stage is null) throw new NotFoundException(nameof(Stage), stageId);
-        task.StageId = stage.Id;
-        await taskRepository.UpdateProperty(task, pt => pt.StageId);
-    }
-
-    public async Task DeleteStage(Guid stageId, Guid projectId)
-    {
-        var stage = await stageRepository.GetById(stageId);
-        if (stage is null) throw new NotFoundException(nameof(Stage), stageId);
-        stageRepository.DeleteStage(stage);
-        // TODO: rework this
-        // var stages = _context.Stages.Where(st => st.Index >= stage.Index).ToList();
-        // if (stages.Count > 0)
-        // {
-        //     var index = stages.Max(s => s.Index);
-        //     if (index != stage.Index)
-        //         foreach (var st in stages)
-        //             st.Index -= 1;
-        // }
+        if (stage.Type == StageType.Custom) throw new ArgumentException($"Stage with id=${stageId} is not custom");
+        await stageRepository.DeleteStage(stage);
     }
 }

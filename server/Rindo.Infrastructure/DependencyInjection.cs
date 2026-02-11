@@ -1,14 +1,16 @@
-﻿using Application.Interfaces.Repositories;
+﻿using Application.Auth.Jwt;
+using Application.Interfaces.Caching;
+using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
+using Application.Interfaces.Transactions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Rindo.Infrastructure.Interfaces.Caching;
-using Rindo.Infrastructure.Jwt;
 using Rindo.Infrastructure.Repositories;
 using Rindo.Infrastructure.Repositories.Cached;
 using Rindo.Infrastructure.Services.Caching;
+using Rindo.Infrastructure.Services.Transactions;
 
 namespace Rindo.Infrastructure;
 
@@ -27,6 +29,7 @@ public static class DependencyInjection
             context.Database.Migrate();
         }
     }
+    
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         var dbOptions = configuration.GetSection(nameof(ConnectionStrings)).Get<ConnectionStrings>();
@@ -34,13 +37,16 @@ public static class DependencyInjection
         {
             throw new InvalidOperationException("You must provide a connection string in configuration");
         }
-        services.AddDbContext<PostgresDbContext>(options => options.UseNpgsql(dbOptions.POSTGRESQL, b => b.MigrationsAssembly("Rindo.API")));
+        services.AddDbContext<PostgresDbContext>(options => options
+                .UseNpgsql(dbOptions.POSTGRESQL, b => b.MigrationsAssembly("Rindo.API"))
+                .UseSnakeCaseNamingConvention());
         services.AddStackExchangeRedisCache(redisOptions =>
         {
             redisOptions.Configuration = dbOptions.REDIS;
         });
         
         services.AddScoped<IRedisCacheService, RedisCacheService>();
+        services.AddScoped<IDataTransactionService, DataTransactionService>();
         
         return services;
     }
@@ -56,7 +62,6 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ITaskRepository, TaskRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
-        services.AddScoped<ITagRepository, TagRepository>();
         services.AddScoped<IInvitationRepository, InvitationRepository>();
         services.AddScoped<IJwtProvider, JwtProvider>();
         

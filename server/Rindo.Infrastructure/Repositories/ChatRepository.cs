@@ -1,21 +1,21 @@
 ﻿using Application.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Rindo.Domain.Models;
+using Rindo.Domain.DataObjects;
 
 namespace Rindo.Infrastructure.Repositories;
 
-public class ChatRepository : RepositoryBase<Chat>, IChatRepository
+public class ChatRepository(PostgresDbContext context) : RepositoryBase<Chat>(context), IChatRepository
 {
-    public ChatRepository(PostgresDbContext context) : base(context)
-    {
-    }
-
+    private readonly PostgresDbContext _context = context;
     public async Task<Chat> Create(Chat chat) => await CreateAsync(chat);
 
-    public new void Delete(Chat chat) => base.Delete(chat);
+    public async Task DeleteById(Guid chatId)
+    {
+        await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM Chat WHERE Id = {chatId}");
+    }
 
     public async Task<Chat?> GetChatById(Guid id) =>
-        await FindByCondition(c => c.Id == id)
+        await FindByCondition(c => c.ChatId == id)
             .Include(c => c.Messages)
             .AsNoTracking()
             .FirstOrDefaultAsync();

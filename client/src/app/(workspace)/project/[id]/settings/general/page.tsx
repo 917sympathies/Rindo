@@ -5,10 +5,9 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { IProject, IUser } from "@/types";
+import { IUser, ProjectInfo } from "@/types";
 import { CalendarDays, CalendarIcon, Circle } from "lucide-react";
 import Editor from "@/components/editor";
-import dayjs from "dayjs";
 import {
   Popover,
   PopoverContent,
@@ -21,14 +20,20 @@ import {
   LogLevel,
   HubConnectionState,
 } from "@microsoft/signalr";
-import { ChangeProjectDescription, ChangeProjectName, DeleteProject, GetSettingsInfo } from "@/requests";
+import {deleteProject, getSettingsInfo, updateProject} from "@/requests";
+import {UpdateProjectDto} from "@/types/project.types";
+
+
+type ProjectSettings = Omit<ProjectInfo, "deadlineDate" | "created"> & {
+  deadlineDate?: Date;
+  created: Date;
+}
+
 
 export default function Page() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const [projectSettings, setProjectSettings] = useState<IProject>(
-    {} as IProject
-  );
+  const [projectSettings, setProjectSettings] = useState<ProjectSettings>({} as ProjectSettings);
   const [users, setUsers] = useState<IUser[]>([]);
   const [conn, setConnection] = useState<HubConnection | null>(null);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState<boolean>(false);
@@ -38,17 +43,22 @@ export default function Page() {
 
   useEffect(() => {
     async function fetchInfo() {
-      const response = await GetSettingsInfo(id);
-      if (response.ok) {
-        const data = await response.json();
-        setProjectSettings(data);
-        setDesc(data.description);
-        setName(data.name);
-        setProjectSettings((prev) => ({
-          ...prev,
-          users: [...data.users, data.owner],
-        }));
-      }
+      getSettingsInfo(id)
+        .then(response => {
+          const data = response.data;
+          const settings: ProjectSettings = {
+            ...data,
+            created: new Date(data.created),
+            deadlineDate: data.deadlineDate ? new Date(data.deadlineDate) : undefined
+          }
+          setProjectSettings(settings);
+          setDesc(settings.description);
+          setName(settings.name);
+          setProjectSettings((prev) => ({
+            ...prev,
+            users: [...settings.users],
+          }));
+        })
     }
     fetchInfo();
   }, []);
@@ -93,34 +103,23 @@ export default function Page() {
   };
 
   const saveProjectChanges = () => {
-    if (desc !== projectSettings.description) handleChangeProjectDescription();
-    if (name !== projectSettings.name) handleChangeProjectName();
-    setIsModified(false);
+    updateProject({
+      projectId: id,
+      name: name,
+      description: desc,
+    })
+        .then(() => {
+          sendMessageChangeProjectName(id);
+          setIsModified(false);
+        })
   };
 
   const handleDeleteProject = async () => {
-    const response = await DeleteProject(id);
-    if (response.ok === true) {
-      sendMessageDeleteProject(id);
-      router.push("/main");
-    }
-  };
-
-  const handleChangeProjectName = async () => {
-    const response = await ChangeProjectName(projectSettings.id, name);
-    sendMessageChangeProjectName(projectSettings.id);
-    setProjectSettings((prev) => ({
-      ...prev,
-      name: name,
-    }));
-  };
-
-  const handleChangeProjectDescription = async () => {
-    const response = await ChangeProjectDescription(projectSettings.id, desc);
-    setProjectSettings((prev) => ({
-      ...prev,
-      description: desc,
-    }));
+    deleteProject(id)
+      .then(() => {
+        sendMessageDeleteProject(id);
+        router.push("/main");
+      });
   };
 
   return (
@@ -138,20 +137,10 @@ export default function Page() {
             <Editor desc={desc} setDesc={setDesc} />
           </div>
           <div className="flex flex-row gap-8">
-            <Button
-              onClick={() => setIsProjectModalOpen(true)}
-              variant={"destructive"}
-            >
+            <Button onClick={() => setIsProjectModalOpen(true)} variant={"destructive"}>
               Удалить проект
             </Button>
-            <Button
-              className={
-                isModified
-                  ? "border border-green-500 bg-white text-green-500 hover:bg-green-500 hover:text-white ease-in-out duration-300"
-                  : "invisible"
-              }
-              onClick={() => saveProjectChanges()}
-            >
+            <Button className="border border-green-500 bg-white text-green-500 hover:bg-green-500 hover:text-white ease-in-out duration-300" onClick={() => saveProjectChanges()}>
               Сохранить изменения
             </Button>
           </div>
@@ -162,7 +151,7 @@ export default function Page() {
             <Label className="text-[1rem]">Сроки проекта</Label>
           </div>
           <div className="rounded-lg bg-gray-50 p-2 dark:bg-black/40">
-            <div className="flex flex-row items-center justify-between">
+            {/* <div className="flex flex-row items-center justify-between">
               <Label>Начало</Label>
               <Popover>
                 <PopoverTrigger asChild>
@@ -183,21 +172,21 @@ export default function Page() {
                 </PopoverTrigger>
               </Popover>
               <Circle size={12} color="#009900" className="fill-green-600" />
-            </div>
+            </div> */}
             <div className="flex flex-row items-center justify-between">
-              <Label>Конец</Label>
+              <Label>Дедлайн</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     variant={"ghost"}
                     className={cn(
                       "justify-start text-left font-normal dark:bg-[#111] dark:border-black/30 dark:hover:bg-black/20 hover:bg-transparent hover:cursor-default dark:bg-transparent dark:hover:bg-transparent",
-                      !projectSettings.finishDate && "text-muted-foreground"
+                      !projectSettings.deadlineDate && "text-muted-foreground"
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {projectSettings.startDate ? (
-                      dayjs(projectSettings.finishDate).format("DD-MM-YYYY")
+                    {projectSettings?.deadlineDate ? (
+                      projectSettings.deadlineDate.toDateString()
                     ) : (
                       <span>Выберите дату</span>
                     )}
@@ -206,7 +195,7 @@ export default function Page() {
               </Popover>
               <Circle size={12} color="red" className="fill-red-600" />
             </div>
-            <div className="flex flex-row items-center justify-end">
+            {/* <div className="flex flex-row items-center justify-end">
               <Label>Сегодня</Label>
               <Popover>
                 <PopoverTrigger asChild>
@@ -227,7 +216,7 @@ export default function Page() {
                 </PopoverTrigger>
               </Popover>
               <Circle size={12} color="orange" className="fill-orange-400" />
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

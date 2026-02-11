@@ -1,20 +1,19 @@
-﻿using Rindo.Domain.Common;
-using Rindo.Domain.Models;
+﻿using Rindo.Domain.DTO;
+using Rindo.Domain.DTO.Projects;
+using Rindo.Domain.DTO.Tasks;
+using Rindo.Domain.DataObjects;
 
 namespace Application.Interfaces.Services;
 
 public interface ITaskService
 {
-    Task<ProjectTask> CreateTask(ProjectTask projectTask);
-    Task UpdateName(Guid taskId, string name);
-    Task UpdateDescription(Guid taskId,string description);
-    Task UpdateResponsible(Guid taskId, Nullable<Guid> userId);
-    Task UpdateStartDate(Guid taskId, DateOnly date);
-    Task UpdateFinishDate(Guid taskId, DateOnly date);
-    Task UpdateProgress(Guid taskId, string number);
+    Task<ProjectTask> CreateTask(AddTaskDto addTaskDto);
+    Task UpdateTask(UpdateTaskDto projectTaskDto);
+    Task UpdateTaskStage(Guid taskId, Guid stageId);
     Task DeleteTask(Guid taskId);
-    Task<IEnumerable<ProjectTask>> GetTasksByStageId(Guid stageId);
-    Task<IEnumerable<object>> GetTasksByProjectId(Guid projectId);
+    Task DeleteTasksByProjectId(Guid projectId);
+    Task UnassignTasksFromUser(Guid projectId, Guid userId);
+    Task<IEnumerable<ProjectTaskDto>> GetTasksByProjectId(Guid projectId);
     Task<IEnumerable<ProjectTask>> GetTasksByUserId(Guid userId);
-    Task<object>  GetTaskById(Guid id);
+    Task<ProjectTaskDto> GetTaskById(Guid id);
 }

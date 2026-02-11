@@ -3,15 +3,16 @@ using Application.Common.Mapping;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
 using Rindo.Domain.DTO;
+using Rindo.Domain.DTO.Roles;
 using Rindo.Domain.Enums;
-using Rindo.Domain.Models;
+using Rindo.Domain.DataObjects;
 
 namespace Application.Services;
 
 public class RoleService(
     IRoleRepository roleRepository,
-    IUserRepository userRepository,
-    IProjectRepository projectRepository)
+    IUserService userService,
+    IProjectService projectService)
     : IRoleService
 {
     public async Task CreateRole(RoleDtoOnCreate roleDto)
@@ -24,7 +25,7 @@ public class RoleService(
     {
         var role = await roleRepository.GetRoleById(roleId);
         if(role is null) throw new NotFoundException(nameof(Role), roleId);
-        roleRepository.DeleteRole(role);
+        await roleRepository.DeleteRole(role);
     }
 
     public async Task UpdateRoleName(Guid roleId, string name)
@@ -37,7 +38,7 @@ public class RoleService(
 
     public async Task AddUserToRole(Guid roleId, Guid userId)
     {
-        var user = await userRepository.GetUserById(userId);
+        var user = await userService.GetUserById(userId);
         if(user is null) throw new NotFoundException(nameof(User), userId);
         var role = await roleRepository.GetRoleById(roleId);
         if(role is null) throw new NotFoundException(nameof(Role), roleId);
@@ -46,35 +47,34 @@ public class RoleService(
 
     public async Task RemoveUserFromRole(Guid roleId, Guid userId)
     {
-        var user = await userRepository.GetUserById(userId);
-        if(user is null) throw new NotFoundException(nameof(User), userId);
-        var role = await roleRepository.GetRoleById(roleId);
-        if(role is null) throw new NotFoundException(nameof(Role), roleId);
-
-        //TODO: add check if this relation exists
         await roleRepository.RemoveUserFromRole(roleId, userId);
     }
 
-    public async Task UpdateRoleRights(Guid roleId, RoleRights rights)
+    public async Task RemoveRolesByProjectId(Guid projectId)
+    {
+        await roleRepository.RemoveRolesByProjectId(projectId);
+    }
+
+    public async Task UpdateRoleRights(Guid roleId, Permissions rights)
     {
         var role = await roleRepository.GetRoleById(roleId);
         if(role is null) throw new NotFoundException(nameof(Role), roleId);
-        role.BitRoleRights = rights;
-        roleRepository.UpdateRole(role);
+        role.BitPermissions = rights;
+        await roleRepository.UpdateRole(role);
     }
 
-    public async Task<RoleRights> GetRightsByProjectId(Guid projectId, Guid userId)
+    public async Task<Permissions> GetRightsByProjectId(Guid projectId, Guid userId)
     {
-        var user = await userRepository.GetUserById(userId) ?? throw new NotFoundException(nameof(User), userId);
-        var project = await projectRepository.GetProjectById(projectId) ?? throw new NotFoundException(nameof(Project), projectId);
+        var user = await userService.GetUserById(userId) ?? throw new NotFoundException(nameof(User), userId);
+        var project = await projectService.GetProjectById(projectId) ?? throw new NotFoundException(nameof(Project), projectId);
         if (project.OwnerId == user.Id)
         {
-            return (RoleRights)Enum.GetValues<RoleRights>().Cast<int>().Sum();
+            return (Permissions)Enum.GetValues<Permissions>().Cast<int>().Sum();
         }
         var roles = await roleRepository.GetRolesByUserId(userId);
         if (roles.Length == 0) return 0;
         
-        return (RoleRights)roles.Aggregate(0, (current, role) => current | (int)role.BitRoleRights);
+        return (Permissions)roles.Aggregate(0, (current, role) => current | (int)role.BitPermissions);
     }
     
     public async Task<IEnumerable<RoleDto>> GetRolesByProjectId(Guid projectId)

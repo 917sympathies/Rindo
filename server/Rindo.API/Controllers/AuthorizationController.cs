@@ -1,35 +1,31 @@
+using Application.Interfaces.Access;
 using Microsoft.AspNetCore.Mvc;
-using Rindo.Domain.DTO;
-using Application.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
+using Rindo.Domain.DTO.Auth;
+using IAuthorizationService = Application.Interfaces.Services.IAuthorizationService;
 
 namespace Rindo.API.Controllers;
 
 [Route("api/[controller]")]
+[AllowAnonymous]
 [ApiController]
-public class AuthorizationController : ControllerBase
+public class AuthorizationController(IAuthorizationService service, IDataAccessController dataAccessController) : ControllerBase
 {
-    private readonly IAuthorizationService _service;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-        
-    public AuthorizationController(IAuthorizationService service, IHttpContextAccessor httpContextAccessor)
-    {
-        _service = service;
-        _httpContextAccessor = httpContextAccessor;
-    }
-        
     [HttpPost("signup")]
     public async Task<IActionResult> SignUpUser([FromBody]SignUpDto signUpDto)
     {
-        await _service.SignUpUser(signUpDto);
-        return Ok();
+        return Ok(await service.SignUpUser(signUpDto));
     }
 
     [HttpPost("auth")]
     public async Task<IActionResult> AuthUser([FromBody]LoginDto loginDto)
     {
-        var result = await _service.AuthUser(loginDto);
-        if (!result.IsSuccess) return BadRequest(result.Error);
-        _httpContextAccessor.HttpContext?.Response.Cookies.Append("_rindo", result.Value.Token);
-        return Ok(result.Value.User);
+        return Ok(await service.AuthUser(loginDto));
+    }
+
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> RefreshToken([FromBody]RefreshTokenDto refreshTokenDto)
+    {
+        return Ok(await service.RefreshToken(refreshTokenDto.RefreshToken, dataAccessController.EmployeeId));
     }
 }

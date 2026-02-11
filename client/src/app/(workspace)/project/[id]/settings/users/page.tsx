@@ -6,7 +6,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { IProject, IUser } from "@/types";
+import {IProject, IUser, ProjectInfo, UserDto} from "@/types";
 import { CirclePlus, Crown, X } from "lucide-react";
 import AddUserModal from "@/components/addUserModal";
 import {
@@ -17,18 +17,16 @@ import {
   CardFooter,
   CardTitle,
 } from "@/components/ui/card";
-import { GetSettingsInfo, RemoveUserFromProject } from "@/requests";
+import { getSettingsInfo, removeUserFromProject } from "@/requests";
 
 export default function Page() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const [projectSettings, setProjectSettings] = useState<IProject>(
-    {} as IProject
-  );
-  const [users, setUsers] = useState<IUser[]>([]);
+  const [projectSettings, setProjectSettings] = useState<ProjectInfo>({} as ProjectInfo);
+  const [users, setUsers] = useState<UserDto[]>([]);
   const [isUserModalOpen, setIsUserModalOpen] = useState<boolean>(false);
   const [isUserDeleteModal, setIsUserDeleteModal] = useState<boolean>(false);
-  const [userOnDelete, setUserOnDelete] = useState<IUser>({} as IUser);
+  const [userOnDelete, setUserOnDelete] = useState<UserDto>({} as UserDto);
   const [fetchRolesInfo, setFetch] = useState<boolean>(true);
   const [username, setUsername] = useState<string>("");
 
@@ -46,15 +44,14 @@ export default function Page() {
 
   useEffect(() => {
     async function fetchInfo() {
-      const response = await GetSettingsInfo(id);
-      if (response.ok) {
-        const data = await response.json();
-        setProjectSettings(data);
-        setProjectSettings((prev) => ({
-          ...prev,
-          users: [...data.users],
-        }));
-      }
+      getSettingsInfo(id)
+          .then(response => response.data)
+          .then(projectInfo => {
+            setProjectSettings({
+              ...projectInfo,
+              users: [...projectInfo.users],
+            });
+          })
     }
     fetchInfo();
     if (fetchRolesInfo) {
@@ -63,7 +60,7 @@ export default function Page() {
   }, [fetchRolesInfo]);
 
   const handleRemoveUser = async () => {
-    const response = await RemoveUserFromProject(id, userOnDelete.username);
+    const response = await removeUserFromProject(id, userOnDelete.username);
     setFetch(true);
     setIsUserDeleteModal(false);
     setUserOnDelete({} as IUser);
@@ -96,13 +93,27 @@ export default function Page() {
               >
                 <CardHeader>
                   <CardTitle className="flex flex-row gap-2 justify-between">
+                    <Avatar
+                        style={{
+                          backgroundColor: "#4198FF",
+                          color: "white",
+                          width: "3.5vh",
+                          height: "3.5vh",
+                          fontSize: "1.2rem",
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                    >
+                      {user?.firstName?.slice(0, 1).toUpperCase()}
+                      {user?.lastName?.slice(0, 1).toUpperCase()}
+                    </Avatar>
                     <div className="flex flex-row items-center gap-2">
                       {user.id === projectSettings.ownerId ? (
-                        <Crown size={18} color="rgb(255, 255, 0)" />
+                          <Crown size={18} color="rgb(255, 255, 0)" />
                       ) : (
-                        <></>
+                          <></>
                       )}
-                      {user.username}
                     </div>
                     {user.id !== projectSettings.ownerId ? (
                       <X
@@ -123,32 +134,6 @@ export default function Page() {
                     <span>E-Mail: {user.email}</span>
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <Avatar
-                    style={{
-                      backgroundColor: "#4198FF",
-                      color: "white",
-                      width: "3.5vh",
-                      height: "3.5vh",
-                      fontSize: "1.2rem",
-                      margin: "0.1rem",
-                      marginLeft: "0.4rem",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    {user?.firstName?.slice(0, 1).toUpperCase()}
-                    {user?.lastName?.slice(0, 1).toUpperCase()}
-                  </Avatar>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                    }}
-                  ></div>
-                </CardContent>
               </Card>
             ))
           ) : (

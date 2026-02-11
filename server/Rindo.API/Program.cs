@@ -1,59 +1,95 @@
 using Application;
+using Application.Interfaces.Access;
+using NLog;
+using NLog.Web;
+using Rindo.API.Common;
+using Rindo.API.Middleware.Authentication;
 using Rindo.API.Middleware.Exceptions;
+using Rindo.API.Middleware.Logging;
 using Rindo.Chat;
 using Rindo.Infrastructure;
 
-var builder = WebApplication.CreateBuilder(args);
+// Early init of NLog to allow startup and exception logging, before host is built
+var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
+logger.Debug("Starting app");
 
-builder.Services
-    .AddControllers()
-    .AddNewtonsoftJson(options => 
-    { 
-        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore; 
-    });
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Configuration
-    .AddJsonFile("appsettings.db.json", optional: false)
-    .AddJsonFile("appsettings.auth.json", optional: false);
-
-builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
-builder.Services.AddCors(options =>
-    options.AddPolicy("CorsPolicy",
-        conf => conf
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials()
-            .SetIsOriginAllowed(_ => true)));
-
-builder.Services
-    .AddInfrastructure(builder.Configuration)
-    .AddHttpContextAccessor()
-    .AddRepositories()
-    .AddApplication();
-
-builder.Services.AddJwt(builder.Configuration);
-// builder.Services.AddScoped<AsyncActionAccessFilter>();
-builder.Services.AddSignalR();
-
-var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
+try
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-    // app.ApplyMigrations();    
+    
+    var builder = WebApplication.CreateBuilder(args);
+    
+    builder.Logging.ClearProviders();
+    builder.Host.UseNLog();
+    
+    builder.Services
+        .AddControllers(options =>
+        {
+            options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+        })
+        .AddNewtonsoftJson(options => 
+        { 
+            options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore; 
+        });
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen();
+    builder.Configuration
+        .AddJsonFile("appsettings.db.json", optional: false)
+        .AddJsonFile("appsettings.auth.json", optional: false);
+    
+    builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
+    builder.Services.AddCors(options =>
+        options.AddPolicy("CorsPolicy",
+            conf => conf
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials()
+                .SetIsOriginAllowed(_ => true)));
+    
+    builder.Services
+        .AddInfrastructure(builder.Configuration)
+        .AddHttpContextAccessor()
+        .AddRepositories()
+        .AddApplication();
+    
+    builder.Services.AddScoped<IDataAccessController, DataAccessController>();
+    
+    builder.Services.AddJwt(builder.Configuration);
+    // builder.Services.AddScoped<AsyncActionAccessFilter>();
+    builder.Services.AddSignalR();
+    
+    var app = builder.Build();
+    
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+        // app.ApplyMigrations();    
+    }
+
+    app.UseMiddleware<RequestLoggingMiddleware>();
+    app.UseMiddleware<ExceptionHandlerMiddleware>();
+    
+    app.UseCors("CorsPolicy"); 
+    
+    app.UseAuthentication();
+    app.UseAuthorization();
+    
+    app.UseMiddleware<AuthenticationMiddleware>();
+    
+    app.MapControllers();
+    
+    app.MapHub<ChatHub>("/chat");
+    
+    app.Run();
 }
-
-app.UseMiddleware<ExceptionHandlerMiddleware>();
-
-app.UseCors("CorsPolicy"); 
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.MapHub<ChatHub>("/chat");
-
-app.Run();
+catch (Exception exception)
+{
+    // NLog: catch setup errors
+    logger.Error(exception, "Stopped program because of exception");
+    throw;
+}
+finally
+{
+    // Ensure to flush and stop internal timers/threads before application-exit (Avoid segmentation fault on Linux)
+    LogManager.Shutdown();
+}

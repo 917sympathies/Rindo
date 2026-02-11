@@ -1,15 +1,16 @@
 using System.ComponentModel.DataAnnotations;
+using Application.Auth;
+using Application.Auth.Jwt;
+using Application.Common.Exceptions;
 using Application.Common.Mapping;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
-using Rindo.Domain.Common;
-using Rindo.Domain.DTO;
-using Rindo.Domain.Models;
-using Rindo.Infrastructure.Jwt;
+using Rindo.Domain.DTO.Auth;
+using Rindo.Domain.DataObjects;
 
 namespace Application.Services;
 
-public class AuthorizationService(IUserRepository userRepository, IJwtProvider jwtProvider) : IAuthorizationService
+public class AuthorizationService(IUserRepository userRepository, IJwtProvider jwtProvider, IAuthCacheService authCacheService) : IAuthorizationService
 {
     public async Task<User> SignUpUser(SignUpDto signUpDto)
     {
@@ -22,18 +23,40 @@ public class AuthorizationService(IUserRepository userRepository, IJwtProvider j
         return await userRepository.CreateUser(user);
     }
 
-    public async Task<Result<TokenDto>> AuthUser(LoginDto loginDto)
+    public async Task<TokenDto> AuthUser(LoginDto loginDto)
     {
         var user = await userRepository.GetUserByUsername(loginDto.Username);
-        if (user is null) return Error.NotFound("User with this username doesn't exists");
+        if (user is null) throw new NotFoundException("User with this username doesn't exists");
         
         var password = PasswordHandler.GetPasswordHash(loginDto.Password);
-        if (!user.Password.Equals(password))
-            throw new ValidationException("Wrong password");
+        if (!user.Password.Equals(password)) throw new ValidationException("Wrong password");
+        
+        return await GenerateToken(user);
+    }
 
+    public async Task<TokenDto> RefreshToken(string refreshToken, Guid userId)
+    {
+        var refreshTokenValue = await authCacheService.GetRefreshTokenAsync(refreshToken);
+        if (refreshTokenValue is null || refreshTokenValue.ValidTo < DateTime.Now)
+        {
+            throw new ValidationException("Refresh token expired");
+        }
+        var user = await userRepository.GetUserById(userId);
+        if (user is null) throw new NotFoundException("User with this username doesn't exists");
+
+        return await GenerateToken(user);
+    }
+
+    private async Task<TokenDto> GenerateToken(User user)
+    {
+        var tokenResult = jwtProvider.GenerateToken(user.UserId);
+        
+        await authCacheService.InsertRefreshTokenAsync(tokenResult.RefreshToken, tokenResult.RefreshTokenValue);
+        
         return new TokenDto
         {
-            Token = jwtProvider.GenerateToken(user),
+            Token = tokenResult.Token,
+            RefreshToken = tokenResult.RefreshToken,
             User = user.MapToDto()
         };
     }

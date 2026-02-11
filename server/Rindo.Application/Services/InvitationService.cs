@@ -1,16 +1,14 @@
 ﻿using Application.Common.Exceptions;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
-using Microsoft.EntityFrameworkCore;
-using Rindo.Domain.Common;
 using Rindo.Domain.DTO;
-using Rindo.Domain.Models;
-using Rindo.Infrastructure;
+using Rindo.Domain.DTO.Projects;
+using Rindo.Domain.DataObjects;
 
 namespace Application.Services;
 
 public class InvitationService(
-    IProjectService projectService,
+    IProjectRepository projectRepository,
     IInvitationRepository invitationRepository,
     IUserRepository userRepository) : IInvitationService
 {
@@ -36,10 +34,10 @@ public class InvitationService(
     {
         var invitation = await invitationRepository.GetInvitationById(invitationId);
         if (invitation is null) throw new NotFoundException(nameof(Invitation), invitationId);
-        await projectService.AddUserToProject(invitation.ProjectId, invitation.RecipientId);
+        await projectRepository.AddUserToProject(invitation.ProjectId, invitation.RecipientId);
     }
 
-    public async Task<IEnumerable<InviteDto>> GetInvitationsByProjectId(Guid projectId)
+    public async Task<IEnumerable<InvitationProjectInfoDto>> GetInvitationsByProjectId(Guid projectId)
     {
         var invites = await invitationRepository.GetInvitationsByProjectId(projectId);
         var sendersIds = invites.Select(x => x.SenderId);
@@ -47,17 +45,27 @@ public class InvitationService(
         var senders = await userRepository.GetUsersByIds(sendersIds.ToArray());
         var recipients = await userRepository.GetUsersByIds(recipientsIds.ToArray());
         
-        var result = invites.Select(inv => new InviteDto
+        var result = invites.Select(inv => new InvitationProjectInfoDto
         { 
             Id = inv.Id, 
-            SenderUsername = senders.FirstOrDefault(x => x.Id == inv.SenderId)?.Username ?? string.Empty, 
-            RecipientUsername = recipients.FirstOrDefault(x => x.Id == inv.RecipientId)?.Username ?? string.Empty,
+            SenderUsername = senders.FirstOrDefault(x => x.UserId == inv.SenderId)?.Username ?? string.Empty, 
+            RecipientUsername = recipients.FirstOrDefault(x => x.UserId == inv.RecipientId)?.Username ?? string.Empty,
         });
         return result;
     }
 
-    public async Task<IEnumerable<Invitation>> GetInvitationsByUserId(Guid userId)
+    public async Task<IEnumerable<InvitationDto>> GetInvitationsByUserId(Guid userId)
     {
-        return await invitationRepository.GetInvitationsByUserId(userId);
+        var invitations = await invitationRepository.GetInvitationsByUserId(userId);
+        var senders = await userRepository.GetUsersByIds(invitations.Select(x => x.SenderId).ToArray());
+        var projects = await projectRepository.GetProjectsByIds(invitations.Select(x => x.ProjectId).ToArray());
+        return invitations.Select(inv => new InvitationDto
+        {
+            InvitationId = inv.Id,
+            ProjectId = inv.ProjectId,
+            SenderId = inv.SenderId,
+            ProjectName = projects.FirstOrDefault(x => x.ProjectId == inv.ProjectId)?.Name ?? string.Empty,
+            SenderUsername = senders.FirstOrDefault(x => x.UserId == inv.SenderId)?.Username ?? string.Empty,
+        });
     }
 }

@@ -1,498 +1,250 @@
+import axios from 'axios';
 import {
-    IProjectDto,
+    AddStageDto,
+    AddTaskDto,
+    CreateProjectDto,
     IRoleDto,
-    IStage,
-    IStageDto,
-    ITaskDto,
+    Stage,
     IUserRights,
+    ProjectInfo,
+    TaskDto,
+    TokenDto,
+    UserDto, UpdateTaskDto,
 } from "./types";
+import { Chat } from './components/chat/models/chat.model';
+import {ProjectTasks, UpdateProjectDto} from "@/types/project.types";
 
-const baseUrl = "http://localhost:5000";
-
-export const GetProjectInfoHeader = async (id: string) => {
-  return await fetch(`${baseUrl}/api/project/${id}/header`, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-  });
-};
-
-export const GetProjectsByUserId = async (userId: string) => {
-  return await fetch(
-    `${baseUrl}/api/project?userId=${userId}`,
-    {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
+axios.interceptors.request.use(config => {
+    const token = localStorage.getItem("token");
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
     }
-  );
-};
-
-export const GetProjectUsers = async (projectId: string) => {
-  return await fetch(
-    `${baseUrl}/api/user?projectId=${projectId}`,
-    {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
+    else {
+        // make refreshToken request
     }
-  );
-};
+    config.headers["Content-Type"] = "application/json";
+    config.baseURL = "http://localhost:5000";
+    return config;
+});
 
-export const GetTasksByUserId = async (userId: string) => {
-  return await fetch(
-    `${baseUrl}/api/project/${userId}/usertasks`,
-    {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
+// axios.interceptors.response.use(
+//     (response) => {
+//         return response.data;
+//     },
+//     (error) => {
+//         if (error.response && error.response.data) {
+//             return Promise.reject(error.response.data);
+//         }
+//         return Promise.reject(error.message);
+//     }
+// );
+
+// axios.interceptors.response.use(
+//     function onFulfilled(response) {
+//         // Any status code that lie within the range of 2xx cause this function to trigger
+//         // Do something with response data
+//         return response;
+//     }, function onRejected(error) {
+//         // Any status codes that falls outside the range of 2xx cause this function to trigger
+//         // Do something with response error
+//         return Promise.reject(error);
+//     }
+// );
+
+axios.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        const originalRequest = error.config;
+
+        // Prevent infinite loops for the refresh endpoint itself
+        if (error.response.status === 401 && originalRequest.url !== 'auth/refresh') {
+            try {
+                const refreshToken = localStorage.getItem("refreshToken");
+                // Call the refresh API
+                const response = await axios.post('api/authorization/refresh', {
+                    refreshToken: refreshToken,
+                });
+
+                const { accessToken, refreshToken: newRefreshToken } = response.data;
+
+                // Update tokens in storage/store
+                localStorage.setItem("token", newRefreshToken);
+
+                // Retry the original request with the new token
+                originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+                return axios(originalRequest);
+            } catch (refreshError) {
+                // If refresh fails, log out the user
+                // store.dispatch(logout());
+                // Redirect to login page (handle this in your UI logic)
+                return Promise.reject(refreshError);
+            }
+        }
+
+        return Promise.reject(error);
     }
-  );
+);
+
+export const getProjectInfoHeader = async (id: string) => {
+    return await axios.get(`/api/projects/${id}/header`);
 };
 
-export const AuthUser = async (userName: string, password: string) => {
-  const authInfo = { username: userName, password: password };
-  return await fetch(`${baseUrl}/api/authorization/auth`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify(authInfo),
-  });
+export const getProjectsByUserId = async (userId: string) => {
+    return await axios.get(`/api/projects?userId=${userId}`);
 };
 
-export const SignUpUser = async (
-  username: string,
-  password: string,
-  email: string,
-  firstName: string,
-  lastName: string
+export const getProjectUsers = async (projectId: string) => {
+    return await axios.get(`/api/users?projectId=${projectId}`);
+};
+
+export const getTasksByUserId = async (userId: string) => {
+    return await axios.get<ProjectTasks[]>(`/api/projects/${userId}/user-tasks`);
+};
+
+export const authUser = async (userName: string, password: string) => {
+    const authInfo = { username: userName, password: password };
+    return await axios.post<TokenDto>(`/api/authorization/auth`, authInfo);
+};
+
+export const signUpUser = async (
+    username: string,
+    password: string,
+    email: string,
+    firstName: string,
+    lastName: string
 ) => {
-  return await fetch(`${baseUrl}/api/authorization/signup`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify({
-      username: username,
-      password: password,
-      email: email,
-      firstName: firstName,
-      lastName: lastName,
-    }),
-  });
-};
-
-export const UpdateUserFirstName = async (
-  userId: string,
-  firstName: string
-) => {
-  return await fetch(
-    `${baseUrl}/api/user/${userId}/firstname?firstName=${firstName}`,
-    {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    }
-  );
-};
-
-export const UpdateUserLastName = async (userId: string, lastName: string) => {
-  return await fetch(
-    `${baseUrl}/api/user/${userId}/lastname?lastName=${lastName}`,
-    {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    }
-  );
-};
-
-export const UpdateUserEmail = async (userId: string, email: string) => {
-  return await fetch(
-    `${baseUrl}/api/user/${userId}/email?email=${email}`,
-    {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    }
-  );
-};
-
-export const GetRights = async (roleId: string, userId: string) => {
-  //const userId = localStorage.getItem("userId");// непонятно, что за id?
-  // проверить на правильность выполнения, должно быть api/role/projectId=id?userId=..
-  return await fetch(`${baseUrl}/api/role/${roleId}/${userId}`, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-  });
-};
-
-export const ChangeProjectDescription = async (
-  id: string,
-  description: string
-) => {
-  return await fetch(
-    `${baseUrl}/api/project/${id}/desc?description=${description}`,
-    {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    }
-  );
-};
-
-export const ChangeProjectName = async (id: string, name: string) => {
-  return await fetch(`${baseUrl}/api/project/${id}/name?name=${name}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-  });
-};
-
-export const DeleteProject = async (id: string) => {
-  return await fetch(`${baseUrl}/api/project/${id}`, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-  });
-};
-
-export const GetSettingsInfo = async (id: string) => {
-  return await fetch(
-    `${baseUrl}/api/project/${id}/settings`,
-    {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    }
-  );
-};
-
-export const GetRolesByProjectId = async (id: string) => {
-  return await fetch(
-    `${baseUrl}/api/role?projectId=${id}`,
-    {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    }
-  );
-};
-
-export const AddUserToRole = async (roleId: string, userId: string) => {
-  return await fetch(
-    `${baseUrl}/api/role/${roleId}/adduser?userId=${userId}`,
-    {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    }
-  );
-};
-
-export const RemoveUserFromRole = async (roleId: string, userId: string) => {
-  return await fetch(
-    `${baseUrl}/api/role/${roleId}/removeuser?userId=${userId}`,
-    {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    }
-  );
-};
-
-export const SaveRoleName = async (roleId: string, name: string) => {
-  return await fetch(`${baseUrl}/api/role/${roleId}/name?name=${name}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-  });
-};
-
-export const SaveRoleRights = async (roleId: string, rights: IUserRights) => {
-  return await fetch(`${baseUrl}/api/role/${roleId}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify(rights),
-  });
-};
-
-export const CreateRole = async (role: IRoleDto) => {
-  return await fetch(`${baseUrl}/api/role`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify(role),
-  });
-};
-
-export const DeleteRole = async (id: string) => {
-  return await fetch(`${baseUrl}/api/role/${id}`, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-  });
-};
-
-export const RemoveUserFromProject = async (
-  projectId: string,
-  username: string
-) => {
-  return await fetch(
-    `${baseUrl}/api/project/${projectId}/remove?username=${username}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    }
-  );
-};
-
-export const CreateProject = async (project: IProjectDto) => {
-  return await fetch(`${baseUrl}/api/project`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify(project),
-  });
-};
-
-export const GetUsersByProjectId = async (projectId: string) => {
-  return await fetch(
-    `${baseUrl}/api/user?projectId=${projectId}`,
-    {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    }
-  );
-};
-
-export const AddTask = async (task: ITaskDto) => {
-  return await fetch(`${baseUrl}/api/task`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify(task),
-  });
-};
-
-export const DeleteTask = async (id: string) => {
-  return await fetch(`${baseUrl}/api/task/${id}`, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-  });
-};
-
-export const GetTask = async (id: string) => {
-  return await fetch(`${baseUrl}/api/task/${id}`, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-  });
-};
-
-export const UpdateTaskStage = async (taskId: string, stageId: string) => {
-  return await fetch(
-    `${baseUrl}/api/stage/${stageId}?taskId=${taskId}`,
-    {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    }
-  );
-};
-
-export const UpdateTaskProgress = async (taskId: string, value: string) => {
-  return await fetch(
-    `${baseUrl}/api/task/${taskId}/progress?number=${value}`,
-    {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    }
-  );
-};
-
-export const UpdateTaskStartDate = async (taskId: string, date: string) => {
-  return await fetch(
-    `${baseUrl}/api/task/${taskId}/start`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify(date),
-    }
-  );
-};
-
-export const UpdateTaskFinishDate = async (taskId: string, date: string) => {
-  return await fetch(
-    `${baseUrl}/api/task/${taskId}/finish`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify(date),
-    }
-  );
-};
-
-export const UpdateTaskResponsibleUser = async (taskId: string,value: string) => {
-  return await fetch(
-    `${baseUrl}/api/task/${taskId}/responsible?userId=${value}`,
-    {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    }
-  );
-};
-
-export const UpdateTaskName = async (taskId: string, name: string) => {
-  return await fetch(
-    `${baseUrl}/api/task/${taskId}/name?name=${name}`,
-    {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    }
-  );
-};
-
-export const UpdateTaskDescription = async (
-  taskId: string,
-  description: string
-) => {
-  return await fetch(
-    `${baseUrl}/api/task/${taskId}/description?description=${description}`,
-    {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    }
-  );
-};
-
-export const InviteUserToProject = async (
-  projectId: string,
-  username: string
-) => {
-  return await fetch(
-    `${baseUrl}/api/project/${projectId}/invite?username=${username}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    }
-  );
-};
-
-export const GetChatInfo = async (chatId: string) => {
-  return await fetch(`${baseUrl}/api/chat/${chatId}`, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-  });
-};
-
-export const GetUserInfo = async (id: string) => {
-    return await fetch(`${baseUrl}/api/user/${id}`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+    return await axios.post(`/api/authorization/signup`, {
+        username: username,
+        password: password,
+        email: email,
+        firstName: firstName,
+        lastName: lastName,
     });
 };
 
-export const GetTasksByProjectId = async (projectId: string) => {
-    return await fetch(
-        `${baseUrl}/api/task/?projectId=${projectId}`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-    });
+export const getRights = async (roleId: string, userId: string) => {
+    //const userId = localStorage.getItem("userId");// непонятно, что за id?
+    // проверить на правильность выполнения, должно быть api/roles/projectId=id?userId=..
+    return await axios.get(`/api/roles/${roleId}/${userId}`);
 };
 
-export const GetInvitesByProjectId = async (projectId: string) => {
-    return await fetch(
-      `${baseUrl}/api/invitation/project?projectId=${projectId}`, {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-    });
+export const deleteProject = async (id: string) => {
+    return await axios.delete(`/api/projects/${id}`);
 };
 
-export const GetInvitesByUserId = async (userId: string) => {
-  return await fetch(
-    `${baseUrl}/api/invitation/user?userId=${userId}`,
-    {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    }
-  );
+export const getSettingsInfo = async (id: string) => {
+    return await axios.get<ProjectInfo>(`/api/projects/${id}/settings`);
 };
 
-export const DeleteInvite = async (id: string) => {
-  return await fetch(`${baseUrl}/api/invitation/${id}`, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-  });
+export const getRolesByProjectId = async (id: string) => {
+    return await axios.get(`/api/roles?projectId=${id}`);
 };
 
-export const AddStage = async (stage: IStageDto) => {
-  return await fetch(`${baseUrl}/api/stage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify(stage),
-  });
+export const addUserToRole = async (roleId: string, userId: string) => {
+    return await axios.put(`/api/roles/${roleId}/add-user?userId=${userId}`);// FIXME
 };
 
-export const DeleteStage = async (id: string) => {
-  return await fetch(`${baseUrl}/api/stage/${id}`, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-  });
+export const removeUserFromRole = async (roleId: string, userId: string) => {
+    return await axios.put(`/api/roles/${roleId}/remove-user?userId=${userId}`);// FIXME
 };
 
-export const UpdateProjectStages = async (
-  projectId: string,
-  stages: IStage[]
-) => {
-  return await fetch(
-    `${baseUrl}/api/project/${projectId}/stages`,
-    {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify(stages),
-    }
-  );
+export const saveRoleName = async (roleId: string, name: string) => {
+    return await axios.put(`/api/roles/${roleId}/name?name=${name}`);// FIXME
 };
 
-export const GetStagesByProjectId = async (projectId: string) => {
-  return await fetch(
-    `${baseUrl}/api/stage?projectId=${projectId}`,
-    {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    }
-  );
+export const saveRoleRights = async (roleId: string, rights: IUserRights) => {
+    return await axios.put(`/api/roles/${roleId}`);
 };
 
-export const GetTasksCommentsAmount = async (taskId: string) => {
-  return await fetch(
-    `${baseUrl}/api/comment?taskId=${taskId}`,
-    {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    }
-  );
+export const createRole = async (role: IRoleDto) => {
+    return await axios.post(`/api/roles`, role);
 };
+
+export const deleteRole = async (id: string) => {
+    return await axios.delete(`/api/roles/${id}`);
+};
+
+export const removeUserFromProject = async (projectId: string, username: string) => {
+    return await axios.post(`/api/projects/${projectId}/remove?username=${username}`);// FIXME
+};
+
+export const createProject = async (project: CreateProjectDto) => {
+    return await axios.post<string>(`/api/projects`, project);
+};
+
+export const getUsersByProjectId = async (projectId: string) => {
+    return await axios.get<UserDto[]>(`/api/users?projectId=${projectId}`);
+};
+
+export const addTask = async (task: AddTaskDto) => {
+    return await axios.post(`/api/tasks`, task);
+};
+
+export const deleteTask = async (id: string) => {
+    return await axios.delete(`/api/tasks/${id}`);
+};
+
+export const getTask = async (id: string) => {
+    return await axios.get<TaskDto>(`/api/tasks/${id}`);
+};
+
+export const updateTask = async (taskDto: UpdateTaskDto) => {
+    return await axios.put(`/api/tasks`, taskDto);
+};
+
+export const inviteUserToProject = async (projectId: string, username: string) => {
+    return await axios.post(`/api/projects/${projectId}/invite?username=${username}`); // FIXME
+};
+
+export const getChatInfo = async (chatId: string) => {
+    return await axios.get<Chat>(`/api/chat/${chatId}`);
+};
+
+export const getUser = async (id: string) => {
+    return await axios.get<UserDto>(`/api/users/${id}`);
+};
+
+export const getTasksByProjectId = async (projectId: string) => {
+    return await axios.get(`/api/tasks/?projectId=${projectId}`);
+};
+
+export const getInvitesByProjectId = async (projectId: string) => {
+    return await axios.get(`/api/invitations/project?projectId=${projectId}`);
+};
+
+export const getInvitesByUserId = async (userId: string) => {
+    return await axios.get(`/api/invitations/user?userId=${userId}`
+    );
+};
+
+export const deleteInvite = async (id: string) => {
+    return await axios.delete(`/api/invitations/${id}`);
+};
+
+export const addStage = async (stage: AddStageDto) => {
+    return await axios.post(`/api/stages`, stage);
+};
+
+export const deleteStage = async (id: string) => {
+    return await axios.delete(`/api/stages/${id}`);
+};
+
+export const updateTaskStage = async (taskId: string, stageId: string) => {
+    return await axios.patch(`/api/tasks/${taskId}?stageId=${stageId}`);
+}
+
+export const getStagesByProjectId = async (projectId: string) => {
+    return await axios.get<Stage[]>(`/api/stages?projectId=${projectId}`);
+};
+
+export const getTasksCommentsAmount = async (taskId: string) => {
+    return await axios.get(`/api/comments?taskId=${taskId}`);
+};
+
+export const updateUser = async (userDto: UserDto) => {
+    return await axios.put(`/api/users`, userDto);
+}
+
+export const updateProject = async (updateProjectDto: UpdateProjectDto) => {
+    return await axios.put(`/api/projects`, updateProjectDto);
+}

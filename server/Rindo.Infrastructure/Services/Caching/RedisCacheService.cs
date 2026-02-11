@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
+﻿using Application.Interfaces.Caching;
+using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
-using Rindo.Infrastructure.Interfaces.Caching;
 
 namespace Rindo.Infrastructure.Services.Caching;
 
@@ -8,7 +8,7 @@ public class RedisCacheService(IDistributedCache distributedCache): IRedisCacheS
 {
     public async Task<T?> GetAsync<T>(string key)
     {
-        if (string.IsNullOrWhiteSpace(key)) return default;
+        if (string.IsNullOrWhiteSpace(key)) throw new ArgumentNullException(nameof(key));
         
         var data = await distributedCache.GetStringAsync(key);
 

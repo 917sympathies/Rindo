@@ -1,6 +1,6 @@
 ﻿using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
-using Rindo.Domain.Models;
+using Rindo.Domain.DataObjects;
 
 namespace Application.Services;
 
@@ -8,9 +8,9 @@ public class MessageService(IChatMessageRepository messageRepository, IUserServi
 {
     public async Task<Tuple<ChatMessage, string>> AddMessage(Guid userId, Guid chatId, string content)
     {
-        var user = (await userService.GetUserById(userId)).Value;
-        var msg = new ChatMessage { ChatId = chatId, SenderId = userId, Content = content, Time = DateTime.UtcNow};
-        await messageRepository.AddMessage(msg);
-        return new (msg, user!.Username);
+        var user = await userService.GetUserById(userId);
+        var message = new ChatMessage { ChatId = chatId, SenderId = userId, Content = content, Time = DateTime.UtcNow};
+        await messageRepository.AddMessage(message);
+        return new Tuple<ChatMessage, string>(message, user!.Username);
     }
 }

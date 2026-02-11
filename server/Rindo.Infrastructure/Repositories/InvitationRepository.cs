@@ -1,6 +1,6 @@
 ﻿using Application.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
-using Rindo.Domain.Models;
+using Rindo.Domain.DataObjects;
 
 namespace Rindo.Infrastructure.Repositories;
 

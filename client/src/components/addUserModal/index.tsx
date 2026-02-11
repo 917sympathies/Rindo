@@ -4,7 +4,7 @@ import { Input } from "../ui/input";
 import { User2, X } from "lucide-react";
 import { useState } from "react";
 import { useParams } from "next/navigation";
-import { InviteUserToProject } from "@/requests";
+import { inviteUserToProject } from "@/requests";
 
 interface ModalProps {
   onClose: () => void;
@@ -15,7 +15,7 @@ export default function AddUserModal({ onClose }: ModalProps) {
   const { id } = useParams<{ id: string }>();
 
   const handleInviteUser = async () => {
-    const response = await InviteUserToProject(id, username);
+    const response = await inviteUserToProject(id, username);
     setUsername("");
     onClose();
   };

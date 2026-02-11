@@ -21,7 +21,7 @@ import {
   LogLevel,
   HubConnectionState,
 } from "@microsoft/signalr";
-import { AddUserToRole, CreateRole, GetRolesByProjectId, GetSettingsInfo, RemoveUserFromRole, SaveRoleName, SaveRoleRights } from "@/requests";
+import { addUserToRole, createRole, getRolesByProjectId, getSettingsInfo, removeUserFromRole, saveRoleName, saveRoleRights } from "@/requests";
 
 export default function Page() {
   const { id } = useParams<{ id: string }>();
@@ -51,10 +51,9 @@ export default function Page() {
 
   useEffect(() => {
     async function fetchInfo() {
-      const response = await GetSettingsInfo(id);
-      if (response.ok) 
-      {
-        const data = await response.json();
+      const response = await getSettingsInfo(id);
+      if (response.ok) {
+        const data = response.data;
         setProjectSettings(data);
         setProjectSettings((prev) => ({
           ...prev,
@@ -63,17 +62,15 @@ export default function Page() {
       }
     }
     async function fetchRoles() {
-      const response = await GetRolesByProjectId(id);
-      if (response.ok) 
-      {
-        const data = await response.json();
+      const response = await getRolesByProjectId(id);
+      if (response.ok) {
+        const data = response.data;
         setRoles(data);
         setSelectedRole(data[0]);
       }
     }
     fetchInfo();
-    if (fetchRolesInfo) 
-    {
+    if (fetchRolesInfo) {
       fetchRoles();
       setFetch(false);
     }
@@ -85,12 +82,10 @@ export default function Page() {
         .withUrl(`http://localhost:5000/chat`)
         .build();
       setConnection(connection);
-      if (connection.state === HubConnectionState.Disconnected) 
-      {
+      if (connection.state === HubConnectionState.Disconnected) {
         await connection.start();
-      } 
-      else 
-      {
+      }
+      else {
         console.log("Already connected");
       }
     }
@@ -99,17 +94,17 @@ export default function Page() {
 
   const handleAddUserToRole = async (userId: string) => {
     setUserToRole("");
-    const response = await AddUserToRole(selectedRole.id, userId);
+    const response = await addUserToRole(selectedRole.id, userId);
     setFetch(true);
   };
 
   const handleRemoveUserFromRole = async (userId: string) => {
-    const response = await RemoveUserFromRole(selectedRole.id, userId);
+    const response = await removeUserFromRole(selectedRole.id, userId);
     setFetch(true);
   };
 
   const handleSaveRole = async () => {
-    const responseNameChange = await SaveRoleName(selectedRole.id, selectedRole.name);
+    const responseNameChange = await saveRoleName(selectedRole.id, selectedRole.name);
     const rights: IUserRights = {
       canAddRoles: selectedRole.canAddRoles,
       canAddStage: selectedRole.canAddStage,
@@ -124,7 +119,7 @@ export default function Page() {
       canModifyTask: selectedRole.canModifyTask,
       canUseChat: selectedRole.canUseChat,
     };
-    const response = await SaveRoleRights(selectedRole.id, rights);
+    const response = await saveRoleRights(selectedRole.id, rights);
     setFetch(true);
   };
 
@@ -134,7 +129,7 @@ export default function Page() {
       projectId: id,
       color: "#FFFF",
     };
-    const response = await CreateRole(role);
+    const response = await createRole(role);
     setFetch(true);
     setNewRole("");
   };
@@ -279,7 +274,7 @@ export default function Page() {
                           justifyContent: "center",
                           alignItems: "center",
                         }}
-                        // src="/static/images/avatar/1.jpg"
+                      // src="/static/images/avatar/1.jpg"
                       >
                         {user?.firstName?.slice(0, 1)}
                         {user?.lastName?.slice(0, 1)}

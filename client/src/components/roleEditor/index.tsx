@@ -1,12 +1,12 @@
 "use client";
 import { useState, Dispatch, SetStateAction } from "react";
-import {Dialog, DialogContent} from "../ui/dialog"
+import { Dialog, DialogContent } from "../ui/dialog"
 import { Switch } from "../ui/switch";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { IRole } from "@/types";
-import { DeleteRole } from "@/requests";
+import { deleteRole } from "@/requests";
 
 interface Props {
   selectedRole: IRole;
@@ -24,7 +24,7 @@ export default function RoleEditor({
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const handleDeleteRole = async () => {
-    const response = await DeleteRole(selectedRole.id);
+    const response = await deleteRole(selectedRole.id);
     setIsModalOpen(false);
     doFetch();
   }
@@ -131,7 +131,7 @@ export default function RoleEditor({
             >
               Сохранить изменения
             </Button>
-            <Button 
+            <Button
               className="w-full mt-4 text-white bg-red-500 hover:bg-red-400 ease-in-out duration-300"
               onClick={() => setIsModalOpen(true)}>
               Удалить

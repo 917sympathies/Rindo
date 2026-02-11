@@ -1,30 +1,23 @@
 ﻿using System.Linq.Expressions;
 using Application.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Rindo.Domain.Models;
+using Rindo.Domain.DataObjects;
 using Task = System.Threading.Tasks.Task;
 
 namespace Rindo.Infrastructure.Repositories;
 
-public class StageRepository : RepositoryBase<Stage>, IStageRepository
+public class StageRepository(PostgresDbContext context) : RepositoryBase<Stage>(context), IStageRepository
 {
-    public StageRepository(PostgresDbContext context) : base(context)
-    {
-    }
-
     public Task CreateStages(IEnumerable<Stage> stages) => CreateAsync(stages);
 
     public Task<Stage> CreateStage(Stage stages) => CreateAsync(stages);
 
-    public void DeleteStage(Stage stages) => Delete(stages);
+    public async Task DeleteStage(Stage stages) => await Delete(stages);
 
-    public void UpdateStage(Stage stages) => Update(stages);
-
-    public Task UpdateStageProperty<TProperty>(Stage stage, Expression<Func<Stage, TProperty>> expression) =>
-        UpdateStageProperty<TProperty>(stage, expression);
+    public async Task UpdateStage(Stage stages) => await Update(stages);
 
     public async Task<Stage?> GetById(Guid id) => 
-        await FindByCondition(p => p.Id == id)
+        await FindByCondition(p => p.StageId == id)
             .Include(s => s.Tasks)
             .ThenInclude(t => t.Comments)
             .AsNoTracking()

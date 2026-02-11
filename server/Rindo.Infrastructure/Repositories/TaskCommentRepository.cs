@@ -1,19 +1,15 @@
 ﻿using Application.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Rindo.Domain.Models;
+using Rindo.Domain.DataObjects;
 using Task = System.Threading.Tasks.Task;
 
 namespace Rindo.Infrastructure.Repositories;
 
-public class TaskCommentRepository : RepositoryBase<TaskComment>, ITaskCommentRepository
+public class TaskCommentRepository(PostgresDbContext context): RepositoryBase<TaskComment>(context), ITaskCommentRepository
 {
-    public TaskCommentRepository(PostgresDbContext context) : base(context)
-    {
-    }
-
     public Task CreateComment(TaskComment comment) => CreateAsync(comment);
 
-    public void DeleteComment(TaskComment comment) => Delete(comment);
+    public async Task DeleteComment(TaskComment comment) => await Delete(comment);
 
     public Task<int> GetCommentsCountByTaskId(Guid taskId)
     {

@@ -1,7 +1,6 @@
 ﻿using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
-using Rindo.Domain.Models;
-using Rindo.Infrastructure;
+using Rindo.Domain.DataObjects;
 
 namespace Application.Services;
 

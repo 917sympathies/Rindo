@@ -24,7 +24,7 @@ public class ChatHub : Hub
         var userId = Guid.Parse(_userId);
         var chatId = Guid.Parse(_chatId);
         var (msg, username) = await _messageService.AddMessage(userId, chatId, message);
-        await Clients.All.SendAsync($"ReceiveProjectChat{_chatId}", msg.Id, username, message, msg.ChatId, msg.Time);
+        await Clients.All.SendAsync($"ReceiveProjectChat{_chatId}", msg.MessageId, username, message, msg.ChatId, msg.Time);
     }
     
     public async Task SendTaskComment(string _userId, string message, string _taskId)

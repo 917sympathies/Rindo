@@ -21,22 +21,22 @@ public abstract class RepositoryBase<T>(PostgresDbContext context) where T : cla
         return createdEntity.Entity;
     }
 
-    protected void Delete(T entity)
+    protected async Task Delete(T entity)
     {
         context.Remove(entity);
-        context.SaveChanges();
+        await context.SaveChangesAsync();
     }
     
-    protected void DeleteMany(IEnumerable<T> entities)
+    protected async Task DeleteMany(IEnumerable<T> entities)
     {
         context.RemoveRange(entities);
-        context.SaveChanges();
+        await context.SaveChangesAsync();
     }
 
-    protected void Update(T entity)
+    protected async Task Update(T entity)
     {
         context.Update(entity);
-        context.SaveChanges();
+        await context.SaveChangesAsync();
     }
 
     protected async Task UpdatePropertyAsync<TProperty>(T entity, Expression<Func<T, TProperty>> expression)
@@ -45,8 +45,11 @@ public abstract class RepositoryBase<T>(PostgresDbContext context) where T : cla
         await context.SaveChangesAsync();
     }
 
-    protected bool UpdateCollectionAsync<TProperty>(T entity, Expression<Func<T,IEnumerable<TProperty>>> expression) where TProperty : class
-     => context.Entry(entity).Collection(expression).IsModified = true;
+    protected async Task UpdateCollectionAsync<TProperty>(T entity, Expression<Func<T, IEnumerable<TProperty>>> expression) where TProperty : class
+    {
+        context.Entry(entity).Collection(expression).IsModified = true;
+        await context.SaveChangesAsync();
+    }
 
     protected IQueryable<T> FindAll() =>
         context.Set<T>().AsNoTracking();
