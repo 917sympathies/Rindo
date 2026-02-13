@@ -49,15 +49,15 @@ services:
     networks:
       - dev
   
-  client:
-    image: client
-    build:
-      context: ../client
-      dockerfile: Dockerfile
-    ports:
-      - "5002:3000"
-    networks:
-      - dev
+#  client:
+#    image: client
+#    build:
+#      context: ../client
+#      dockerfile: Dockerfile
+#    ports:
+#      - "5002:3000"
+#    networks:
+#      - dev
 
   proxy:
     image: nginx:mainline
